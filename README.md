@@ -27,4 +27,3 @@ go run ./cmd/aapctl prove
 ```
 
 The proof command writes `out/proofs/phase1-proof.json` at the repository root.
-
