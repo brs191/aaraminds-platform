@@ -1,0 +1,19 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "leadership-status-agent",
+  "description": "Produces the recurring monthly AVP/VP leadership status deck (.pptx) from project inputs.",
+  "version": "1.3.0",
+  "url": "https://agents.aaraminds.internal/leadership-status-agent",
+  "preferredTransport": "JSONRPC",
+  "provider": { "organization": "AaraMinds", "url": "https://aaraminds.internal" },
+  "capabilities": { "streaming": false, "pushNotifications": false },
+  "securitySchemes": { "entra": { "type": "oauth2" } },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    { "id": "monthly-status-deck", "name": "Monthly leadership status deck",
+      "description": "Turn a month of execution into a decision-grade VP status deck.",
+      "tags": ["status", "leadership", "pptx"],
+      "examples": ["build my monthly status deck for my VP", "refresh last month's status deck"] }
+  ]
+}

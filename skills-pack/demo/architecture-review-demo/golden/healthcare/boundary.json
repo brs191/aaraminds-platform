@@ -1,0 +1,129 @@
+{
+  "system_name": "patient-care-coordination-platform",
+  "service_assessments": [
+    {
+      "service": "api-gateway",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "chatty",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper",
+        "synchronous dependency count is 5, indicates chatty design"
+      ]
+    },
+    {
+      "service": "auth-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "patient-records-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "patient-records-read-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "scheduling-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "lab-results-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "external-lab-gateway",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper"
+      ]
+    },
+    {
+      "service": "provider-directory-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "billing-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "audit-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "notification-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper"
+      ]
+    }
+  ],
+  "boundary_risks": [
+    {
+      "severity": "high",
+      "category": "fan_out",
+      "description": "service \"auth-service\" is a synchronous dependency of 7 other services \u2014 it is a bottleneck and a single point of failure",
+      "services_affected": [
+        "auth-service"
+      ]
+    },
+    {
+      "severity": "medium",
+      "category": "chatty_dependency",
+      "description": "service \"api-gateway\" has 5 synchronous dependencies; this is chatty and increases latency, blast radius, and coupling",
+      "services_affected": [
+        "api-gateway"
+      ]
+    }
+  ],
+  "recommended_changes": [
+    {
+      "action": "introduce_async",
+      "targets": [
+        "auth-service"
+      ],
+      "rationale": "This service is a synchronous bottleneck for many consumers. Convert read-paths to cached or eventual-consistent reads; split write-paths into commands handled asynchronously."
+    },
+    {
+      "action": "introduce_async",
+      "targets": [
+        "api-gateway"
+      ],
+      "rationale": "Convert the highest-volume synchronous calls to asynchronous events. This reduces coupling, contains failures, and improves latency."
+    }
+  ],
+  "overall_score": 77,
+  "overall_rating": "Boundaries directionally sound; targeted improvements recommended",
+  "summary": "Service boundary canvas for patient-care-coordination-platform: 11 proposed services analyzed, 2 boundary risks identified, overall boundary score 77/100."
+}

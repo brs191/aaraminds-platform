@@ -1,0 +1,233 @@
+{
+  "system_name": "retail-banking-platform",
+  "description": "Online retail banking platform for account holders. Provides account management, money transfers between internal and external accounts, statement generation, and fraud detection. Subject to financial regulation: strong audit trail, immutable ledger, regulator-accessible record retention, and PCI-DSS for card operations.",
+  "deployment_target": "aks",
+  "api_style": "rest",
+  "versioning_strategy": "uri",
+  "constraints": [
+    "must satisfy PCI-DSS for card data",
+    "SOX-compliant audit trail required",
+    "ledger must be append-only with regulator access",
+    "regional data residency: customers' data stays in customer's region",
+    "strong consistency for account balance reads after a transfer"
+  ],
+  "non_functional_requirements": {
+    "availability_target": "99.95",
+    "latency_p99_ms": 500
+  },
+  "patterns": [
+    "api_gateway",
+    "event_sourcing",
+    "cqrs",
+    "saga",
+    "transactional_outbox",
+    "idempotent_consumer",
+    "zero_trust",
+    "service_mesh",
+    "async_messaging",
+    "relational_data",
+    "observability",
+    "identity",
+    "audit_logging",
+    "blue_green_deployment"
+  ],
+  "teams": [
+    {"name": "core-banking-team"},
+    {"name": "risk-team"},
+    {"name": "platform-team"}
+  ],
+  "data_stores": [
+    {"name": "accounts-db", "kind": "postgres", "classification": "pii", "encrypted": true},
+    {"name": "ledger-store", "kind": "postgres", "classification": "financial", "encrypted": true},
+    {"name": "transfers-db", "kind": "postgres", "classification": "financial", "encrypted": true},
+    {"name": "statements-read-model", "kind": "cosmos", "encrypted": true},
+    {"name": "fraud-scoring-store", "kind": "postgres", "encrypted": true},
+    {"name": "audit-log-store", "kind": "postgres", "classification": "audit", "encrypted": true},
+    {"name": "card-vault", "kind": "postgres", "classification": "pci", "encrypted": true},
+    {"name": "session-cache", "kind": "redis", "encrypted": true}
+  ],
+  "services": [
+    {
+      "name": "api-gateway",
+      "business_capability": "external API governance and authentication entry point",
+      "criticality": "high",
+      "type": "gateway",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": [],
+      "depends_on": ["auth-service", "account-service", "transfer-service", "statement-service"],
+      "team": "platform-team",
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/",
+      "resources": []
+    },
+    {
+      "name": "auth-service",
+      "business_capability": "authentication, multi-factor authorization, and session management",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["customer_credentials", "mfa_factors", "sessions"],
+      "depends_on": [],
+      "team": "platform-team",
+      "data_stores": ["session-cache"],
+      "resilience": ["timeout", "retry"],
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/auth",
+      "resources": [
+        {"name": "tokens", "operations": ["create"], "versioned": true},
+        {"name": "sessions", "operations": ["get", "delete"], "versioned": true}
+      ]
+    },
+    {
+      "name": "account-service",
+      "business_capability": "account profile and balance lookup",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["accounts", "account_holders"],
+      "depends_on": ["auth-service", "ledger-service"],
+      "team": "core-banking-team",
+      "data_stores": ["accounts-db"],
+      "resilience": ["timeout", "circuit_breaker"],
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/accounts",
+      "resources": [
+        {"name": "accounts", "operations": ["list", "get"], "paginated": true, "versioned": true},
+        {"name": "balances", "operations": ["get"], "versioned": true}
+      ]
+    },
+    {
+      "name": "ledger-service",
+      "business_capability": "immutable transaction ledger (event-sourced)",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["ledger_entries", "account_snapshots"],
+      "depends_on": [],
+      "consumes_events_from": ["transfer-service"],
+      "team": "core-banking-team",
+      "data_stores": ["ledger-store"],
+      "resilience": ["timeout", "retry", "outbox"],
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/ledger",
+      "resources": [
+        {"name": "entries", "operations": ["list", "get", "create"], "paginated": true, "versioned": true}
+      ]
+    },
+    {
+      "name": "transfer-service",
+      "business_capability": "money transfer orchestration between internal and external accounts",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["transfers", "transfer_steps", "compensations"],
+      "depends_on": ["auth-service", "account-service", "fraud-service", "ledger-service"],
+      "team": "core-banking-team",
+      "data_stores": ["transfers-db"],
+      "resilience": ["timeout", "retry", "circuit_breaker", "outbox"],
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/transfers",
+      "resources": [
+        {"name": "transfers", "operations": ["list", "get", "create"], "paginated": true, "versioned": true}
+      ]
+    },
+    {
+      "name": "fraud-service",
+      "business_capability": "real-time fraud scoring on transfer events",
+      "criticality": "high",
+      "type": "worker",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["fraud_rules", "fraud_scores"],
+      "depends_on": [],
+      "consumes_events_from": ["transfer-service", "auth-service"],
+      "team": "risk-team",
+      "data_stores": ["fraud-scoring-store"],
+      "resilience": ["timeout"],
+      "has_dashboards": true,
+      "has_alerts": true
+    },
+    {
+      "name": "statement-service",
+      "business_capability": "monthly statement generation and customer self-service queries (CQRS read model)",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["statement_projections"],
+      "depends_on": ["auth-service"],
+      "consumes_events_from": ["ledger-service"],
+      "team": "core-banking-team",
+      "data_stores": ["statements-read-model"],
+      "resilience": ["timeout"],
+      "has_dashboards": true,
+      "has_alerts": false,
+      "auth": "oauth2",
+      "base_path": "/statements",
+      "resources": [
+        {"name": "statements", "operations": ["list", "get"], "paginated": true, "versioned": true}
+      ]
+    },
+    {
+      "name": "card-service",
+      "business_capability": "card lifecycle, activation, and PCI-scoped operations",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["cards", "card_tokens"],
+      "depends_on": ["auth-service"],
+      "team": "core-banking-team",
+      "data_stores": ["card-vault"],
+      "resilience": ["timeout", "circuit_breaker"],
+      "has_dashboards": false,
+      "has_alerts": true
+    },
+    {
+      "name": "audit-service",
+      "business_capability": "regulator-facing audit log persistence",
+      "criticality": "high",
+      "type": "worker",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["audit_entries"],
+      "depends_on": [],
+      "consumes_events_from": ["auth-service", "transfer-service", "ledger-service", "card-service"],
+      "team": "platform-team",
+      "data_stores": ["audit-log-store"],
+      "resilience": ["retry"],
+      "has_dashboards": true,
+      "has_alerts": true
+    },
+    {
+      "name": "notification-service",
+      "business_capability": "customer notifications (SMS, email, push) for transfers and security events",
+      "criticality": "medium",
+      "type": "worker",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["notification_log"],
+      "depends_on": [],
+      "consumes_events_from": ["transfer-service", "auth-service", "fraud-service"],
+      "team": "platform-team",
+      "data_stores": [],
+      "has_dashboards": false,
+      "has_alerts": true
+    }
+  ]
+}

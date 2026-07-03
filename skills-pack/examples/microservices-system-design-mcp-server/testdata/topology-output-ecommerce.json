@@ -1,0 +1,153 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "platform": "container_apps",
+  "service_placements": [
+    {
+      "service": "api-gateway",
+      "platform": "container_apps",
+      "replicas": "2-10",
+      "ingress": "external",
+      "scale_rule": "http_concurrency",
+      "cpu": "0.5",
+      "memory_gib": "1"
+    },
+    {
+      "service": "fulfillment-orchestrator",
+      "platform": "container_apps",
+      "replicas": "1-5",
+      "ingress": "none",
+      "scale_rule": "queue_depth",
+      "cpu": "0.5",
+      "memory_gib": "1"
+    },
+    {
+      "service": "inventory-service",
+      "platform": "container_apps",
+      "replicas": "1-5",
+      "ingress": "internal",
+      "scale_rule": "http_concurrency",
+      "cpu": "0.5",
+      "memory_gib": "1"
+    },
+    {
+      "service": "notification-service",
+      "platform": "container_apps",
+      "replicas": "0-3",
+      "ingress": "none",
+      "scale_rule": "queue_depth",
+      "cpu": "0.25",
+      "memory_gib": "0.5"
+    },
+    {
+      "service": "order-service",
+      "platform": "container_apps",
+      "replicas": "2-10",
+      "ingress": "internal",
+      "scale_rule": "http_concurrency",
+      "cpu": "0.5",
+      "memory_gib": "1"
+    },
+    {
+      "service": "payment-service",
+      "platform": "container_apps",
+      "replicas": "2-10",
+      "ingress": "internal",
+      "scale_rule": "http_concurrency",
+      "cpu": "0.5",
+      "memory_gib": "1"
+    },
+    {
+      "service": "reporting-service",
+      "platform": "container_apps",
+      "replicas": "1-3",
+      "ingress": "internal",
+      "scale_rule": "http_concurrency",
+      "cpu": "0.25",
+      "memory_gib": "0.5"
+    }
+  ],
+  "data_placements": [
+    {
+      "name": "events",
+      "azure_service": "Azure Service Bus",
+      "tier": "Standard",
+      "encryption": "at_rest",
+      "subnet": "shared",
+      "backup_policy": "n/a (transactional messaging)"
+    },
+    {
+      "name": "inventory-db",
+      "azure_service": "Azure Database for PostgreSQL \u2014 Flexible Server",
+      "tier": "General Purpose, 2 vCore",
+      "encryption": "at_rest",
+      "subnet": "shared",
+      "backup_policy": "Daily; PITR 7 days"
+    },
+    {
+      "name": "orders-db",
+      "azure_service": "Azure Database for PostgreSQL \u2014 Flexible Server",
+      "tier": "General Purpose, 2 vCore",
+      "classification": "pii",
+      "encryption": "at_rest_cmk",
+      "subnet": "dedicated",
+      "backup_policy": "Daily; PITR 7 days"
+    },
+    {
+      "name": "payments-db",
+      "azure_service": "Azure Database for PostgreSQL \u2014 Flexible Server",
+      "tier": "General Purpose, 2 vCore",
+      "classification": "pci",
+      "encryption": "at_rest_cmk",
+      "subnet": "dedicated",
+      "backup_policy": "Daily; PITR 7 days"
+    },
+    {
+      "name": "session-cache",
+      "azure_service": "Azure Cache for Redis",
+      "tier": "Standard C1",
+      "encryption": "at_rest",
+      "subnet": "shared",
+      "backup_policy": "RDB snapshot, daily"
+    }
+  ],
+  "network_boundaries": [
+    {
+      "name": "perimeter",
+      "includes": [
+        "api-gateway",
+        "external apis"
+      ],
+      "justification": "Public-facing entry; behind WAF and OAuth/JWT validation."
+    },
+    {
+      "name": "application",
+      "includes": [
+        "internal services",
+        "workers"
+      ],
+      "justification": "East-west traffic; mTLS enforced via service mesh or Container Apps internal ingress."
+    },
+    {
+      "name": "isolation:pci",
+      "includes": [
+        "payments-db"
+      ],
+      "justification": "Sensitive classification (pci) \u2014 dedicated subnet, deny-by-default network policy, audit on every access."
+    }
+  ],
+  "environment_path": [
+    "dev",
+    "staging",
+    "prod"
+  ],
+  "gaps": [],
+  "next_steps": [
+    "Author Container Apps / AKS manifest scaffolds per service from the placements above",
+    "Wire managed identities for each service and bind to Key Vault for secrets",
+    "Configure health probes (/healthz) on every API and gateway placement",
+    "Provision data tier per placement and verify backup policies in staging before prod",
+    "Apply dedicated subnet and deny-by-default NSG/NetworkPolicy for sensitive-data isolation boundary"
+  ],
+  "score": 100,
+  "summary": "Deployment topology for ecommerce-order-platform on container_apps: 7 service placement(s), 5 data placement(s), 3 network boundary(ies), 0 gap(s); environment path dev \u2192 staging \u2192 prod."
+}

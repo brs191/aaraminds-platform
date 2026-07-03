@@ -1,0 +1,35 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Public REST API surface for the e-commerce order platform.",
+  "api_style": "rest",
+  "versioning_strategy": "uri",
+  "services": [
+    {
+      "name": "order-service",
+      "business_capability": "order management",
+      "base_path": "/orders",
+      "auth": "oauth2",
+      "resources": [
+        { "name": "orders", "operations": ["list", "get", "create", "update"], "paginated": true, "versioned": true },
+        { "name": "line-items", "operations": ["list", "get"], "paginated": true, "versioned": true }
+      ]
+    },
+    {
+      "name": "catalog-service",
+      "business_capability": "product catalog",
+      "base_path": "/catalog",
+      "auth": "oauth2",
+      "resources": [
+        { "name": "products", "operations": ["list", "get"], "paginated": false, "versioned": true }
+      ]
+    },
+    {
+      "name": "cart-service",
+      "base_path": "carts",
+      "auth": "",
+      "resources": [
+        { "name": "carts", "operations": ["get", "create", "update", "delete"], "versioned": false }
+      ]
+    }
+  ]
+}

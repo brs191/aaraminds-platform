@@ -1,0 +1,26 @@
+{
+  "skill": "azure-network-topology-visualization",
+  "purpose": "Measure description-triggering accuracy: does the skill fire on in-scope visualization requests and correctly defer to sibling skills otherwise? Run with the skill-creator eval harness (ai-evaluation-harness).",
+  "version": "1.0.0",
+  "should_trigger": [
+    {"prompt": "Draw me a network topology diagram of our Azure estate, hub-and-spoke, with the risky subnets coloured.", "why": "core: risk-annotated topology picture"},
+    {"prompt": "Generate a Confluence-ready draw.io diagram of all our VNets and peerings across subscriptions.", "why": "core: multi-sub diagram, drawio/Confluence"},
+    {"prompt": "I need an HLD and MLD view of the network that refreshes itself and shows exposure findings on the map.", "why": "core: HLD/MLD + severity overlay + refresh"},
+    {"prompt": "Visualize which resources are internet-exposed across the management group as a coloured diagram.", "why": "core: severity-painted visual"},
+    {"prompt": "Our generated topology diagram has no peering edges and everything is green — fix the visualization.", "why": "core: the exact RC-1..RC-4 failure this skill prevents"},
+    {"prompt": "Make a multi-hub network map with the internet/ExpressRoute boundary drawn.", "why": "core: boundary nodes + multi-hub layout"}
+  ],
+  "should_not_trigger": [
+    {"prompt": "Review our Azure network for reachability and segmentation risk and give me a prioritized findings report.", "routes_to": "azure-network-topology-analysis", "why": "produces findings, not a picture"},
+    {"prompt": "Write a VP-ready escalation memo about the network exposure we found.", "routes_to": "aara-network-topology-reviewer / executive narrative", "why": "report/narrative, not a diagram"},
+    {"prompt": "Generate the Terraform for a new hub-and-spoke topology from this intent.", "routes_to": "azure-network-iac-generation", "why": "IaC generation"},
+    {"prompt": "Forecast the cost of adding an Azure Firewall and a second spoke.", "routes_to": "azure-network-cost-forecasting", "why": "cost"},
+    {"prompt": "Build the Go MCP server that exposes get_topology and analyze_risks.", "routes_to": "mcp-go-server-building", "why": "engine/transport build"},
+    {"prompt": "Diagram our AWS VPC peering and security groups.", "routes_to": "(none — out of scope)", "why": "non-Azure: skill must decline and say so"}
+  ],
+  "scoring": {
+    "trigger_recall": "fraction of should_trigger prompts that route to this skill (target >= 0.95)",
+    "trigger_precision": "1 - (fraction of should_not_trigger prompts that wrongly route here) (target = 1.0; false-positives are worse than misses here)"
+  },
+  "notes": "The hard boundary is map (this skill) vs report (analysis/reviewer). Most confusions will be should_not_trigger #1/#2 leaking in; weight those in review."
+}

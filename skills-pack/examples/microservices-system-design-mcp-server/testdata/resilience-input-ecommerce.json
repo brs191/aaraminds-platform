@@ -1,0 +1,27 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Resilience planning for the customer-facing e-commerce platform.",
+  "non_functional_requirements": {
+    "availability_target": "99.9",
+    "latency_p99_ms": 300
+  },
+  "services": [
+    {"name": "api-gateway",              "type": "gateway", "criticality": "high",   "replicated": true},
+    {"name": "order-service",            "type": "api",     "criticality": "high",   "replicated": true},
+    {"name": "payment-service",          "type": "api",     "criticality": "high",   "replicated": true},
+    {"name": "inventory-service",        "type": "api",     "criticality": "medium", "replicated": true},
+    {"name": "auth-service",             "type": "api",     "criticality": "high",   "replicated": false},
+    {"name": "fulfillment-orchestrator", "type": "worker",  "criticality": "medium", "replicated": true},
+    {"name": "notification-service",     "type": "worker",  "criticality": "low",    "replicated": true}
+  ],
+  "dependencies": [
+    {"from": "api-gateway", "to": "order-service"},
+    {"from": "api-gateway", "to": "auth-service",       "idempotent": true},
+    {"from": "order-service", "to": "inventory-service", "idempotent": false},
+    {"from": "order-service", "to": "payment-service",   "idempotent": false}
+  ],
+  "external_apis": [
+    {"name": "stripe-payments", "used_by": ["payment-service"], "stated_sla": "99.99"},
+    {"name": "tax-jar",          "used_by": ["order-service"],   "stated_sla": "varies"}
+  ]
+}

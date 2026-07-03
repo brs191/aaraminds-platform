@@ -1,0 +1,638 @@
+{
+  "system_name": "patient-care-coordination-platform",
+  "service_observability": [
+    {
+      "service": "api-gateway",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "api-gateway \u2014 golden signals (latency, traffic, errors, saturation)",
+        "api-gateway \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "api-gateway availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "api-gateway elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "api-gateway latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "auth-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "auth-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "auth-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "auth-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "auth-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "auth-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "patient-records-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "patient-records-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "patient-records-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "patient-records-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "patient-records-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "patient-records-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "patient-records-read-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "patient-records-read-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "patient-records-read-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "patient-records-read-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "patient-records-read-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "patient-records-read-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "scheduling-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "scheduling-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "scheduling-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "scheduling-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "scheduling-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "scheduling-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "lab-results-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "lab-results-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "lab-results-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "lab-results-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "lab-results-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "lab-results-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "external-lab-gateway",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "throughput",
+          "description": "Processed messages per second",
+          "measurement": "rate(messages_processed_total[5m])"
+        },
+        {
+          "name": "saturation",
+          "description": "Queue backlog depth",
+          "measurement": "queue_depth"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "external-lab-gateway \u2014 golden signals (latency, traffic, errors, saturation)",
+        "external-lab-gateway \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "external-lab-gateway availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "external-lab-gateway elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "external-lab-gateway queue backlog",
+          "condition": "queue_depth growing for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "provider-directory-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "provider-directory-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "provider-directory-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "provider-directory-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "provider-directory-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "provider-directory-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "billing-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 800ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "billing-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "billing-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "billing-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "billing-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "billing-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "audit-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "throughput",
+          "description": "Processed messages per second",
+          "measurement": "rate(messages_processed_total[5m])"
+        },
+        {
+          "name": "saturation",
+          "description": "Queue backlog depth",
+          "measurement": "queue_depth"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "audit-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "audit-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "audit-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "audit-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "audit-service queue backlog",
+          "condition": "queue_depth growing for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "notification-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "throughput",
+          "description": "Processed messages per second",
+          "measurement": "rate(messages_processed_total[5m])"
+        },
+        {
+          "name": "saturation",
+          "description": "Queue backlog depth",
+          "measurement": "queue_depth"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.5%",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "notification-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "notification-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "notification-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "info"
+        },
+        {
+          "name": "notification-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "info"
+        },
+        {
+          "name": "notification-service queue backlog",
+          "condition": "queue_depth growing for 15m",
+          "severity": "info"
+        }
+      ]
+    }
+  ],
+  "coverage_gaps": [
+    {
+      "severity": "high",
+      "category": "no_alerts",
+      "description": "service \"patient-records-read-service\" has no alerts configured; failures will be discovered by users, not operators",
+      "services_affected": [
+        "patient-records-read-service"
+      ],
+      "recommendation": "Wire the recommended alerts (SLO burn, error rate, latency/backlog) to the on-call channel."
+    },
+    {
+      "severity": "medium",
+      "category": "no_alerts",
+      "description": "service \"provider-directory-service\" has no alerts configured; failures will be discovered by users, not operators",
+      "services_affected": [
+        "provider-directory-service"
+      ],
+      "recommendation": "Wire the recommended alerts (SLO burn, error rate, latency/backlog) to the on-call channel."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"external-lab-gateway\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "external-lab-gateway"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"provider-directory-service\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "provider-directory-service"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"notification-service\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "notification-service"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    }
+  ],
+  "observability_score": 53,
+  "observability_rating": "Observability is insufficient; significant work needed before launch",
+  "summary": "Observability plan for patient-care-coordination-platform: 11 services planned, 5 coverage gaps, observability-readiness score 53/100."
+}

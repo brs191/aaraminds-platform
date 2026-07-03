@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "blocked_actions": [
+    "payment_execution",
+    "identity_administration",
+    "credential_change",
+    "secret_read_or_export",
+    "production_delete",
+    "production_deploy",
+    "legal_commitment",
+    "external_customer_send_without_owner_approval",
+    "compliance_attestation_without_reviewer"
+  ],
+  "default_unclassified_boundary": "hard",
+  "missing_contract_boundary": "blocked"
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.local/schemas/audit-event.schema.json",
+  "title": "AAP Audit Event",
+  "type": "object",
+  "required": [
+    "audit_event_id",
+    "event_type",
+    "actor_type",
+    "actor_id",
+    "context_type",
+    "context_id",
+    "payload_ref",
+    "payload_hash",
+    "timestamp"
+  ],
+  "properties": {
+    "audit_event_id": { "type": "string" },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "agent_started",
+        "manifest_validated",
+        "tool_invoked",
+        "tool_denied",
+        "approval_requested",
+        "approval_granted",
+        "approval_denied",
+        "memory_written",
+        "memory_superseded",
+        "memory_purged",
+        "eval_completed",
+        "skill_revision_opened",
+        "release_approved"
+      ]
+    },
+    "actor_type": { "type": "string", "enum": ["agent", "user", "tool_principal", "approver", "system"] },
+    "actor_id": { "type": "string" },
+    "context_type": { "type": "string", "enum": ["run", "engagement", "agent", "skill", "release", "eval", "system"] },
+    "context_id": { "type": "string" },
+    "run_id": { "type": ["string", "null"] },
+    "payload_ref": { "type": "string" },
+    "payload_hash": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "context_type": { "const": "run" } }, "required": ["context_type"] },
+      "then": {
+        "required": ["run_id"],
+        "properties": { "run_id": { "type": "string", "minLength": 1 } }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

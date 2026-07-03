@@ -1,0 +1,40 @@
+{
+  "system_name": "patient-care-coordination-platform",
+  "risks": [
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"api-gateway\" synchronously depends on 5 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "api-gateway",
+        "auth-service",
+        "billing-service",
+        "lab-results-service",
+        "patient-records-service",
+        "scheduling-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "missing_resilience",
+      "description": "high-criticality service \"api-gateway\" declares no resilience controls (retry, circuit_breaker, timeout, bulkhead)",
+      "components_affected": [
+        "api-gateway"
+      ],
+      "mitigation": "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+    }
+  ],
+  "missing_decisions": [
+    "recovery objectives (RTO/RPO) not stated"
+  ],
+  "next_steps": [
+    "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded.",
+    "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+  ],
+  "risk_posture_score": 70,
+  "risk_rating": "Elevated risk; material issues to resolve before implementation",
+  "summary": "Architecture risk report for patient-care-coordination-platform: 11 services analyzed, 2 risks identified, risk-posture score 70/100."
+}

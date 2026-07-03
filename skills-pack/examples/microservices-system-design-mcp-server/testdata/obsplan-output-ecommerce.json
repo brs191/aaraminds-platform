@@ -1,0 +1,382 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "service_observability": [
+    {
+      "service": "api-gateway",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 300ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "api-gateway \u2014 golden signals (latency, traffic, errors, saturation)",
+        "api-gateway \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "api-gateway availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "api-gateway elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "api-gateway latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "order-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 300ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "order-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "order-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "order-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "order-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "order-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "payment-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.95%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 300ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "payment-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "payment-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "payment-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "page"
+        },
+        {
+          "name": "payment-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "page"
+        },
+        {
+          "name": "payment-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "page"
+        }
+      ]
+    },
+    {
+      "service": "inventory-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 300ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "inventory-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "inventory-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "inventory-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "inventory-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "inventory-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "fulfillment-worker",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "throughput",
+          "description": "Processed messages per second",
+          "measurement": "rate(messages_processed_total[5m])"
+        },
+        {
+          "name": "saturation",
+          "description": "Queue backlog depth",
+          "measurement": "queue_depth"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.9%",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "fulfillment-worker \u2014 golden signals (latency, traffic, errors, saturation)",
+        "fulfillment-worker \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "fulfillment-worker availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "ticket"
+        },
+        {
+          "name": "fulfillment-worker elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "ticket"
+        },
+        {
+          "name": "fulfillment-worker queue backlog",
+          "condition": "queue_depth growing for 15m",
+          "severity": "ticket"
+        }
+      ]
+    },
+    {
+      "service": "reporting-service",
+      "slis": [
+        {
+          "name": "availability",
+          "description": "Fraction of successful requests",
+          "measurement": "1 - (5xx / total requests)"
+        },
+        {
+          "name": "error_rate",
+          "description": "Fraction of failed requests",
+          "measurement": "(4xx+5xx) / total requests"
+        },
+        {
+          "name": "latency_p99",
+          "description": "99th percentile request latency",
+          "measurement": "histogram_quantile(0.99, request_duration_seconds)"
+        }
+      ],
+      "slos": [
+        {
+          "sli": "availability",
+          "objective": "99.5%",
+          "window": "30d"
+        },
+        {
+          "sli": "latency_p99",
+          "objective": "p99 < 300ms",
+          "window": "30d"
+        }
+      ],
+      "recommended_dashboards": [
+        "reporting-service \u2014 golden signals (latency, traffic, errors, saturation)",
+        "reporting-service \u2014 SLO burn-down"
+      ],
+      "recommended_alerts": [
+        {
+          "name": "reporting-service availability SLO burn",
+          "condition": "error budget burn rate > 2x over 1h",
+          "severity": "info"
+        },
+        {
+          "name": "reporting-service elevated error rate",
+          "condition": "error_rate > 5% for 10m",
+          "severity": "info"
+        },
+        {
+          "name": "reporting-service latency regression",
+          "condition": "latency_p99 above SLO for 15m",
+          "severity": "info"
+        }
+      ]
+    }
+  ],
+  "coverage_gaps": [
+    {
+      "severity": "high",
+      "category": "no_alerts",
+      "description": "service \"order-service\" has no alerts configured; failures will be discovered by users, not operators",
+      "services_affected": [
+        "order-service"
+      ],
+      "recommendation": "Wire the recommended alerts (SLO burn, error rate, latency/backlog) to the on-call channel."
+    },
+    {
+      "severity": "high",
+      "category": "no_alerts",
+      "description": "service \"payment-service\" has no alerts configured; failures will be discovered by users, not operators",
+      "services_affected": [
+        "payment-service"
+      ],
+      "recommendation": "Wire the recommended alerts (SLO burn, error rate, latency/backlog) to the on-call channel."
+    },
+    {
+      "severity": "medium",
+      "category": "no_alerts",
+      "description": "service \"reporting-service\" has no alerts configured; failures will be discovered by users, not operators",
+      "services_affected": [
+        "reporting-service"
+      ],
+      "recommendation": "Wire the recommended alerts (SLO burn, error rate, latency/backlog) to the on-call channel."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"payment-service\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "payment-service"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"fulfillment-worker\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "fulfillment-worker"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    },
+    {
+      "severity": "medium",
+      "category": "no_dashboards",
+      "description": "service \"reporting-service\" has no dashboards; incident triage will be slow without golden-signal visibility",
+      "services_affected": [
+        "reporting-service"
+      ],
+      "recommendation": "Stand up the recommended golden-signals and SLO burn-down dashboards before launch."
+    }
+  ],
+  "observability_score": 38,
+  "observability_rating": "Observability is largely absent; the system is not operable as designed",
+  "summary": "Observability plan for ecommerce-order-platform: 6 services planned, 6 coverage gaps, observability-readiness score 38/100."
+}

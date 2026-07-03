@@ -1,0 +1,19 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Pattern-to-Azure mapping for the e-commerce order platform.",
+  "deployment_target": "aks",
+  "constraints": ["PCI-DSS for card data", "EU data residency"],
+  "patterns": [
+    "api_gateway",
+    "async_messaging",
+    "saga",
+    "cqrs",
+    "relational_data",
+    "document_data",
+    "cache",
+    "container_orchestration",
+    "observability",
+    "identity",
+    "blue_green_deployment"
+  ]
+}

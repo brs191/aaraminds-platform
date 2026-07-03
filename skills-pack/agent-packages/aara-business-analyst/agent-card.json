@@ -1,0 +1,19 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "aara-business-analyst",
+  "description": "Trace-first Business Analyst: turns stakeholder inputs into traceable requirements, user stories, acceptance criteria, and change-impact notes. Human-gated.",
+  "version": "1.0.0",
+  "url": "https://agents.aaraminds.internal/aara-business-analyst",
+  "preferredTransport": "JSONRPC",
+  "provider": { "organization": "AaraMinds", "url": "https://aaraminds.internal" },
+  "capabilities": { "streaming": false, "pushNotifications": false },
+  "securitySchemes": { "entra": { "type": "oauth2" } },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    { "id": "requirements-synthesis", "name": "Requirements synthesis",
+      "description": "Convert stakeholder evidence into traceable requirements, stories, and acceptance criteria.",
+      "tags": ["business-analysis","requirements","traceability"],
+      "examples": ["turn these stakeholder notes into requirements and user stories","draft acceptance criteria with traceability for this feature"] }
+  ]
+}

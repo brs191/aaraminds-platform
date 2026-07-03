@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.local/schemas/memory-record.schema.json",
+  "title": "AAP Memory Record",
+  "type": "object",
+  "required": [
+    "memory_id",
+    "agent_id",
+    "engagement_id",
+    "classification",
+    "content_ref",
+    "content_hash",
+    "source_citation",
+    "created_at",
+    "expires_at",
+    "status"
+  ],
+  "properties": {
+    "memory_id": { "type": "string" },
+    "agent_id": { "type": "string" },
+    "engagement_id": { "type": "string" },
+    "classification": { "type": "string", "enum": ["public", "internal", "client-confidential", "pii"] },
+    "content_ref": { "type": "string" },
+    "content_hash": { "type": "string" },
+    "source_citation": {
+      "type": "object",
+      "required": ["run_id", "trace_id", "span_id", "source_ref"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "trace_id": { "type": "string" },
+        "span_id": { "type": "string" },
+        "source_ref": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["active", "superseded"] },
+    "supersedes_memory_id": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}

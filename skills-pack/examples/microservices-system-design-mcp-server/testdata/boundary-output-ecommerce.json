@@ -1,0 +1,135 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "service_assessments": [
+    {
+      "service": "order-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "circular_risk",
+      "owner_clarity": "single_team",
+      "notes": [
+        "synchronous dependency count is 5, indicates chatty design",
+        "participates in a circular synchronous dependency chain"
+      ]
+    },
+    {
+      "service": "inventory-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "pricing-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "payment-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "circular_risk",
+      "owner_clarity": "single_team",
+      "notes": [
+        "participates in a circular synchronous dependency chain"
+      ]
+    },
+    {
+      "service": "tax-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "notification-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "fulfillment-orchestrator",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "no_team",
+      "notes": [
+        "no team assigned \u2014 services without owners drift"
+      ]
+    }
+  ],
+  "boundary_risks": [
+    {
+      "severity": "high",
+      "category": "circular_dependency",
+      "description": "circular synchronous dependency detected; break the cycle by introducing async messaging or restructuring the call chain",
+      "services_affected": [
+        "order-service",
+        "payment-service"
+      ]
+    },
+    {
+      "severity": "high",
+      "category": "data_co_ownership",
+      "description": "data store \"orders\" is owned by multiple services; data ownership should be exclusive",
+      "services_affected": [
+        "order-service",
+        "pricing-service"
+      ]
+    },
+    {
+      "severity": "medium",
+      "category": "chatty_dependency",
+      "description": "service \"order-service\" has 5 synchronous dependencies; this is chatty and increases latency, blast radius, and coupling",
+      "services_affected": [
+        "order-service"
+      ]
+    },
+    {
+      "severity": "medium",
+      "category": "no_owner",
+      "description": "service \"fulfillment-orchestrator\" has no owning team \u2014 services without owners drift in scope and quality",
+      "services_affected": [
+        "fulfillment-orchestrator"
+      ]
+    }
+  ],
+  "recommended_changes": [
+    {
+      "action": "introduce_async",
+      "targets": [
+        "order-service",
+        "payment-service"
+      ],
+      "rationale": "Break the cycle by introducing event-driven communication. At least one edge of the cycle should be asynchronous to avoid deadlock and cascading failures."
+    },
+    {
+      "action": "consolidate_data",
+      "targets": [
+        "order-service",
+        "pricing-service"
+      ],
+      "rationale": "Pick a single owner for this data store. The other services should access via the owner's API. Co-owned data leads to inconsistent updates and unclear accountability."
+    },
+    {
+      "action": "introduce_async",
+      "targets": [
+        "order-service"
+      ],
+      "rationale": "Convert the highest-volume synchronous calls to asynchronous events. This reduces coupling, contains failures, and improves latency."
+    },
+    {
+      "action": "clarify_ownership",
+      "targets": [
+        "fulfillment-orchestrator"
+      ],
+      "rationale": "Assign a single team as the owner. Services without owners accumulate undefined behavior and become legacy quickly."
+    }
+  ],
+  "overall_score": 54,
+  "overall_rating": "Boundaries need significant rework; redesign recommended before proceeding",
+  "summary": "Service boundary canvas for ecommerce-order-platform: 7 proposed services analyzed, 4 boundary risks identified, overall boundary score 54/100."
+}

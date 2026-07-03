@@ -1,0 +1,43 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Generated archives / exports
+*.zip
+
+# Temp / scratch
+tmp/
+temp/
+.cache/
+*.tmp
+
+# Local-only holding pen — scratch exports, retired staging; never company content
+/_archive/
+
+# Git lock files
+index.lock
+
+pptx-review/
+analyze_storage.py
+zip_code_intelligence_factory.py
+
+# In aaraminds-platform, .claude/skills and .claude/agents are real copied
+# source-of-truth directories, not generated symlink wiring.
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# MCP server binaries — rebuilt locally via copilot/setup-mac.sh, never committed
+skills-pack/examples/microservices-system-design-mcp-server/mcp-server
+skills-pack/examples/microservices-system-design-mcp-server/mcp-server-darwin-arm64
+skills-pack/examples/microservices-system-design-mcp-server/mcp-server-darwin-amd64
+
+# Local agent/client configuration
+.mcp.json
+.claude/settings.json
+.agents/
+.codex/

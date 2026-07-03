@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-hooks.json",
+  "comment": "Run the test suite before any 'git commit' Bash invocation. Blocks the commit if tests fail. Skip with TEST_BEFORE_COMMIT_SKIP=1 for cases where a quick docs-only commit doesn't warrant the test run. Fails CLOSED if python3 is missing or CLAUDE_TOOL_INPUT cannot be parsed — better to block a commit than silently skip tests. Install by merging the 'hooks.PreToolUse' array into ~/.claude/settings.json.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Detect 'git commit'; run Go tests (race-detector on, count=1 to defeat cache) or Maven test depending on project type. Honor TEST_BEFORE_COMMIT_SKIP=1. Parses CLAUDE_TOOL_INPUT with python3 (universally available) rather than jq.",
+            "command": "if [ \"$TEST_BEFORE_COMMIT_SKIP\" = \"1\" ]; then exit 0; fi; command -v python3 >/dev/null 2>&1 || { echo 'test-before-commit hook: python3 not found; failing closed' >&2; exit 2; }; cmd=$(printf '%s' \"$CLAUDE_TOOL_INPUT\" | python3 -c 'import sys,json;d=json.load(sys.stdin);print(d.get(\"command\",\"\"))' 2>/dev/null) || { echo 'test-before-commit hook: failed to parse CLAUDE_TOOL_INPUT; failing closed' >&2; exit 2; }; [ -n \"$cmd\" ] || { echo 'test-before-commit hook: empty .command; failing closed' >&2; exit 2; }; if echo \"$cmd\" | grep -qE '\\bgit\\s+commit\\b'; then echo 'Tests before commit…' >&2; if [ -f go.mod ]; then go test -race -count=1 ./... >&2 || { echo 'go test failed; commit blocked. Set TEST_BEFORE_COMMIT_SKIP=1 to bypass intentionally.' >&2; exit 2; }; fi; if [ -f pom.xml ]; then mvn -B test >&2 || { echo 'mvn test failed; commit blocked. Set TEST_BEFORE_COMMIT_SKIP=1 to bypass intentionally.' >&2; exit 2; }; fi; fi; exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

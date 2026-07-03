@@ -1,0 +1,83 @@
+{
+  "system_name": "retail-banking-platform",
+  "service_assessments": [
+    {
+      "service": "api-gateway",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper"
+      ]
+    },
+    {
+      "service": "auth-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "account-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "ledger-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "transfer-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "fraud-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "statement-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "card-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "audit-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "notification-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    }
+  ],
+  "boundary_risks": [],
+  "recommended_changes": [],
+  "overall_score": 100,
+  "overall_rating": "Boundaries well-defined; minor adjustments only",
+  "summary": "Service boundary canvas for retail-banking-platform: 10 proposed services analyzed, 0 boundary risks identified, overall boundary score 100/100."
+}

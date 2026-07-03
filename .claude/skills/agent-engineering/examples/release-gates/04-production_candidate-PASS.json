@@ -1,0 +1,2 @@
+{"agent":"demo-ready-agent","agent_version":"2.0.0","requested_stage":"production_candidate","decision":"PASS","design_score":93,"design_band":"production_ready_candidate","behavior_evaluated":true,
+ "evidence":{"runnable_artifact":true,"agent_spec":true,"io_contracts":true,"tool_contract":true,"guardrails":true,"review_scorecard":true,"eval_plan":true,"executed_eval_results":true,"security_review":true,"monitoring_plan":true,"rollback_runbook":true,"human_approval_model":true}}

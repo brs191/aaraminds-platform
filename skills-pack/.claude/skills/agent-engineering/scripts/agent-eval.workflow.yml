@@ -1,0 +1,28 @@
+# Sample CI workflow — drop into .github/workflows/agent-eval.yml of an agent's repo.
+# Runs the agent-engineering pack's validators as a release gate on every PR.
+name: agent-eval
+on:
+  pull_request:
+    paths: ["agents/**", "**/agent-card.json", "**/release-gate.json", "**/*.agent.md"]
+  workflow_dispatch:
+
+jobs:
+  agent-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Install validators
+        run: pip install jsonschema
+      # Assumes the pack lives at skills/agent-engineering/ in this repo (adjust SCRIPTS if relocated,
+      # or copy skills/agent-engineering/scripts/* into ./scripts/ before enabling).
+      - name: Validate schemas + firewall negatives
+        run: python skills/agent-engineering/scripts/validate-schemas.py
+      - name: Check package completeness
+        run: python skills/agent-engineering/scripts/check-package-completeness.py --generated-package ./agents/${{ github.event.repository.name }}
+      - name: Check release gate (fails the build on a firewall violation)
+        run: python skills/agent-engineering/scripts/check-release-gate.py ./release-gate.json
+      # Behavioral eval execution remains external — wire it through aara-ai-evaluation-engineer:
+      # - name: Run regression eval suite
+      #   run: python skills/agent-engineering/scripts/run-evals.py --suite regression --threshold 1.0

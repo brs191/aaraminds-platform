@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds/agent-engineering/eval-case.schema.json",
+  "title": "Agent eval case",
+  "description": "One test case for an AI agent. Build 20-50 from real/expected failures; balance should-fire and should-not-fire.",
+  "type": "object",
+  "required": ["id", "type", "category", "input", "grader", "should_fire"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "e.g. G-001 (happy), E-001 (edge), A-001 (adversarial), R-001 (regression)" },
+    "type": { "enum": ["happy", "edge", "adversarial", "regression"] },
+    "category": { "enum": ["functional", "behavioral", "safety"] },
+    "input": { "type": "string", "description": "The task/prompt or input fixture" },
+    "reference_outcome": { "type": "string", "description": "Expected environment state / output (verify state, not the agent's claim)" },
+    "expected_tools": { "type": "array", "items": { "type": "string" }, "description": "Tools that should be called" },
+    "forbidden_tools": { "type": "array", "items": { "type": "string" } },
+    "trajectory_match": { "enum": ["strict", "unordered", "subset", "superset", "none"], "default": "none" },
+    "grader": { "enum": ["code", "judge", "human"] },
+    "should_fire": { "type": "boolean", "description": "Whether the target behavior SHOULD occur (both-sided coverage)" },
+    "risk_tier": { "enum": ["low", "medium", "high"], "default": "low" },
+    "trials": { "type": "integer", "minimum": 1, "default": 1, "description": "Run count for pass@k / pass^k" },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}

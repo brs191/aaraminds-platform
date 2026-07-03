@@ -1,0 +1,686 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e2e8f0" stroke-width="0.5" opacity="0.5"/>
+    </pattern>
+
+    <!-- Geometric icon set, 18x18 viewBox, stroke=currentColor -->
+    <symbol id="i-chat" viewBox="0 0 18 18"><path d="M3 4 H15 V12 H7 L4 15 V12 H3 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 18 18"><path d="M4 2 H11 L14 5 V16 H4 Z M11 2 V5 H14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8 H12 M6 11 H12 M6 14 H10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 9 H15.5 M9 2.5 C 11.5 5 11.5 13 9 15.5 M9 2.5 C 6.5 5 6.5 13 9 15.5" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 18 18"><path d="M9 2 L15 4 V9 C15 13 9 16 9 16 C9 16 3 13 3 9 V4 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-key" viewBox="0 0 18 18"><circle cx="6" cy="9" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 9 H16 M14 9 V12 M12 9 V11" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 18 18"><circle cx="4" cy="14" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="9" cy="4" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="11" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.2 12.8 L7.8 5.2 M10.2 5.2 L12.8 9.8" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 18 18"><path d="M9 3 C 6 3 5 5 5 7 C 3 7 2 9 3 11 C 2 13 4 15 6 14 C 7 16 11 16 12 14 C 14 15 16 13 15 11 C 16 9 15 7 13 7 C 13 5 12 3 9 3 Z M9 3 V14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+    <symbol id="i-route" viewBox="0 0 18 18"><circle cx="4" cy="4" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="14" cy="14" r="1.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 5 C 10 5 5 13 13 13" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 18 18"><circle cx="9" cy="9" r="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 1.5 V4 M9 14 V16.5 M16.5 9 H14 M4 9 H1.5 M14.3 3.7 L12.5 5.5 M5.5 12.5 L3.7 14.3 M14.3 14.3 L12.5 12.5 M5.5 5.5 L3.7 3.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 18 18"><path d="M3 9 L7 13 L15 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 18 18"><circle cx="9" cy="6" r="2.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 16 C 3 12 5.5 10.5 9 10.5 C 12.5 10.5 15 12 15 16" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-db" viewBox="0 0 18 18"><ellipse cx="9" cy="4" rx="6" ry="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 4 V14 C 3 15.1 5.7 16 9 16 C 12.3 16 15 15.1 15 14 V4 M3 9 C 3 10.1 5.7 11 9 11 C 12.3 11 15 10.1 15 9" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 18 18"><path d="M5 13 C 2.5 13 1.5 10.5 3 8.5 C 3 6 5 4.5 7 5 C 8 3 11.5 3 12.5 5.5 C 15 5.5 16.5 8 15 10 C 16 12 14 13 12 13 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-gateway" viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 9 H6 M12 9 H15 M9 3 V6 M9 12 V15" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 18 18"><path d="M3 15 V3 M3 15 H15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="5" y="10" width="2" height="5" fill="currentColor"/><rect x="8.5" y="7" width="2" height="8" fill="currentColor"/><rect x="12" y="4" width="2" height="11" fill="currentColor"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 18 18"><path d="M1.5 9 C 3 5 6 3 9 3 C 12 3 15 5 16.5 9 C 15 13 12 15 9 15 C 6 15 3 13 1.5 9 Z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="9" cy="9" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 18 18"><path d="M9 2 L16.5 15 H1.5 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 7 V11 M9 13 V13.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-git" viewBox="0 0 18 18"><circle cx="5" cy="4" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5" cy="14" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="13" cy="9" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.6 V12.4 M5 9 C 5 6.5 8 6 11.5 8" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-flow" viewBox="0 0 18 18"><rect x="2" y="3" width="5" height="4" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="11" width="5" height="4" rx="0.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M7 5 H10 V13 H11" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 5 V9 L12 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-funnel" viewBox="0 0 18 18"><path d="M2 3 H16 L11 9 V15 L7 13.5 V9 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 18 18"><path d="M9 2 L15 5 V12 L9 15 L3 12 V5 Z M3 5 L9 8 L15 5 M9 8 V15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+    <symbol id="i-link" viewBox="0 0 18 18"><path d="M7 11 L11 7 M5 9 L4 10 C 2.5 11.5 2.5 13.5 4 15 C 5.5 16.5 7.5 16.5 9 15 L10 14 M8 4 L9 3 C 10.5 1.5 12.5 1.5 14 3 C 15.5 4.5 15.5 6.5 14 8 L13 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-coins" viewBox="0 0 18 18"><ellipse cx="7" cy="6" rx="4.5" ry="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6 V9 C 2.5 10.1 4.5 11 7 11 C 9.5 11 11.5 10.1 11.5 9 V6" fill="none" stroke="currentColor" stroke-width="1.4"/><ellipse cx="11" cy="12" rx="4.5" ry="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 12 V15 C 6.5 16.1 8.5 17 11 17" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 18 18"><path d="M3 3 H8 C 8.8 3 9 3.5 9 4 V15 C 9 14.5 8.5 14 8 14 H3 Z M9 4 C 9 3.5 9.2 3 10 3 H15 V14 H10 C 9.5 14 9 14.5 9 15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 18 18"><path d="M3 3 H9 L15 9 L9 15 L3 9 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="6" cy="6" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 18 18"><path d="M4 13 C 5 11 5 9 5 7 C 5 4.5 7 3 9 3 C 11 3 13 4.5 13 7 C 13 9 13 11 14 13 Z M7.5 15 C 8 16 10 16 10.5 15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+    <symbol id="i-handoff" viewBox="0 0 18 18"><path d="M2 9 H10 M10 9 L7 6 M10 9 L7 12 M11 4 H16 V14 H11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+
+    <!-- Shadow for L1 cards -->
+    <filter id="shadow-l1" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.10"/>
+    </filter>
+    <filter id="shadow-l2" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.07"/>
+    </filter>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+
+  <!-- ============================================== -->
+  <!-- HEADER (y: 0-88) -->
+  <!-- ============================================== -->
+  <rect x="0" y="0" width="1600" height="88" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.5"/>
+
+  <!-- Title block -->
+  <text x="40" y="42" font-size="26" font-weight="700" fill="#0f172a">Business Analyst AI Agent</text>
+  <text x="40" y="66" font-size="13" font-weight="400" fill="#475569">Reusable across projects · Interoperable with QA and Scrum Master agents · Traceability-by-construction discipline</text>
+
+  <!-- Capability tags on the right -->
+  <g font-size="10.5" font-weight="600">
+    <g transform="translate(770, 30)">
+      <rect width="148" height="22" rx="11" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.5"/>
+      <text x="74" y="15" text-anchor="middle" fill="#3730a3">Requirement elicitation</text>
+    </g>
+    <g transform="translate(926, 30)">
+      <rect width="146" height="22" rx="11" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.5"/>
+      <text x="73" y="15" text-anchor="middle" fill="#3730a3">Specification authoring</text>
+    </g>
+    <g transform="translate(1080, 30)">
+      <rect width="142" height="22" rx="11" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.5"/>
+      <text x="71" y="15" text-anchor="middle" fill="#3730a3">Traceability matrix</text>
+    </g>
+    <g transform="translate(1230, 30)">
+      <rect width="130" height="22" rx="11" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.5"/>
+      <text x="65" y="15" text-anchor="middle" fill="#3730a3">Change impact</text>
+    </g>
+    <g transform="translate(1368, 30)">
+      <rect width="192" height="22" rx="11" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.5"/>
+      <text x="96" y="15" text-anchor="middle" fill="#3730a3">Cross-project pattern library</text>
+    </g>
+    <text x="1560" y="68" text-anchor="end" font-size="10.5" font-weight="400" fill="#64748b">v1.0 · engineering-grade documentation · polish in Figma for board use</text>
+  </g>
+
+  <!-- ============================================== -->
+  <!-- LEFT PANEL — Trace sources / Ecosystem / Identity (y: 110-740) -->
+  <!-- ============================================== -->
+  <g>
+    <text x="40" y="106" font-size="11" font-weight="700" fill="#0d9488" letter-spacing="0.8">TRACE SOURCES &amp; ECOSYSTEM</text>
+
+    <!-- Stakeholder sources card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="40" y="116" width="320" height="178" rx="6" fill="#ffffff" stroke="#0d9488" stroke-width="1"/>
+      <rect x="40" y="116" width="320" height="28" rx="6" fill="#0d9488"/>
+      <rect x="40" y="138" width="320" height="6" fill="#0d9488"/>
+      <text x="56" y="135" font-size="12" font-weight="700" fill="#ffffff">Stakeholder input sources</text>
+
+      <g transform="translate(56, 156)" color="#0d9488">
+        <use href="#i-chat" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#115e59">Meeting transcripts</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Otter, Recall.ai, Zoom captions</text>
+      </g>
+      <g transform="translate(56, 196)" color="#0d9488">
+        <use href="#i-doc" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#115e59">Documents &amp; specs</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Confluence, SharePoint, Drive</text>
+      </g>
+      <g transform="translate(56, 236)" color="#0d9488">
+        <use href="#i-globe" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#115e59">Channels &amp; threads</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Slack, Teams, Email, GitHub issues</text>
+      </g>
+      <g transform="translate(56, 270)" color="#0d9488">
+        <use href="#i-tag" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">PII redaction on ingest · verbatim quotes preserved encrypted</text>
+      </g>
+    </g>
+
+    <!-- Project tools card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="40" y="306" width="320" height="148" rx="6" fill="#ffffff" stroke="#1d4ed8" stroke-width="1"/>
+      <rect x="40" y="306" width="320" height="28" rx="6" fill="#1d4ed8"/>
+      <rect x="40" y="328" width="320" height="6" fill="#1d4ed8"/>
+      <text x="56" y="325" font-size="12" font-weight="700" fill="#ffffff">Project work systems</text>
+
+      <g transform="translate(56, 346)" color="#1d4ed8">
+        <use href="#i-flow" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#1e3a8a">Work item systems</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Jira, Azure DevOps, Linear</text>
+      </g>
+      <g transform="translate(56, 386)" color="#1d4ed8">
+        <use href="#i-git" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#1e3a8a">Linked code references</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">GitHub, GitLab, Bitbucket</text>
+      </g>
+      <g transform="translate(56, 426)" color="#1d4ed8">
+        <use href="#i-cube" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#1e3a8a">Design references</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Figma, Miro (linked, not authored)</text>
+      </g>
+    </g>
+
+    <!-- Identity & isolation card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="40" y="466" width="320" height="138" rx="6" fill="#ffffff" stroke="#475569" stroke-width="1"/>
+      <rect x="40" y="466" width="320" height="28" rx="6" fill="#475569"/>
+      <rect x="40" y="488" width="320" height="6" fill="#475569"/>
+      <text x="56" y="485" font-size="12" font-weight="700" fill="#ffffff">Identity &amp; project isolation</text>
+
+      <g transform="translate(56, 506)" color="#475569">
+        <use href="#i-key" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#334155">SSO · OIDC</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Stakeholder identity on every event</text>
+      </g>
+      <g transform="translate(56, 546)" color="#475569">
+        <use href="#i-shield" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#334155">Project-scoped RBAC</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Per-tenant secrets · no cross-project bleed</text>
+      </g>
+      <g transform="translate(56, 580)" color="#475569">
+        <use href="#i-cog" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">HashiCorp Vault · per-project secret scope</text>
+      </g>
+    </g>
+
+    <!-- Downstream agents card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="40" y="616" width="320" height="124" rx="6" fill="#ffffff" stroke="#be123c" stroke-width="1"/>
+      <rect x="40" y="616" width="320" height="28" rx="6" fill="#be123c"/>
+      <rect x="40" y="638" width="320" height="6" fill="#be123c"/>
+      <text x="56" y="635" font-size="12" font-weight="700" fill="#ffffff">Downstream agent peers</text>
+
+      <g transform="translate(56, 656)" color="#be123c">
+        <use href="#i-handoff" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#881337">QA Agent</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Consumes acceptance criteria + scenarios</text>
+      </g>
+      <g transform="translate(56, 696)" color="#be123c">
+        <use href="#i-handoff" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#881337">Scrum Master Agent</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Consumes INVEST stories + dependencies</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============================================== -->
+  <!-- CENTER PANEL — Orchestration / Agent / MCP (y: 110-740) -->
+  <!-- ============================================== -->
+  <g>
+    <text x="380" y="106" font-size="11" font-weight="700" fill="#1d4ed8" letter-spacing="0.8">ORCHESTRATION · AGENT PIPELINE · MCP LAYER</text>
+
+    <!-- Orchestrator (L1) -->
+    <g filter="url(#shadow-l1)">
+      <rect x="380" y="116" width="760" height="78" rx="8" fill="#ffffff" stroke="#1d4ed8" stroke-width="1.8"/>
+      <rect x="380" y="116" width="760" height="32" rx="8" fill="#1d4ed8"/>
+      <rect x="380" y="142" width="760" height="6" fill="#1d4ed8"/>
+      <g transform="translate(396, 124)" color="#ffffff">
+        <use href="#i-route" width="18" height="18"/>
+      </g>
+      <text x="424" y="138" font-size="13" font-weight="700" fill="#ffffff">Orchestrator · LangGraph state machine</text>
+      <text x="940" y="138" text-anchor="end" font-size="11" font-weight="600" fill="#bfdbfe">Lifecycle: draft → reviewed → sealed → changed → retired</text>
+
+      <g transform="translate(396, 162)" color="#1d4ed8">
+        <use href="#i-clock" width="14" height="14"/>
+        <text x="20" y="11" font-size="10.5" font-weight="400" fill="#334155">Checkpointed · resumable across restarts</text>
+      </g>
+      <g transform="translate(680, 162)" color="#1d4ed8">
+        <use href="#i-link" width="14" height="14"/>
+        <text x="20" y="11" font-size="10.5" font-weight="400" fill="#334155">Per-artifact trace ID propagates to peers</text>
+      </g>
+      <g transform="translate(1000, 162)" color="#1d4ed8">
+        <use href="#i-cog" width="14" height="14"/>
+        <text x="20" y="11" font-size="10.5" font-weight="400" fill="#334155">Project config injected at runtime</text>
+      </g>
+    </g>
+
+    <!-- Agent capabilities (single-agent, sequential five-capability pipeline) -->
+    <g>
+      <!-- Background container for agent layer -->
+      <rect x="380" y="206" width="760" height="156" rx="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="394" y="226" font-size="11" font-weight="700" fill="#9a3412" letter-spacing="0.6">BA AGENT · SINGLE-AGENT · SEQUENTIAL PIPELINE</text>
+
+      <!-- Capability boxes -->
+      <g>
+        <!-- Elicitor -->
+        <g filter="url(#shadow-l2)">
+          <rect x="394" y="240" width="138" height="108" rx="6" fill="#ffffff" stroke="#ea580c" stroke-width="1.2"/>
+          <g transform="translate(404, 250)" color="#ea580c">
+            <use href="#i-funnel" width="18" height="18"/>
+          </g>
+          <text x="432" y="263" font-size="12" font-weight="700" fill="#9a3412">Elicitor</text>
+          <text x="404" y="285" font-size="10" font-weight="400" fill="#475569">Parses raw sources;</text>
+          <text x="404" y="298" font-size="10" font-weight="400" fill="#475569">extracts candidate</text>
+          <text x="404" y="311" font-size="10" font-weight="400" fill="#475569">requirements + verbatim</text>
+          <text x="404" y="324" font-size="10" font-weight="400" fill="#475569">source quotes.</text>
+          <text x="404" y="340" font-size="9" font-weight="600" fill="#9a3412">Haiku tier</text>
+        </g>
+
+        <!-- Analyst -->
+        <g filter="url(#shadow-l2)">
+          <rect x="540" y="240" width="138" height="108" rx="6" fill="#ffffff" stroke="#ea580c" stroke-width="1.2"/>
+          <g transform="translate(550, 250)" color="#ea580c">
+            <use href="#i-brain" width="18" height="18"/>
+          </g>
+          <text x="578" y="263" font-size="12" font-weight="700" fill="#9a3412">Analyst</text>
+          <text x="550" y="285" font-size="10" font-weight="400" fill="#475569">Detects ambiguity,</text>
+          <text x="550" y="298" font-size="10" font-weight="400" fill="#475569">conflict, duplicates;</text>
+          <text x="550" y="311" font-size="10" font-weight="400" fill="#475569">classifies functional,</text>
+          <text x="550" y="324" font-size="10" font-weight="400" fill="#475569">non-functional, constraint.</text>
+          <text x="550" y="340" font-size="9" font-weight="600" fill="#9a3412">Sonnet tier</text>
+        </g>
+
+        <!-- Author -->
+        <g filter="url(#shadow-l2)">
+          <rect x="686" y="240" width="138" height="108" rx="6" fill="#ffffff" stroke="#ea580c" stroke-width="1.2"/>
+          <g transform="translate(696, 250)" color="#ea580c">
+            <use href="#i-doc" width="18" height="18"/>
+          </g>
+          <text x="724" y="263" font-size="12" font-weight="700" fill="#9a3412">Author</text>
+          <text x="696" y="285" font-size="10" font-weight="400" fill="#475569">User stories (INVEST),</text>
+          <text x="696" y="298" font-size="10" font-weight="400" fill="#475569">Gherkin acceptance</text>
+          <text x="696" y="311" font-size="10" font-weight="400" fill="#475569">criteria, BRD entries</text>
+          <text x="696" y="324" font-size="10" font-weight="400" fill="#475569">against project schema.</text>
+          <text x="696" y="340" font-size="9" font-weight="600" fill="#9a3412">Sonnet tier</text>
+        </g>
+
+        <!-- Validator (L1 — gate before sealing) -->
+        <g filter="url(#shadow-l1)">
+          <rect x="832" y="240" width="138" height="108" rx="6" fill="#ffffff" stroke="#16a34a" stroke-width="1.8"/>
+          <g transform="translate(842, 250)" color="#16a34a">
+            <use href="#i-check" width="18" height="18"/>
+          </g>
+          <text x="870" y="263" font-size="12" font-weight="700" fill="#166534">Validator</text>
+          <text x="842" y="285" font-size="10" font-weight="400" fill="#475569">Schema + traceability</text>
+          <text x="842" y="298" font-size="10" font-weight="400" fill="#475569">+ downstream-contract</text>
+          <text x="842" y="311" font-size="10" font-weight="400" fill="#475569">checks against QA &amp;</text>
+          <text x="842" y="324" font-size="10" font-weight="400" fill="#475569">SM consumer schemas.</text>
+          <text x="842" y="340" font-size="9" font-weight="700" fill="#166534">Sealing gate</text>
+        </g>
+
+        <!-- Change Manager -->
+        <g filter="url(#shadow-l2)">
+          <rect x="978" y="240" width="148" height="108" rx="6" fill="#ffffff" stroke="#ea580c" stroke-width="1.2"/>
+          <g transform="translate(988, 250)" color="#ea580c">
+            <use href="#i-git" width="18" height="18"/>
+          </g>
+          <text x="1016" y="263" font-size="12" font-weight="700" fill="#9a3412">Change Mgr</text>
+          <text x="988" y="285" font-size="10" font-weight="400" fill="#475569">On upstream change,</text>
+          <text x="988" y="298" font-size="10" font-weight="400" fill="#475569">computes impact across</text>
+          <text x="988" y="311" font-size="10" font-weight="400" fill="#475569">linked artifacts; reopens</text>
+          <text x="988" y="324" font-size="10" font-weight="400" fill="#475569">downstream lifecycle.</text>
+          <text x="988" y="340" font-size="9" font-weight="600" fill="#9a3412">Sonnet tier</text>
+        </g>
+      </g>
+
+      <!-- Arrows between capabilities -->
+      <g stroke="#ea580c" stroke-width="1.2" fill="none">
+        <line x1="532" y1="294" x2="540" y2="294" marker-end="url(#arrow)"/>
+        <line x1="678" y1="294" x2="686" y2="294" marker-end="url(#arrow)"/>
+        <line x1="824" y1="294" x2="832" y2="294" marker-end="url(#arrow)"/>
+        <line x1="970" y1="294" x2="978" y2="294" marker-end="url(#arrow)"/>
+      </g>
+    </g>
+
+    <!-- Operational discipline callout strip -->
+    <g>
+      <rect x="380" y="374" width="760" height="42" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+      <g transform="translate(396, 385)" color="#92400e">
+        <use href="#i-link" width="20" height="20"/>
+      </g>
+      <text x="428" y="392" font-size="12" font-weight="700" fill="#92400e">Operational discipline: Traceability-by-Construction</text>
+      <text x="428" y="407" font-size="10.5" font-weight="400" fill="#78350f">Every artifact is written with upstream + downstream links populated. No link → no seal → no downstream consumption. Non-negotiable.</text>
+    </g>
+
+    <!-- MCP layer -->
+    <g>
+      <rect x="380" y="428" width="760" height="124" rx="8" fill="#faf5ff" stroke="#7c3aed" stroke-width="1.2"/>
+      <text x="394" y="448" font-size="11" font-weight="700" fill="#5b21b6" letter-spacing="0.6">MCP LAYER · TOOL ALLOWLIST PER PROJECT</text>
+
+      <g>
+        <g transform="translate(394, 460)">
+          <rect width="118" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-flow" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">Jira / ADO</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Work-item sync</text>
+        </g>
+        <g transform="translate(520, 460)">
+          <rect width="118" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-doc" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">Confluence</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Source docs</text>
+        </g>
+        <g transform="translate(646, 460)">
+          <rect width="118" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-chat" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">Slack / Teams</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Threads</text>
+        </g>
+        <g transform="translate(772, 460)">
+          <rect width="118" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-git" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">GitHub</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Code links</text>
+        </g>
+        <g transform="translate(898, 460)">
+          <rect width="118" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-clock" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">Otter / Recall</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Transcripts</text>
+        </g>
+        <g transform="translate(1024, 460)">
+          <rect width="102" height="40" rx="5" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+          <g transform="translate(8, 11)" color="#7c3aed"><use href="#i-cube" width="16" height="16"/></g>
+          <text x="30" y="17" font-size="11" font-weight="600" fill="#5b21b6">Figma</text>
+          <text x="30" y="30" font-size="9" font-weight="400" fill="#475569">Designs</text>
+        </g>
+      </g>
+
+      <!-- Tool row -->
+      <g>
+        <g transform="translate(394, 508)">
+          <rect width="118" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="59" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">Ambiguity detector</text>
+          <text x="59" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">Regex + LLM judge</text>
+        </g>
+        <g transform="translate(520, 508)">
+          <rect width="118" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="59" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">INVEST scorer</text>
+          <text x="59" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">Story-quality grade</text>
+        </g>
+        <g transform="translate(646, 508)">
+          <rect width="118" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="59" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">Gherkin validator</text>
+          <text x="59" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">Syntax + structure</text>
+        </g>
+        <g transform="translate(772, 508)">
+          <rect width="118" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="59" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">Schema validator</text>
+          <text x="59" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">JSON Schema gate</text>
+        </g>
+        <g transform="translate(898, 508)">
+          <rect width="118" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="59" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">Traceability graph</text>
+          <text x="59" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">DAG builder</text>
+        </g>
+        <g transform="translate(1024, 508)">
+          <rect width="102" height="36" rx="5" fill="#f3e8ff" stroke="#a78bfa" stroke-width="0.8"/>
+          <text x="51" y="14" text-anchor="middle" font-size="10.5" font-weight="600" fill="#5b21b6">Impact analyzer</text>
+          <text x="51" y="27" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">Change blast radius</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Handoff contracts to QA and SM -->
+    <g>
+      <rect x="380" y="564" width="760" height="176" rx="8" fill="#fff1f2" stroke="#be123c" stroke-width="1.2"/>
+      <text x="394" y="584" font-size="11" font-weight="700" fill="#881337" letter-spacing="0.6">HANDOFF CONTRACTS · CONTRACT-VALIDATED AT BOUNDARY</text>
+
+      <!-- To QA -->
+      <g filter="url(#shadow-l2)">
+        <rect x="394" y="596" width="358" height="132" rx="6" fill="#ffffff" stroke="#be123c" stroke-width="1"/>
+        <g transform="translate(404, 606)" color="#be123c"><use href="#i-handoff" width="18" height="18"/></g>
+        <text x="432" y="619" font-size="12" font-weight="700" fill="#881337">→ QA Agent contract</text>
+        <text x="404" y="641" font-size="10.5" font-weight="600" fill="#334155">Acceptance criteria (Gherkin)</text>
+        <text x="404" y="656" font-size="10" font-weight="400" fill="#475569">Given/When/Then, edge + negative cases</text>
+        <text x="404" y="673" font-size="10.5" font-weight="600" fill="#334155">Test scenarios + expected outcomes</text>
+        <text x="404" y="688" font-size="10" font-weight="400" fill="#475569">Per-scenario data conditions</text>
+        <text x="404" y="705" font-size="10.5" font-weight="600" fill="#334155">Traceability ID + requirement clauses</text>
+        <text x="404" y="720" font-size="10" font-weight="400" fill="#475569">Stable ID survives requirement revisions</text>
+      </g>
+
+      <!-- To SM -->
+      <g filter="url(#shadow-l2)">
+        <rect x="766" y="596" width="360" height="132" rx="6" fill="#ffffff" stroke="#be123c" stroke-width="1"/>
+        <g transform="translate(776, 606)" color="#be123c"><use href="#i-handoff" width="18" height="18"/></g>
+        <text x="804" y="619" font-size="12" font-weight="700" fill="#881337">→ Scrum Master Agent contract</text>
+        <text x="776" y="641" font-size="10.5" font-weight="600" fill="#334155">User story + INVEST score</text>
+        <text x="776" y="656" font-size="10" font-weight="400" fill="#475569">Independent, Negotiable, Valuable…</text>
+        <text x="776" y="673" font-size="10.5" font-weight="600" fill="#334155">Dependencies + readiness state</text>
+        <text x="776" y="688" font-size="10" font-weight="400" fill="#475569">Blocking stories, external deps</text>
+        <text x="776" y="705" font-size="10.5" font-weight="600" fill="#334155">Size hint + business value signal</text>
+        <text x="776" y="720" font-size="10" font-weight="400" fill="#475569">Hints, not decisions — SM agent owns final</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============================================== -->
+  <!-- RIGHT PANEL — Observability / Quality / Patterns (y: 110-740) -->
+  <!-- ============================================== -->
+  <g>
+    <text x="1160" y="106" font-size="11" font-weight="700" fill="#7c3aed" letter-spacing="0.8">OBSERVABILITY · QUALITY · LEARNING</text>
+
+    <!-- Observability card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="1160" y="116" width="400" height="156" rx="6" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+      <rect x="1160" y="116" width="400" height="28" rx="6" fill="#7c3aed"/>
+      <rect x="1160" y="138" width="400" height="6" fill="#7c3aed"/>
+      <text x="1176" y="135" font-size="12" font-weight="700" fill="#ffffff">Observability &amp; cost telemetry</text>
+
+      <g transform="translate(1176, 156)" color="#7c3aed">
+        <use href="#i-eye" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#5b21b6">OpenTelemetry traces</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Per-artifact span tree from elicit to seal</text>
+      </g>
+      <g transform="translate(1176, 196)" color="#7c3aed">
+        <use href="#i-chart" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#5b21b6">Quality metrics</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Ambiguity rate · INVEST pass · time-to-seal</text>
+      </g>
+      <g transform="translate(1176, 236)" color="#7c3aed">
+        <use href="#i-coins" width="16" height="16"/>
+        <text x="22" y="13" font-size="11.5" font-weight="600" fill="#5b21b6">Cost per artifact</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Alert at 80% of monthly ceiling</text>
+      </g>
+    </g>
+
+    <!-- Quality gates card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="1160" y="284" width="400" height="166" rx="6" fill="#ffffff" stroke="#16a34a" stroke-width="1"/>
+      <rect x="1160" y="284" width="400" height="28" rx="6" fill="#16a34a"/>
+      <rect x="1160" y="306" width="400" height="6" fill="#16a34a"/>
+      <text x="1176" y="303" font-size="12" font-weight="700" fill="#ffffff">Quality gates · CI-blocked</text>
+
+      <g transform="translate(1176, 324)" color="#16a34a">
+        <use href="#i-check" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#166534">Coverage ≥ 0.92</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">vs golden-set extractions</text>
+      </g>
+      <g transform="translate(1176, 360)" color="#16a34a">
+        <use href="#i-check" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#166534">Fidelity ≥ 0.88 · INVEST ≥ 0.95</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">LLM-judge with calibrated rubric</text>
+      </g>
+      <g transform="translate(1176, 396)" color="#16a34a">
+        <use href="#i-check" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#166534">Traceability = 1.00 (no tolerance)</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Missing link is a defect, not a warning</text>
+      </g>
+      <g transform="translate(1176, 432)" color="#16a34a">
+        <use href="#i-check" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#166534">Contract validity = 1.00</text>
+      </g>
+    </g>
+
+    <!-- Pattern library card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="1160" y="462" width="400" height="140" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="1"/>
+      <rect x="1160" y="462" width="400" height="28" rx="6" fill="#d97706"/>
+      <rect x="1160" y="484" width="400" height="6" fill="#d97706"/>
+      <text x="1176" y="481" font-size="12" font-weight="700" fill="#ffffff">Cross-project pattern library</text>
+
+      <g transform="translate(1176, 502)" color="#d97706">
+        <use href="#i-book" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#92400e">Promoted patterns</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Proven in ≥3 projects · human-gated</text>
+      </g>
+      <g transform="translate(1176, 542)" color="#d97706">
+        <use href="#i-alert" width="16" height="16"/>
+        <text x="22" y="13" font-size="11" font-weight="600" fill="#92400e">Context-checked, never default</text>
+        <text x="22" y="26" font-size="10" font-weight="400" fill="#475569">Cross-project bleed is an anti-pattern</text>
+      </g>
+      <g transform="translate(1176, 580)" color="#d97706">
+        <use href="#i-funnel" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">pgvector similarity · domain-tagged retrieval</text>
+      </g>
+    </g>
+
+    <!-- Human-in-loop card -->
+    <g filter="url(#shadow-l2)">
+      <rect x="1160" y="614" width="400" height="126" rx="6" fill="#ffffff" stroke="#0d9488" stroke-width="1"/>
+      <rect x="1160" y="614" width="400" height="28" rx="6" fill="#0d9488"/>
+      <rect x="1160" y="636" width="400" height="6" fill="#0d9488"/>
+      <text x="1176" y="633" font-size="12" font-weight="700" fill="#ffffff">Human-in-loop · mandatory triggers</text>
+
+      <g transform="translate(1176, 654)" color="#0d9488">
+        <use href="#i-bell" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">Ambiguity flag · conflict between stakeholders</text>
+      </g>
+      <g transform="translate(1176, 680)" color="#0d9488">
+        <use href="#i-bell" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">Regulated data classification · pricing impact</text>
+      </g>
+      <g transform="translate(1176, 706)" color="#0d9488">
+        <use href="#i-bell" width="16" height="16"/>
+        <text x="22" y="13" font-size="10.5" font-weight="400" fill="#334155">Cross-project pattern promotion · contract change</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Connector arrow from Center (sealed) to handoffs panel — implicit via vertical layout; QA/SM at left panel get inbound arrow -->
+  <g stroke="#be123c" stroke-width="1.4" fill="none" opacity="0.65">
+    <!-- From handoff section in center to downstream agents card on left -->
+    <path d="M394 660 Q 370 660 360 678" marker-end="url(#arrow)"/>
+    <path d="M394 718 Q 370 718 360 718" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- ============================================== -->
+  <!-- FOUNDATION STRIP (y: 758-900) — five cards -->
+  <!-- ============================================== -->
+  <g>
+    <rect x="0" y="758" width="1600" height="142" fill="#f8fafc" stroke="#cbd5e1" stroke-width="0.5"/>
+    <text x="40" y="780" font-size="11" font-weight="700" fill="#475569" letter-spacing="0.8">FOUNDATION · CROSS-CUTTING PILLARS</text>
+
+    <!-- Each card 290 wide, 20 gap, starting at x=40 -->
+    <!-- Security -->
+    <g transform="translate(40, 788)" filter="url(#shadow-l2)">
+      <rect width="290" height="98" rx="6" fill="#ffffff" stroke="#475569" stroke-width="0.8"/>
+      <g transform="translate(14, 14)" color="#475569"><use href="#i-shield" width="18" height="18"/></g>
+      <text x="42" y="28" font-size="12" font-weight="700" fill="#334155">Security</text>
+      <text x="14" y="52" font-size="10" font-weight="400" fill="#475569">SSO + OIDC · project-scoped RBAC</text>
+      <text x="14" y="68" font-size="10" font-weight="400" fill="#475569">PII redactor on ingest · Vault secrets</text>
+      <text x="14" y="84" font-size="10" font-weight="400" fill="#475569">Append-only audit · stakeholder provenance</text>
+    </g>
+
+    <!-- Reliability -->
+    <g transform="translate(346, 788)" filter="url(#shadow-l2)">
+      <rect width="290" height="98" rx="6" fill="#ffffff" stroke="#16a34a" stroke-width="0.8"/>
+      <g transform="translate(14, 14)" color="#16a34a"><use href="#i-check" width="18" height="18"/></g>
+      <text x="42" y="28" font-size="12" font-weight="700" fill="#166534">Reliability</text>
+      <text x="14" y="52" font-size="10" font-weight="400" fill="#475569">Versioned artifact store · git-style revisions</text>
+      <text x="14" y="68" font-size="10" font-weight="400" fill="#475569">Contract validation at every boundary</text>
+      <text x="14" y="84" font-size="10" font-weight="400" fill="#475569">Checkpointed state machine · restart-safe</text>
+    </g>
+
+    <!-- Scale -->
+    <g transform="translate(652, 788)" filter="url(#shadow-l2)">
+      <rect width="290" height="98" rx="6" fill="#ffffff" stroke="#1d4ed8" stroke-width="0.8"/>
+      <g transform="translate(14, 14)" color="#1d4ed8"><use href="#i-cloud" width="18" height="18"/></g>
+      <text x="42" y="28" font-size="12" font-weight="700" fill="#1e3a8a">Scale</text>
+      <text x="14" y="52" font-size="10" font-weight="400" fill="#475569">Multi-tenant · one namespace per project</text>
+      <text x="14" y="68" font-size="10" font-weight="400" fill="#475569">Stateless pods · state in Postgres + S3</text>
+      <text x="14" y="84" font-size="10" font-weight="400" fill="#475569">Haiku/Sonnet split keeps unit cost stable</text>
+    </g>
+
+    <!-- Data -->
+    <g transform="translate(958, 788)" filter="url(#shadow-l2)">
+      <rect width="290" height="98" rx="6" fill="#ffffff" stroke="#d97706" stroke-width="0.8"/>
+      <g transform="translate(14, 14)" color="#d97706"><use href="#i-db" width="18" height="18"/></g>
+      <text x="42" y="28" font-size="12" font-weight="700" fill="#92400e">Data</text>
+      <text x="14" y="52" font-size="10" font-weight="400" fill="#475569">pgvector + Postgres · co-located, transactional</text>
+      <text x="14" y="68" font-size="10" font-weight="400" fill="#475569">S3-compatible object store for raw sources</text>
+      <text x="14" y="84" font-size="10" font-weight="400" fill="#475569">Two-tier memory: project + shared library</text>
+    </g>
+
+    <!-- Deployment -->
+    <g transform="translate(1264, 788)" filter="url(#shadow-l2)">
+      <rect width="296" height="98" rx="6" fill="#ffffff" stroke="#7c3aed" stroke-width="0.8"/>
+      <g transform="translate(14, 14)" color="#7c3aed"><use href="#i-gateway" width="18" height="18"/></g>
+      <text x="42" y="28" font-size="12" font-weight="700" fill="#5b21b6">Deployment</text>
+      <text x="14" y="52" font-size="10" font-weight="400" fill="#475569">Kubernetes · per-tenant namespace or account</text>
+      <text x="14" y="68" font-size="10" font-weight="400" fill="#475569">Phased: shadow → assisted → autonomous</text>
+      <text x="14" y="84" font-size="10" font-weight="400" fill="#475569">Ceiling: ~$1,000/mo per project · LangSmith CI</text>
+    </g>
+  </g>
+
+  <!-- ============================================== -->
+  <!-- TYPICAL FLOW STRIP (y: 900-1000) -->
+  <!-- ============================================== -->
+  <g>
+    <rect x="0" y="900" width="1600" height="100" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.5"/>
+    <text x="40" y="922" font-size="11" font-weight="700" fill="#334155" letter-spacing="0.8">TYPICAL FLOW · INPUT → SEALED CONTRACT → DOWNSTREAM HANDOFF</text>
+
+    <!-- Pill stages -->
+    <g font-size="10.5" font-weight="600">
+      <g transform="translate(40, 940)">
+        <rect width="138" height="38" rx="19" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
+        <text x="69" y="17" text-anchor="middle" fill="#115e59">Stakeholder input</text>
+        <text x="69" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#0f766e">transcript · doc · ticket</text>
+      </g>
+      <g transform="translate(196, 940)">
+        <rect width="118" height="38" rx="19" fill="#fff7ed" stroke="#ea580c" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#9a3412">Elicit</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#c2410c">+ source quotes</text>
+      </g>
+      <g transform="translate(332, 940)">
+        <rect width="118" height="38" rx="19" fill="#fff7ed" stroke="#ea580c" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#9a3412">Analyze</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#c2410c">ambiguity · conflict</text>
+      </g>
+      <g transform="translate(468, 940)">
+        <rect width="118" height="38" rx="19" fill="#fff7ed" stroke="#ea580c" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#9a3412">Author</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#c2410c">story · AC · BRD</text>
+      </g>
+      <g transform="translate(604, 940)">
+        <rect width="120" height="38" rx="19" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.4"/>
+        <text x="60" y="17" text-anchor="middle" fill="#166534">Validate</text>
+        <text x="60" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#15803d">schema · trace · contract</text>
+      </g>
+      <g transform="translate(742, 940)">
+        <rect width="118" height="38" rx="19" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#115e59">Human review</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#0f766e">conditional</text>
+      </g>
+      <g transform="translate(878, 940)">
+        <rect width="120" height="38" rx="19" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.4"/>
+        <text x="60" y="17" text-anchor="middle" fill="#166534">Sealed contract</text>
+        <text x="60" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#15803d">lifecycle advanced</text>
+      </g>
+      <g transform="translate(1016, 940)">
+        <rect width="118" height="38" rx="19" fill="#fff1f2" stroke="#be123c" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#881337">→ QA Agent</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#9f1239">AC + scenarios</text>
+      </g>
+      <g transform="translate(1152, 940)">
+        <rect width="118" height="38" rx="19" fill="#fff1f2" stroke="#be123c" stroke-width="1"/>
+        <text x="59" y="17" text-anchor="middle" fill="#881337">→ SM Agent</text>
+        <text x="59" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#9f1239">story + deps</text>
+      </g>
+      <g transform="translate(1288, 940)">
+        <rect width="120" height="38" rx="19" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+        <text x="60" y="17" text-anchor="middle" fill="#92400e">Released feature</text>
+        <text x="60" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#a16207">outcome</text>
+      </g>
+      <g transform="translate(1426, 940)">
+        <rect width="134" height="38" rx="19" fill="#faf5ff" stroke="#7c3aed" stroke-width="1"/>
+        <text x="67" y="17" text-anchor="middle" fill="#5b21b6">Quality event feedback</text>
+        <text x="67" y="30" text-anchor="middle" font-size="9" font-weight="400" fill="#6b21a8">to pattern library</text>
+      </g>
+    </g>
+
+    <!-- Arrows between pills -->
+    <g stroke="#94a3b8" stroke-width="1.1" fill="none">
+      <line x1="178" y1="959" x2="195" y2="959" marker-end="url(#arrow)"/>
+      <line x1="314" y1="959" x2="331" y2="959" marker-end="url(#arrow)"/>
+      <line x1="450" y1="959" x2="467" y2="959" marker-end="url(#arrow)"/>
+      <line x1="586" y1="959" x2="603" y2="959" marker-end="url(#arrow)"/>
+      <line x1="724" y1="959" x2="741" y2="959" marker-end="url(#arrow)"/>
+      <line x1="860" y1="959" x2="877" y2="959" marker-end="url(#arrow)"/>
+      <line x1="998" y1="959" x2="1015" y2="959" marker-end="url(#arrow)"/>
+      <line x1="1134" y1="959" x2="1151" y2="959" marker-end="url(#arrow)"/>
+      <line x1="1270" y1="959" x2="1287" y2="959" marker-end="url(#arrow)"/>
+      <line x1="1408" y1="959" x2="1425" y2="959" marker-end="url(#arrow)"/>
+    </g>
+
+    <!-- Feedback loop arc from end back to Elicit -->
+    <g stroke="#7c3aed" stroke-width="1.1" fill="none" stroke-dasharray="4 3" opacity="0.75">
+      <path d="M1493 940 Q 1493 908 1380 908 L 255 908 Q 255 908 255 940" marker-end="url(#arrow)"/>
+    </g>
+    <text x="820" y="902" text-anchor="middle" font-size="9" font-weight="600" fill="#5b21b6">feedback loop · defects + clarifications enrich elicitor scaffolding</text>
+  </g>
+
+</svg>

@@ -1,0 +1,4 @@
+{"agent":"aara-business-analyst","agent_version":"1.0.0","requested_stage":"production_candidate","decision":"PASS","design_score":90,"design_band":"production_ready_candidate","behavior_evaluated":true,
+ "evidence":{"runnable_artifact":true,"agent_spec":true,"io_contracts":true,"tool_contract":true,"guardrails":true,"review_scorecard":true,"eval_plan":true,"executed_eval_results":true,"security_review":true,"monitoring_plan":true,"rollback_runbook":true,"human_approval_model":true,"monitoring":false,"rollback_kill_switch":false,"canary":false},
+ "conditions":[],
+ "required_fixes":[{"priority":"P2","fix":"PRODUCTION (live) stage: stand up live monitoring + canary rollout + exercise rollback in the production runtime","required_before":"production"}]}

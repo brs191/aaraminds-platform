@@ -1,0 +1,138 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "service_assessments": [
+    {
+      "service": "api-gateway",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper"
+      ]
+    },
+    {
+      "service": "order-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "chatty",
+      "owner_clarity": "single_team",
+      "notes": [
+        "synchronous dependency count is 5, indicates chatty design"
+      ]
+    },
+    {
+      "service": "inventory-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "pricing-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "payment-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "tax-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "catalog-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "cart-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "auth-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "notification-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team"
+    },
+    {
+      "service": "fulfillment-orchestrator",
+      "capability_clarity": "clear",
+      "owns_distinct_data": true,
+      "dependency_health": "healthy",
+      "owner_clarity": "no_team",
+      "notes": [
+        "no team assigned \u2014 services without owners drift"
+      ]
+    },
+    {
+      "service": "reporting-service",
+      "capability_clarity": "clear",
+      "owns_distinct_data": false,
+      "dependency_health": "healthy",
+      "owner_clarity": "single_team",
+      "notes": [
+        "service owns no data \u2014 verify it is not just a thin wrapper"
+      ]
+    }
+  ],
+  "boundary_risks": [
+    {
+      "severity": "medium",
+      "category": "chatty_dependency",
+      "description": "service \"order-service\" has 5 synchronous dependencies; this is chatty and increases latency, blast radius, and coupling",
+      "services_affected": [
+        "order-service"
+      ]
+    },
+    {
+      "severity": "medium",
+      "category": "no_owner",
+      "description": "service \"fulfillment-orchestrator\" has no owning team \u2014 services without owners drift in scope and quality",
+      "services_affected": [
+        "fulfillment-orchestrator"
+      ]
+    }
+  ],
+  "recommended_changes": [
+    {
+      "action": "introduce_async",
+      "targets": [
+        "order-service"
+      ],
+      "rationale": "Convert the highest-volume synchronous calls to asynchronous events. This reduces coupling, contains failures, and improves latency."
+    },
+    {
+      "action": "clarify_ownership",
+      "targets": [
+        "fulfillment-orchestrator"
+      ],
+      "rationale": "Assign a single team as the owner. Services without owners accumulate undefined behavior and become legacy quickly."
+    }
+  ],
+  "overall_score": 84,
+  "overall_rating": "Boundaries directionally sound; targeted improvements recommended",
+  "summary": "Service boundary canvas for ecommerce-order-platform: 12 proposed services analyzed, 2 boundary risks identified, overall boundary score 84/100."
+}

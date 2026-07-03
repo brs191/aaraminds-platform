@@ -1,0 +1,21 @@
+{
+  "skill_name": "azure-network-topology-analysis",
+  "iteration": 3,
+  "notes": "Harder fixtures chosen to probe where a strong base model is most likely to slip: inbound firewall DNAT to a no-public-IP backend (multi-hop reachability), a UDR 0.0.0.0/0 -> None black-hole that makes a scary rule inert (precision), and the AzureCloud service tag whose breadth is easy to under-rate. Answer key: expected-findings3.md.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "firewall-dnat-multihop",
+      "prompt": "Review the attached topology export (fixture-h1-dnat-multihop.json) for internet exposure. Note it includes an Azure Firewall with NAT rules. Give prioritized findings with severity and evidence, and be explicit about which backend hosts are actually reachable from the internet.",
+      "files": ["fixtures/fixture-h1-dnat-multihop.json"],
+      "expected_output": "High: nic-backend1 (10.8.1.4) is internet-reachable on 443 via the firewall DNAT rule dnat-https-to-backend1 (Internet -> 20.70.0.10:443 -> 10.8.1.4:443), even though it has NO public IP, because nsg-backend allows 443 from the firewall subnet 10.0.0.0/26. nic-backend2 must NOT be flagged internet-reachable: identical NSG but no DNAT rule targets it, so there is no inbound path."
+    },
+    {
+      "id": 2,
+      "name": "blackhole-and-service-tags",
+      "prompt": "Review fixture-h2-blackhole-tags.json for internet exposure. Three subnets are internet-facing. Give prioritized findings with severity and evidence, and call out anything that looks exposed in config but isn't actually reachable.",
+      "files": ["fixtures/fixture-h2-blackhole-tags.json"],
+      "expected_output": "High: nic-edge 443 open to Internet (NSG Internet:443 + public IP + route 0.0.0.0/0 -> Internet). Medium/High: nic-api allows 443 from the AzureCloud service tag, which is all Azure public IPs across tenants (far broader than 'internal') + public IP + Internet route -> real broad cross-tenant exposure, not a safe internal allow. darkpool must NOT be flagged high/critical: its NSG allows 0.0.0.0/0:22 and it has a public IP, but its effective route for 0.0.0.0/0 is None (UDR black-hole), so no traffic reaches it -> latent only."
+    }
+  ]
+}

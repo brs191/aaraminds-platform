@@ -1,0 +1,74 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Customer-facing order capture and fulfillment for mid-market e-commerce. Designed for Azure-hosted microservices on AKS or Container Apps.",
+  "services": [
+    {
+      "name": "order-service",
+      "business_capability": "order management",
+      "owns_data": ["orders", "order_line_items"],
+      "depends_on": ["inventory-service", "pricing-service", "payment-service", "tax-service", "notification-service"],
+      "consumes_events_from": [],
+      "team": "platform-team"
+    },
+    {
+      "name": "inventory-service",
+      "business_capability": "inventory management",
+      "owns_data": ["inventory_levels", "reservations"],
+      "depends_on": [],
+      "consumes_events_from": ["order-service"],
+      "team": "platform-team"
+    },
+    {
+      "name": "pricing-service",
+      "business_capability": "pricing and promotions",
+      "owns_data": ["price_lists", "promotions", "orders"],
+      "depends_on": [],
+      "team": "commerce-team"
+    },
+    {
+      "name": "payment-service",
+      "business_capability": "payment processing",
+      "owns_data": ["payment_intents", "payment_methods"],
+      "depends_on": ["order-service"],
+      "team": "commerce-team"
+    },
+    {
+      "name": "tax-service",
+      "business_capability": "tax calculation",
+      "owns_data": ["tax_rates"],
+      "depends_on": [],
+      "team": "commerce-team"
+    },
+    {
+      "name": "notification-service",
+      "business_capability": "customer notification delivery",
+      "owns_data": ["notification_templates"],
+      "depends_on": [],
+      "team": "platform-team"
+    },
+    {
+      "name": "fulfillment-orchestrator",
+      "business_capability": "fulfillment workflow",
+      "owns_data": ["fulfillment_jobs"],
+      "depends_on": ["inventory-service", "order-service"],
+      "consumes_events_from": ["payment-service"]
+    }
+  ],
+  "data_stores": [
+    {"name": "orders", "kind": "cosmos"},
+    {"name": "order_line_items", "kind": "cosmos"},
+    {"name": "inventory_levels", "kind": "postgres"},
+    {"name": "reservations", "kind": "redis"},
+    {"name": "price_lists", "kind": "postgres"},
+    {"name": "promotions", "kind": "postgres"},
+    {"name": "payment_intents", "kind": "postgres"},
+    {"name": "payment_methods", "kind": "postgres"},
+    {"name": "tax_rates", "kind": "postgres"},
+    {"name": "notification_templates", "kind": "blob"},
+    {"name": "fulfillment_jobs", "kind": "postgres"}
+  ],
+  "teams": [
+    {"name": "platform-team"},
+    {"name": "commerce-team"}
+  ]
+}

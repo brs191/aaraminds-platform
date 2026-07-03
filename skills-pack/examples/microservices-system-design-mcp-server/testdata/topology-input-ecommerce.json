@@ -1,0 +1,27 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Customer-facing e-commerce order capture and fulfillment on Azure microservices.",
+  "deployment_target": "container_apps",
+  "environments": ["dev", "staging", "prod"],
+  "non_functional_requirements": {
+    "availability_target": "99.9",
+    "multi_region": false,
+    "latency_p99_ms": 300
+  },
+  "services": [
+    {"name": "api-gateway",              "type": "gateway", "criticality": "high",   "external": true},
+    {"name": "order-service",            "type": "api",     "criticality": "high"},
+    {"name": "payment-service",          "type": "api",     "criticality": "high"},
+    {"name": "inventory-service",        "type": "api",     "criticality": "medium"},
+    {"name": "fulfillment-orchestrator", "type": "worker",  "criticality": "medium"},
+    {"name": "notification-service",     "type": "worker",  "criticality": "low"},
+    {"name": "reporting-service",        "type": "api",     "criticality": "low"}
+  ],
+  "data_stores": [
+    {"name": "orders-db",   "kind": "postgres", "classification": "pii"},
+    {"name": "payments-db", "kind": "postgres", "classification": "pci"},
+    {"name": "inventory-db","kind": "postgres"},
+    {"name": "session-cache","kind": "redis"},
+    {"name": "events",      "kind": "servicebus"}
+  ]
+}

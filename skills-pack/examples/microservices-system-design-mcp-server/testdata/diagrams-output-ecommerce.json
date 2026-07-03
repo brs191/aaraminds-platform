@@ -1,0 +1,14 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "diagram_type": "service_boundary",
+  "audience": "technical",
+  "mermaid": "flowchart TB\n    subgraph api_gateway_b[api-gateway \u2014 gateway]\n    end\n    subgraph catalog_service_b[catalog-service \u2014 api]\n        catalog_service_products[(\"products\")]\n    end\n    subgraph inventory_service_b[inventory-service \u2014 api]\n        inventory_service_inventory_levels[(\"inventory_levels\")]\n        inventory_service_reservations[(\"reservations\")]\n    end\n    subgraph notification_service_b[notification-service \u2014 worker]\n    end\n    subgraph order_service_b[order-service \u2014 api]\n        order_service_orders[(\"orders\")]\n    end\n    subgraph payment_service_b[payment-service \u2014 api]\n        payment_service_payment_intents[(\"payment_intents\")]\n    end\n    api_gateway_b -.-> order_service_b\n    api_gateway_b -.-> catalog_service_b\n    order_service_b -.-> inventory_service_b\n    order_service_b -.-> payment_service_b\n",
+  "plantuml": "@startuml\npackage \"api-gateway (gateway)\" {\n}\npackage \"catalog-service (api)\" {\n  database \"products\"\n}\npackage \"inventory-service (api)\" {\n  database \"inventory_levels\"\n  database \"reservations\"\n}\npackage \"notification-service (worker)\" {\n}\npackage \"order-service (api)\" {\n  database \"orders\"\n}\npackage \"payment-service (api)\" {\n  database \"payment_intents\"\n}\napi_gateway ..> order_service\napi_gateway ..> catalog_service\norder_service ..> inventory_service\norder_service ..> payment_service\n@enduml\n",
+  "drawio_prompt": "Create a service_boundary diagram for the system \"ecommerce-order-platform\" targeted at the technical audience.\n\nSystem description: Order capture, inventory reservation, payment, and notification on Azure microservices.\n\nComponents:\n- api-gateway (gateway), depends on: order-service, catalog-service\n- catalog-service (api), owns data: products\n- inventory-service (api), owns data: inventory_levels, reservations\n- notification-service (worker)\n- order-service (api), depends on: inventory-service, payment-service, owns data: orders\n- payment-service (api), owns data: payment_intents\n\nEvents:\n- OrderCreated produced by order-service, consumed by: notification-service, inventory-service\n- PaymentAuthorized produced by payment-service, consumed by: order-service\n\nExternal systems:\n- stripe (outbound)\n- tax-jar (outbound)\n\nStyle: use C4-Model conventions where applicable. Keep components in a single boundary box for the system.\n",
+  "notes": [
+    "Generated for technical audience.",
+    "Mermaid renders inline in GitHub-flavored markdown.",
+    "PlantUML can be rendered via any PlantUML host or extension.",
+    "The draw.io prompt is text \u2014 paste into draw.io's AI generator, or feed to a manual diagram tool."
+  ]
+}

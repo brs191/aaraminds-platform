@@ -1,0 +1,84 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "risks": [
+    {
+      "severity": "high",
+      "likelihood": "high",
+      "category": "single_point_of_failure",
+      "description": "service \"auth-service\" is a synchronous dependency of 6 components and is not marked replicated; its failure takes down every dependent path",
+      "components_affected": [
+        "auth-service"
+      ],
+      "mitigation": "Run the service with multiple replicas behind a load balancer, add health probes, and verify dependents degrade gracefully (timeouts, fallbacks) when it is unavailable."
+    },
+    {
+      "severity": "high",
+      "likelihood": "high",
+      "category": "stateful_without_datastore",
+      "description": "service \"cart-service\" is marked stateful but references no data store; in-process state is lost on every restart, scale-in, or node failure",
+      "components_affected": [
+        "cart-service"
+      ],
+      "mitigation": "Externalize state to a managed data store (or make the service stateless and push state to the client/cache). Stateful in-memory services cannot scale horizontally or survive restarts."
+    },
+    {
+      "severity": "high",
+      "likelihood": "high",
+      "category": "unencrypted_sensitive_data",
+      "description": "data store \"users-db\" is classified \"pii\" but is not marked encrypted at rest",
+      "components_affected": [
+        "auth-service"
+      ],
+      "mitigation": "Enable encryption at rest (platform-managed or customer-managed keys) and enforce encryption in transit; confirm key rotation and access auditing meet the relevant compliance regime."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"order-service\" synchronously depends on 4 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "order-service",
+        "auth-service",
+        "inventory-service",
+        "payment-service",
+        "pricing-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "medium",
+      "likelihood": "high",
+      "category": "shared_data_store",
+      "description": "data store \"analytics-db\" is accessed by 3 components; shared stores couple deployment, scaling, and failure domains and erode service ownership",
+      "components_affected": [
+        "inventory-service",
+        "pricing-service",
+        "reporting-service"
+      ],
+      "mitigation": "Give the data store a single owning service; other components access it through that service's API or via published events, not direct connections."
+    },
+    {
+      "severity": "medium",
+      "likelihood": "medium",
+      "category": "missing_resilience",
+      "description": "high-criticality service \"auth-service\" declares no resilience controls (retry, circuit_breaker, timeout, bulkhead)",
+      "components_affected": [
+        "auth-service"
+      ],
+      "mitigation": "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+    }
+  ],
+  "missing_decisions": [
+    "recovery objectives (RTO/RPO) not stated"
+  ],
+  "next_steps": [
+    "Run the service with multiple replicas behind a load balancer, add health probes, and verify dependents degrade gracefully (timeouts, fallbacks) when it is unavailable.",
+    "Externalize state to a managed data store (or make the service stateless and push state to the client/cache). Stateful in-memory services cannot scale horizontally or survive restarts.",
+    "Enable encryption at rest (platform-managed or customer-managed keys) and enforce encryption in transit; confirm key rotation and access auditing meet the relevant compliance regime.",
+    "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded.",
+    "Give the data store a single owning service; other components access it through that service's API or via published events, not direct connections."
+  ],
+  "risk_posture_score": 7,
+  "risk_rating": "Severe risk; the architecture needs rework before it is operable",
+  "summary": "Architecture risk report for ecommerce-order-platform: 8 services analyzed, 6 risks identified, risk-posture score 7/100."
+}

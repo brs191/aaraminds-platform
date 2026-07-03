@@ -1,0 +1,4 @@
+{"agent":"aara-copilot-cost-reviewer","agent_version":"1.1.0","requested_stage":"pilot","decision":"PASS","design_score":86,"design_band":"strong_pilot_candidate","behavior_evaluated":true,
+ "evidence":{"runnable_artifact":true,"agent_spec":true,"io_contracts":true,"tool_contract":true,"guardrails":true,"review_scorecard":true,"eval_plan":true,"executed_eval_results":true},
+ "conditions":[],
+ "required_fixes":[{"priority":"P2","fix":"data-source wiring RESOLVED via the copilot-token-budget MCP server (6 tools) — validated by the integration run","required_before":"none"},{"priority":"P1","fix":"production readiness pkg (monitoring plan, tested rollback runbook) + a rate-freshness check that re-verifies AI-Credit rates vs current docs each review","required_before":"production"}]}

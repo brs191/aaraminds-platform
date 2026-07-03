@@ -1,0 +1,77 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "title": "Use Saga with Transactional Outbox for Order Workflow",
+  "status": "Accepted",
+  "date": "2026-05-18",
+  "drivers": [
+    "Cloud-native fit on Azure Container Apps",
+    "Reliability across the order/inventory/payment boundary",
+    "Avoid distributed two-phase commit"
+  ],
+  "context": "The order workflow spans order capture, inventory reservation, payment authorization, and fulfillment. Each service owns its own data, so a distributed database transaction is not appropriate. We need reliable event publication and compensation on failure, plus a story for retries that does not double-charge or double-reserve.",
+  "decision": "Use the Saga pattern coordinated by Azure Durable Functions, with each service publishing events via a transactional outbox and consumers implementing idempotency.",
+  "options": [
+    {
+      "name": "Distributed two-phase commit",
+      "pros": [
+        "Strong consistency"
+      ],
+      "cons": [
+        "Poor cloud fit",
+        "Operational complexity",
+        "Long locks across services"
+      ],
+      "rejected": true,
+      "rejected_because": "Cloud-native services cannot economically participate in 2PC across boundaries."
+    },
+    {
+      "name": "Single checkout service (monolith)",
+      "pros": [
+        "Simpler initial implementation"
+      ],
+      "cons": [
+        "Weak boundaries",
+        "Limits independent scale"
+      ],
+      "rejected": true,
+      "rejected_because": "Conflicts with the architecture's bounded-context discipline and team ownership."
+    },
+    {
+      "name": "Saga + Outbox + Idempotent Consumer",
+      "pros": [
+        "Cloud-native",
+        "Recoverable",
+        "Auditable"
+      ],
+      "cons": [
+        "Requires compensation logic per step",
+        "Eventual consistency must surface in UX"
+      ],
+      "rejected": false
+    }
+  ],
+  "consequences": {
+    "positive": [
+      "Services remain independently deployable",
+      "Workflow state is recoverable from the event log",
+      "New consumers (analytics, notifications) can subscribe without changing producers"
+    ],
+    "negative": [
+      "Compensation must be implemented and tested per step",
+      "Eventual consistency must be visible in product copy and UX states"
+    ],
+    "neutral": [
+      "Observability must include correlation IDs across all workflow steps",
+      "Saga state needs an operational dashboard for stuck-saga triage"
+    ]
+  },
+  "references": [
+    "skills/microservices/05-data-architecture.md",
+    "patterns/microservices/saga.md",
+    "patterns/microservices/transactional-outbox.md",
+    "patterns/microservices/idempotent-consumer.md"
+  ],
+  "warnings": [],
+  "markdown": "# ADR: Use Saga with Transactional Outbox for Order Workflow\n\n**System:** ecommerce-order-platform\n\n**Status:** Accepted\n\n**Date:** 2026-05-18\n\n**Decided by:** platform-team\n\n## Drivers\n\n- Cloud-native fit on Azure Container Apps\n- Reliability across the order/inventory/payment boundary\n- Avoid distributed two-phase commit\n\n## Context\n\nThe order workflow spans order capture, inventory reservation, payment authorization, and fulfillment. Each service owns its own data, so a distributed database transaction is not appropriate. We need reliable event publication and compensation on failure, plus a story for retries that does not double-charge or double-reserve.\n\n## Decision\n\nUse the Saga pattern coordinated by Azure Durable Functions, with each service publishing events via a transactional outbox and consumers implementing idempotency.\n\n## Options Considered\n\n### Distributed two-phase commit \u2014 [x] rejected\n\n**Pros:**\n- Strong consistency\n\n**Cons:**\n- Poor cloud fit\n- Operational complexity\n- Long locks across services\n\n**Rejected because:** Cloud-native services cannot economically participate in 2PC across boundaries.\n\n### Single checkout service (monolith) \u2014 [x] rejected\n\n**Pros:**\n- Simpler initial implementation\n\n**Cons:**\n- Weak boundaries\n- Limits independent scale\n\n**Rejected because:** Conflicts with the architecture's bounded-context discipline and team ownership.\n\n### Saga + Outbox + Idempotent Consumer \u2014 [ ] open\n\n**Pros:**\n- Cloud-native\n- Recoverable\n- Auditable\n\n**Cons:**\n- Requires compensation logic per step\n- Eventual consistency must surface in UX\n\n## Consequences\n\n**Positive:**\n- Services remain independently deployable\n- Workflow state is recoverable from the event log\n- New consumers (analytics, notifications) can subscribe without changing producers\n\n**Negative:**\n- Compensation must be implemented and tested per step\n- Eventual consistency must be visible in product copy and UX states\n\n**Neutral:**\n- Observability must include correlation IDs across all workflow steps\n- Saga state needs an operational dashboard for stuck-saga triage\n\n## References\n\n- skills/microservices/05-data-architecture.md\n- patterns/microservices/saga.md\n- patterns/microservices/transactional-outbox.md\n- patterns/microservices/idempotent-consumer.md\n\n",
+  "quality_score": 100
+}

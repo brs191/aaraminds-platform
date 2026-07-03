@@ -1,0 +1,4 @@
+{"agent":"leadership-status-agent","agent_version":"1.3","requested_stage":"pilot","decision":"CONDITIONAL_PASS","design_score":77,"design_band":"prototype","behavior_evaluated":true,
+ "evidence":{"runnable_artifact":true,"agent_spec":true,"io_contracts":true,"guardrails":true,"review_scorecard":true,"eval_plan":true,"executed_eval_results":true},
+ "conditions":["Fix F-002 (scope/sandbox the Bash tool)","Run remaining eval cases E-001/R-001 + capture efficiency metrics","Dispatch the actual aara-status-deck subagent for a full agent-level trace (this run executed the skill)"],
+ "required_fixes":[{"priority":"P0","fix":"scope tool list (F-002)","required_before":"pilot"},{"priority":"P0","fix":"complete eval suite + efficiency","required_before":"production"}]}

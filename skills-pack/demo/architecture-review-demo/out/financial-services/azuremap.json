@@ -1,0 +1,162 @@
+{
+  "system_name": "retail-banking-platform",
+  "mappings": [
+    {
+      "pattern": "api_gateway",
+      "azure_services": [
+        {
+          "name": "Azure API Management",
+          "role": "Managed API gateway, throttling, and policy enforcement"
+        }
+      ],
+      "rationale": "API Management provides gateway, rate limiting, transformation, and a developer portal as a managed service.",
+      "alternatives": [
+        "Application Gateway (L7 load balancing only)",
+        "Azure Front Door (global edge)"
+      ]
+    },
+    {
+      "pattern": "async_messaging",
+      "azure_services": [
+        {
+          "name": "Azure Service Bus",
+          "role": "Durable queues and topics for async messaging"
+        }
+      ],
+      "rationale": "Service Bus provides ordered, transactional, dead-letter-capable messaging suited to commands and events.",
+      "alternatives": [
+        "Azure Event Hubs (high-throughput streaming)",
+        "Azure Storage Queues (simple, low-cost)"
+      ]
+    },
+    {
+      "pattern": "cqrs",
+      "azure_services": [
+        {
+          "name": "Azure SQL Database",
+          "role": "Write model"
+        },
+        {
+          "name": "Azure Cosmos DB",
+          "role": "Read-optimized query model"
+        }
+      ],
+      "rationale": "Separate write and read stores let each side scale and be modeled independently; Cosmos serves low-latency reads.",
+      "alternatives": [
+        "Single Azure SQL with read replicas (simpler, weaker separation)"
+      ]
+    },
+    {
+      "pattern": "event_sourcing",
+      "azure_services": [
+        {
+          "name": "Azure Cosmos DB",
+          "role": "Append-only event store"
+        },
+        {
+          "name": "Azure Event Hubs",
+          "role": "Event distribution"
+        }
+      ],
+      "rationale": "Cosmos provides an append-only, partitioned event log; Event Hubs distributes events to projections.",
+      "alternatives": [
+        "Azure SQL append-only tables (transactional, lower scale)"
+      ]
+    },
+    {
+      "pattern": "identity",
+      "azure_services": [
+        {
+          "name": "Microsoft Entra ID",
+          "role": "Identity provider and OAuth2/OIDC authority"
+        }
+      ],
+      "rationale": "Entra ID issues and validates tokens for users and workloads and integrates with managed identities.",
+      "alternatives": [
+        "Azure AD B2C (customer identity)"
+      ]
+    },
+    {
+      "pattern": "observability",
+      "azure_services": [
+        {
+          "name": "Azure Monitor",
+          "role": "Metrics and alerts"
+        },
+        {
+          "name": "Application Insights",
+          "role": "Distributed tracing and APM"
+        }
+      ],
+      "rationale": "Azure Monitor + Application Insights provide metrics, logs, traces, and alerting integrated across Azure.",
+      "alternatives": [
+        "Prometheus + Grafana on AKS (self-managed)"
+      ]
+    },
+    {
+      "pattern": "relational_data",
+      "azure_services": [
+        {
+          "name": "Azure SQL Database",
+          "role": "Managed relational store"
+        }
+      ],
+      "rationale": "Azure SQL provides a managed, HA relational database with point-in-time restore and elastic scale.",
+      "alternatives": [
+        "Azure Database for PostgreSQL",
+        "Azure Database for MySQL"
+      ]
+    },
+    {
+      "pattern": "saga",
+      "azure_services": [
+        {
+          "name": "Azure Durable Functions",
+          "role": "Orchestrator for long-running saga workflows"
+        }
+      ],
+      "rationale": "Durable Functions models compensating saga steps as orchestrations with built-in state and retry.",
+      "alternatives": [
+        "Azure Logic Apps (low-code orchestration)",
+        "Service Bus + custom orchestrator"
+      ]
+    }
+  ],
+  "unmapped_patterns": [
+    "audit_logging",
+    "blue_green_deployment",
+    "idempotent_consumer",
+    "service_mesh",
+    "transactional_outbox",
+    "zero_trust"
+  ],
+  "mapping_findings": [
+    {
+      "severity": "medium",
+      "category": "missing_secrets_management",
+      "description": "no secrets-management pattern is present; secrets are likely handled ad hoc",
+      "recommendation": "Add the secrets_management pattern (Azure Key Vault) so credentials and certificates are off the code path."
+    },
+    {
+      "severity": "low",
+      "category": "unknown_pattern",
+      "description": "6 pattern(s) are not in the curated Azure catalog and were not mapped",
+      "patterns_related": [
+        "audit_logging",
+        "blue_green_deployment",
+        "idempotent_consumer",
+        "service_mesh",
+        "transactional_outbox",
+        "zero_trust"
+      ],
+      "recommendation": "Verify the pattern name, or map it manually and propose a catalog addition with a verified Azure service."
+    }
+  ],
+  "coverage": {
+    "mapped_count": 8,
+    "total_count": 20
+  },
+  "mapping_score": 77,
+  "mapping_rating": "Pattern coverage is sound; close targeted gaps",
+  "summary": "Pattern-to-Azure mapping for retail-banking-platform: 8/20 patterns mapped, 2 findings, mapping score 77/100."
+}

@@ -1,0 +1,203 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "api_contracts": [
+    {
+      "service": "api-gateway",
+      "base_path": "",
+      "security": "oauth2",
+      "endpoints": []
+    },
+    {
+      "service": "order-service",
+      "base_path": "/orders",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/orders/line-items",
+          "summary": "List line-items",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/orders/line-items/{id}",
+          "summary": "Get a line-items by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/orders/orders",
+          "summary": "List orders",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/orders/orders",
+          "summary": "Create a orders",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/orders/orders/{id}",
+          "summary": "Get a orders by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/orders/orders/{id}",
+          "summary": "Update a orders",
+          "success_status": 200,
+          "error_responses": [
+            400,
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "catalog-service",
+      "base_path": "/catalog",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/catalog/categories",
+          "summary": "List categories",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/catalog/categories/{id}",
+          "summary": "Get a categories by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/catalog/products",
+          "summary": "List products",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/catalog/products/{id}",
+          "summary": "Get a products by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "cart-service",
+      "base_path": "/carts",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/carts/carts",
+          "summary": "Create a carts",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/carts/carts/{id}",
+          "summary": "Delete a carts",
+          "success_status": 204,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/carts/carts/{id}",
+          "summary": "Get a carts by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/carts/carts/{id}",
+          "summary": "Update a carts",
+          "success_status": 200,
+          "error_responses": [
+            400,
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    }
+  ],
+  "contract_findings": [
+    {
+      "severity": "medium",
+      "category": "no_pagination",
+      "description": "resource \"categories\" in service \"catalog-service\" exposes a list operation without pagination; unbounded responses degrade and eventually fail at scale",
+      "services_affected": [
+        "catalog-service"
+      ],
+      "recommendation": "Add cursor or page/limit pagination to all list endpoints and document the default and maximum page size."
+    }
+  ],
+  "openapi_summary": {
+    "openapi_version": "3.1.0",
+    "total_paths": 10,
+    "total_operations": 14
+  },
+  "contract_score": 92,
+  "contract_rating": "Contract is production-ready; minor refinements only",
+  "summary": "API contract for ecommerce-order-platform: 4 services, 14 operations generated, 1 contract findings, contract-readiness score 92/100."
+}

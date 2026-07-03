@@ -1,0 +1,22 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "audience": "technical",
+  "diagram_type": "service_boundary",
+  "description": "Order capture, inventory reservation, payment, and notification on Azure microservices.",
+  "services": [
+    {"name": "api-gateway",        "type": "gateway", "depends_on": ["order-service", "catalog-service"]},
+    {"name": "order-service",      "type": "api",     "depends_on": ["inventory-service", "payment-service"], "owns_data": ["orders"]},
+    {"name": "inventory-service",  "type": "api",     "owns_data": ["inventory_levels", "reservations"]},
+    {"name": "payment-service",    "type": "api",     "owns_data": ["payment_intents"]},
+    {"name": "catalog-service",    "type": "api",     "owns_data": ["products"]},
+    {"name": "notification-service","type": "worker"}
+  ],
+  "events": [
+    {"name": "OrderCreated",        "producer": "order-service",   "consumers": ["notification-service", "inventory-service"]},
+    {"name": "PaymentAuthorized",   "producer": "payment-service", "consumers": ["order-service"]}
+  ],
+  "external_systems": [
+    {"name": "stripe", "direction": "outbound"},
+    {"name": "tax-jar", "direction": "outbound"}
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.local/schemas/agent-manifest.schema.json",
+  "title": "AAP Agent Manifest",
+  "type": "object",
+  "required": [
+    "agent_id",
+    "manifest_version",
+    "owner",
+    "runtime",
+    "status",
+    "allowed_skills",
+    "allowed_tools",
+    "memory",
+    "approval_boundaries",
+    "telemetry",
+    "evaluation_gate"
+  ],
+  "properties": {
+    "agent_id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "manifest_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "owner": { "type": "string", "minLength": 1 },
+    "runtime": { "type": "string", "enum": ["claude-agent-sdk"] },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "active", "platform-ready", "deprecated", "blocked"]
+    },
+    "allowed_skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["skill_id", "skill_version", "source_path"],
+        "properties": {
+          "skill_id": { "type": "string", "minLength": 1 },
+          "skill_version": { "type": "string", "minLength": 1 },
+          "source_path": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "allowed_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool_name", "contract_version", "approval_boundary"],
+        "properties": {
+          "tool_name": { "type": "string", "minLength": 1 },
+          "contract_version": { "type": "string", "minLength": 1 },
+          "approval_boundary": { "type": "string", "enum": ["none", "soft", "hard", "blocked"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "memory": {
+      "type": "object",
+      "required": ["enabled", "scope", "allowed_classifications", "pii_allowed"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "scope": { "type": "string", "enum": ["none", "agent", "engagement"] },
+        "allowed_classifications": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["public", "internal", "client-confidential", "pii"] }
+        },
+        "pii_allowed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "approval_boundaries": {
+      "type": "object",
+      "required": ["default", "blocked_actions_ref"],
+      "properties": {
+        "default": { "type": "string", "enum": ["hard", "blocked"] },
+        "blocked_actions_ref": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "telemetry": {
+      "type": "object",
+      "required": ["otel_enabled", "cost_attribution", "payload_mode"],
+      "properties": {
+        "otel_enabled": { "type": "boolean" },
+        "cost_attribution": { "type": "boolean" },
+        "payload_mode": { "type": "string", "enum": ["hash-and-reference", "raw-in-non-prod"] }
+      },
+      "additionalProperties": false
+    },
+    "evaluation_gate": {
+      "type": "object",
+      "required": ["required", "benchmark_ref", "threshold_profile"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "benchmark_ref": { "type": "string", "minLength": 1 },
+        "threshold_profile": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

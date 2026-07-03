@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.5"
+
+      - name: Verify platform formatting
+        run: |
+          files="$(gofmt -l ./platform)"
+          if [ -n "$files" ]; then
+            echo "$files"
+            exit 1
+          fi
+
+      - name: Test platform
+        working-directory: platform
+        run: |
+          go mod download
+          go test ./...
+          go test -race ./...
+          go vet ./...
+          go run ./cmd/aapctl validate
+
+      - name: Verify MCP server formatting
+        run: |
+          files="$(gofmt -l ./skills-pack/examples/microservices-system-design-mcp-server/cmd ./skills-pack/examples/microservices-system-design-mcp-server/internal)"
+          if [ -n "$files" ]; then
+            echo "$files"
+            exit 1
+          fi
+
+      - name: Test MCP server
+        working-directory: skills-pack/examples/microservices-system-design-mcp-server
+        run: |
+          go mod download
+          go test ./...
+          go test -race ./...
+          go vet ./...
+          go build -buildvcs=false -o ./mcp-server ./cmd/server
+
+      - name: Validate architecture review demo goldens
+        working-directory: skills-pack/demo/architecture-review-demo
+        env:
+          MCP_SERVER_BIN: ../../examples/microservices-system-design-mcp-server/mcp-server
+        run: |
+          make demo
+          make validate

@@ -1,0 +1,27 @@
+{
+  "skill_name": "azure-network-topology-analysis",
+  "notes": "Each prompt hands the model a synthetic topology export and asks for a prioritized network risk review. The baseline (no skill) is expected to over-flag rule text and miss reachability nuance; the with-skill run should attach reachable-path evidence and avoid the planted traps. Answer key: expected-findings.md.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "internet-exposure-real-vs-latent",
+      "prompt": "Attached is a topology export from our prod subscription — Resource Graph inventory plus Network Watcher effective security rules and effective routes — in fixture-1-internet-exposure.json. Review it for network exposure and security risk. Give me prioritized findings: severity, the resource, and the evidence for each. Be explicit about anything that looks risky in config but isn't actually reachable.",
+      "files": ["fixtures/fixture-1-internet-exposure.json"],
+      "expected_output": "High/critical: spoke-a web VM reachable from the internet on TCP/22 (NSG allow 0.0.0.0/0:22 + effective route 0.0.0.0/0->Internet + attached public IP). Spoke-b's identical 0.0.0.0/0:22 rule reported as latent/informational only, because its effective route for 0.0.0.0/0 is VirtualAppliance (firewall) and it has no public IP — must NOT be high/critical. Orphaned public IP pip-orphan-01 flagged low/medium. Every high finding cites a path."
+    },
+    {
+      "id": 2,
+      "name": "segmentation-and-transitive-peering",
+      "prompt": "Here's a topology bundle for our app platform in fixture-2-segmentation-peering.json (Resource Graph + Network Watcher effective data). Two questions: are the workload tiers properly segmented, and can any spokes reach each other when they shouldn't? Give prioritized findings with evidence.",
+      "files": ["fixtures/fixture-2-segmentation-peering.json"],
+      "expected_output": "High: web subnet (10.3.1.0/24) can reach the db subnet on TCP/1433 directly, bypassing the app tier; db NIC is tagged sensitive -> cross-tier exposure to a sensitive workload. Medium/high: spoke-x and spoke-y can reach each other transitively via the hub NVA (allowForwardedTraffic + UDRs pointing at 10.0.0.4) -> transitive-peering exposure. Spoke-z must NOT be reported as reaching other spokes (allowForwardedTraffic=false, no inter-spoke UDR -> non-transitive). Also catch that nsg-db has no DenyVnetInBound above the default AllowVnetInBound (65000), so the sensitive db is reachable from the entire VNet on all ports, not only web:1433."
+    },
+    {
+      "id": 3,
+      "name": "cidr-overlap-and-avnm-precedence",
+      "prompt": "Review fixture-3-cidr-avnm.json for our shared-services subscription. Note it's governed by an Azure Virtual Network Manager (security admin rules are included). Flag address-space problems and any real internet exposure — and be careful to evaluate what's actually allowed given the network manager rules.",
+      "files": ["fixtures/fixture-3-cidr-avnm.json"],
+      "expected_output": "Medium/high: ov-a-vnet and ov-b-vnet have overlapping address space (both 10.10.0.0/16); peering is Disconnected as a result -> CIDR overlap finding. AVNM handling both directions: the mgmt RDP allow (0.0.0.0/0:3389 + public IP + route Internet) is NOT a real exposure because security admin rule deny-rdp-from-internet (priority 10, Deny) terminates evaluation before the NSG -> at most NSG-hygiene note, not critical. The edge subnet IS exposed on 443 despite its NSG deny, because always-allow-443 (AlwaysAllow) overrides the NSG + public IP + route Internet -> must be flagged as a real open internet path. Also: the mgmt RDP internet path is closed by the AVNM Deny (Internet tag), but east-west/intra-VNet RDP remains open via the NSG 0.0.0.0/0 allow and must be caught; effective security rules do not reflect AVNM rules."
+    }
+  ]
+}

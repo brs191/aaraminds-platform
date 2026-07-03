@@ -1,0 +1,24 @@
+{
+  "skill": "azure-defender-signal-ingestion",
+  "purpose": "Measure triggering accuracy: fire on consuming/integrating Defender for Cloud signals; defer to the deterministic engine (the fallback/compute case), visualization, and policy gating. Run with the ai-evaluation-harness.",
+  "version": "1.0.0",
+  "should_trigger": [
+    {"prompt": "Pull Defender for Cloud attack paths for this subscription and fold them into our risk report.", "why": "core: consume attack-path signals"},
+    {"prompt": "Query the securityresources table for internet-exposed resources and reconcile with our findings.", "why": "core: ARG ingestion + reconcile"},
+    {"prompt": "Where Defender CSPM is licensed, use its exposure analysis instead of recomputing it.", "why": "core: consume-don't-reimplement"},
+    {"prompt": "Integrate Microsoft Defender's cloud security graph signals into antr.", "why": "core: signal integration"},
+    {"prompt": "Should antr compute internet exposure itself or defer to Defender here?", "why": "core: the consume-vs-compute decision"}
+  ],
+  "should_not_trigger": [
+    {"prompt": "Compute internet-exposure reachability from NSGs and routes for a subscription with no Defender.", "routes_to": "azure-network-topology-analysis", "why": "the deterministic compute/fallback case"},
+    {"prompt": "Draw the topology diagram with severity coloured on the nodes.", "routes_to": "azure-network-topology-visualization", "why": "visualization"},
+    {"prompt": "Add a Checkov/OPA policy gate to the Terraform pipeline.", "routes_to": "azure-iac-policy-as-code", "why": "policy gating"},
+    {"prompt": "Map our attack-path findings to ISO 27001 controls.", "routes_to": "soc2-iso27001-controls-mapping", "why": "audit mapping"},
+    {"prompt": "Ingest AWS Security Hub findings.", "routes_to": "(none — out of scope)", "why": "non-Azure: decline"}
+  ],
+  "scoring": {
+    "trigger_recall": "should_trigger routed here (target >= 0.95)",
+    "trigger_precision": "1 - should_not_trigger wrongly routed here (target = 1.0)"
+  },
+  "notes": "Hard boundary: CONSUME Defender's pre-computed signals (this skill) vs COMPUTE reachability deterministically (analysis skill, the fallback). should_not_trigger #1 is the most likely leak."
+}

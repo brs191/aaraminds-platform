@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds/agent-engineering/trace-review.schema.json",
+  "title": "Agent trace review",
+  "description": "Trace-aware (step-level) review of one agent run — locates WHERE it failed, not just that it failed.",
+  "type": "object",
+  "required": ["trace_id", "agent", "verdict", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "trace_id": { "type": "string" },
+    "agent": { "type": "string" },
+    "agent_version": { "type": "string" },
+    "task": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "index": { "type": "integer" },
+          "type": { "enum": ["llm", "tool_call", "handoff", "guardrail", "final"] },
+          "tool": { "type": "string" },
+          "args_valid": { "type": "boolean" },
+          "redundant": { "type": "boolean", "description": "unnecessary / repeated call" },
+          "in_loop": { "type": "boolean" },
+          "guardrail_event": { "enum": ["none", "flagged", "blocked", "redacted"], "default": "none" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "tool_sequence_ok": { "type": "boolean" },
+    "ignored_evidence": { "type": "boolean", "description": "did the agent disregard a tool result it should have used" },
+    "policy_checks": { "type": "array", "items": { "type": "string" } },
+    "final_consistent_with_trace": { "type": "boolean", "description": "does the final answer match what the trace actually established" },
+    "findings": { "type": "array", "items": { "type": "string" } },
+    "verdict": { "enum": ["pass", "pass_with_notes", "fail"] }
+  }
+}

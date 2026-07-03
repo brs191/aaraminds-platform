@@ -1,0 +1,107 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "event_name": "OrderCreated",
+  "producer": "order-service",
+  "consumers": [
+    {
+      "service": "analytics-service",
+      "notes": "Subscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook."
+    },
+    {
+      "service": "audit-service",
+      "notes": "Subscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook."
+    },
+    {
+      "service": "inventory-service",
+      "notes": "Subscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook."
+    },
+    {
+      "service": "notification-service",
+      "notes": "Subscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook."
+    }
+  ],
+  "schema": {
+    "specversion": "1.0",
+    "type": "com.ecommerce-order-platform.order.OrderCreated",
+    "source": "urn:ecommerce-order-platform:order-service",
+    "subject": "<aggregate-id>",
+    "dataschema": "schemas/OrderCreated.v1.json",
+    "data": [
+      {
+        "name": "event_id",
+        "type": "uuid",
+        "required": true,
+        "description": "Idempotency key for consumers. Stable per logical event delivery."
+      },
+      {
+        "name": "occurred_at",
+        "type": "date-time",
+        "required": true,
+        "description": "Timestamp when the event happened in the producer."
+      },
+      {
+        "name": "correlation_id",
+        "type": "uuid",
+        "required": true,
+        "description": "Cross-service correlation for tracing."
+      },
+      {
+        "name": "order_id",
+        "type": "uuid",
+        "required": true,
+        "description": "Order aggregate ID"
+      },
+      {
+        "name": "customer_id",
+        "type": "uuid",
+        "required": true,
+        "description": "Customer who placed the order",
+        "sensitive": true,
+        "handling_note": "PII / PHI / PCI \u2014 must be encrypted in transit; redact in logs and audit emitters."
+      },
+      {
+        "name": "total_cents",
+        "type": "integer",
+        "required": true,
+        "description": "Order total in minor currency units"
+      },
+      {
+        "name": "currency",
+        "type": "string",
+        "required": true,
+        "description": "ISO 4217 currency code"
+      },
+      {
+        "name": "items_count",
+        "type": "integer",
+        "required": true,
+        "description": "Number of line items"
+      },
+      {
+        "name": "captured_at",
+        "type": "date-time",
+        "required": true,
+        "description": "When the order was captured"
+      }
+    ]
+  },
+  "transport": {
+    "azure_service": "Azure Service Bus",
+    "topic_or_entity": "order.events",
+    "subscriptions": [
+      "analytics-service/ordercreated",
+      "audit-service/ordercreated",
+      "inventory-service/ordercreated",
+      "notification-service/ordercreated"
+    ],
+    "dlq": "$DeadLetterQueue (built-in); alert on depth >0"
+  },
+  "ordering": "per_aggregate",
+  "idempotency_key": "event_id \u2014 consumers must dedup on this key with a window \u2265 broker retention.",
+  "warnings": [
+    "1 sensitive field(s) declared; ensure log redaction and audit emitter sanitization are in place at every consumer",
+    "no correlation_id in fields; the schema adds one by default, but producers must populate it from their request context"
+  ],
+  "markdown": "# Event Contract: OrderCreated\n\n**System:** ecommerce-order-platform\n\n**Producer:** order-service\n\n**Type:** `com.ecommerce-order-platform.order.OrderCreated`\n\nEmitted when an order has been captured and persisted. Triggers inventory reservation, customer notification, analytics ingest, and audit logging.\n\n## Transport\n\n- **Service:** Azure Service Bus\n- **Topic/entity:** `order.events`\n- **DLQ:** $DeadLetterQueue (built-in); alert on depth >0\n- **Ordering:** per_aggregate\n\n## Subscriptions\n\n- `analytics-service/ordercreated`\n- `audit-service/ordercreated`\n- `inventory-service/ordercreated`\n- `notification-service/ordercreated`\n\n## Schema (CloudEvents v1.0)\n\n| Field | Type | Required | Sensitive | Description |\n|---|---|---|---|---|\n| `event_id` | uuid | yes |  | Idempotency key for consumers. Stable per logical event delivery. |\n| `occurred_at` | date-time | yes |  | Timestamp when the event happened in the producer. |\n| `correlation_id` | uuid | yes |  | Cross-service correlation for tracing. |\n| `order_id` | uuid | yes |  | Order aggregate ID |\n| `customer_id` | uuid | yes | yes | Customer who placed the order |\n| `total_cents` | integer | yes |  | Order total in minor currency units |\n| `currency` | string | yes |  | ISO 4217 currency code |\n| `items_count` | integer | yes |  | Number of line items |\n| `captured_at` | date-time | yes |  | When the order was captured |\n\n## Idempotency\n\nevent_id \u2014 consumers must dedup on this key with a window \u2265 broker retention.\n\n## Consumers\n\n### analytics-service\n\nSubscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook.\n\n### audit-service\n\nSubscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook.\n\n### inventory-service\n\nSubscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook.\n\n### notification-service\n\nSubscribe via dedicated subscription. Implement idempotent consumer pattern keyed on event_id. Add DLQ alerting and a poison-message playbook.\n\n",
+  "quality_score": 80
+}

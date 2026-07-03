@@ -1,0 +1,17 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "event_name": "OrderCreated",
+  "producer": "order-service",
+  "consumers": ["notification-service", "inventory-service", "analytics-service", "audit-service"],
+  "transport": "service_bus",
+  "ordering": "per_aggregate",
+  "description": "Emitted when an order has been captured and persisted. Triggers inventory reservation, customer notification, analytics ingest, and audit logging.",
+  "fields": [
+    {"name": "order_id", "type": "uuid", "required": true, "description": "Order aggregate ID"},
+    {"name": "customer_id", "type": "uuid", "required": true, "description": "Customer who placed the order", "sensitive": true},
+    {"name": "total_cents", "type": "integer", "required": true, "description": "Order total in minor currency units"},
+    {"name": "currency", "type": "string", "required": true, "description": "ISO 4217 currency code"},
+    {"name": "items_count", "type": "integer", "required": true, "description": "Number of line items"},
+    {"name": "captured_at", "type": "date-time", "required": true, "description": "When the order was captured"}
+  ]
+}

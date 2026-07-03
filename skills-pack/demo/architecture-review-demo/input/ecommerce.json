@@ -1,0 +1,228 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Customer-facing order capture and fulfillment for mid-market e-commerce. Web and mobile clients place orders; the system reserves inventory, authorizes payment, and triggers fulfillment. Designed for Azure-hosted microservices on AKS or Container Apps.",
+  "deployment_target": "aks",
+  "api_style": "rest",
+  "versioning_strategy": "uri",
+  "constraints": [
+    "must satisfy PCI-DSS for card data",
+    "EU data residency required"
+  ],
+  "non_functional_requirements": {
+    "availability_target": "99.9",
+    "latency_p99_ms": 300
+  },
+  "patterns": [
+    "api_gateway",
+    "async_messaging",
+    "saga",
+    "transactional_outbox",
+    "idempotent_consumer",
+    "circuit_breaker",
+    "cache",
+    "container_orchestration",
+    "observability",
+    "identity",
+    "blue_green_deployment"
+  ],
+  "teams": [
+    {"name": "platform-team"},
+    {"name": "commerce-team"}
+  ],
+  "data_stores": [
+    {"name": "orders-db", "kind": "postgres", "encrypted": true},
+    {"name": "users-db", "kind": "postgres", "classification": "pii", "encrypted": true},
+    {"name": "payments-db", "kind": "postgres", "classification": "pci", "encrypted": true},
+    {"name": "inventory-db", "kind": "postgres", "encrypted": true},
+    {"name": "pricing-db", "kind": "postgres", "encrypted": true},
+    {"name": "analytics-db", "kind": "cosmos", "encrypted": true},
+    {"name": "reservations-cache", "kind": "redis", "encrypted": true}
+  ],
+  "services": [
+    {
+      "name": "api-gateway",
+      "business_capability": "external API governance",
+      "criticality": "high",
+      "type": "gateway",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": [],
+      "depends_on": ["order-service", "catalog-service", "cart-service"],
+      "consumes_events_from": [],
+      "team": "platform-team",
+      "has_dashboards": true,
+      "has_alerts": true,
+      "auth": "oauth2",
+      "base_path": "/",
+      "resources": []
+    },
+    {
+      "name": "order-service",
+      "business_capability": "order management",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["orders", "order_line_items"],
+      "depends_on": ["inventory-service", "pricing-service", "payment-service", "tax-service", "notification-service"],
+      "consumes_events_from": [],
+      "team": "platform-team",
+      "data_stores": ["orders-db"],
+      "resilience": ["timeout", "retry", "outbox"],
+      "has_dashboards": true,
+      "has_alerts": false,
+      "auth": "oauth2",
+      "base_path": "/orders",
+      "resources": [
+        {"name": "orders", "operations": ["list", "get", "create", "update"], "paginated": true, "versioned": true},
+        {"name": "line-items", "operations": ["list", "get"], "paginated": true, "versioned": true}
+      ]
+    },
+    {
+      "name": "inventory-service",
+      "business_capability": "inventory management",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["inventory_levels", "reservations"],
+      "depends_on": [],
+      "consumes_events_from": ["order-service"],
+      "team": "platform-team",
+      "data_stores": ["inventory-db", "reservations-cache"],
+      "resilience": ["timeout"],
+      "has_dashboards": true,
+      "has_alerts": true
+    },
+    {
+      "name": "pricing-service",
+      "business_capability": "pricing and promotions",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["price_lists", "promotions"],
+      "depends_on": [],
+      "team": "commerce-team",
+      "data_stores": ["pricing-db", "analytics-db"],
+      "resilience": ["timeout"],
+      "has_dashboards": false,
+      "has_alerts": false
+    },
+    {
+      "name": "payment-service",
+      "business_capability": "payment processing",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["payment_intents", "payment_methods"],
+      "depends_on": ["auth-service"],
+      "team": "commerce-team",
+      "data_stores": ["payments-db"],
+      "resilience": ["timeout", "circuit_breaker", "retry"],
+      "has_dashboards": false,
+      "has_alerts": false
+    },
+    {
+      "name": "tax-service",
+      "business_capability": "tax calculation",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["tax_rates"],
+      "depends_on": [],
+      "team": "commerce-team",
+      "resilience": ["timeout"],
+      "has_dashboards": false,
+      "has_alerts": false
+    },
+    {
+      "name": "catalog-service",
+      "business_capability": "product catalog",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["products", "categories"],
+      "depends_on": [],
+      "team": "commerce-team",
+      "auth": "oauth2",
+      "base_path": "/catalog",
+      "resources": [
+        {"name": "products", "operations": ["list", "get"], "paginated": true, "versioned": true},
+        {"name": "categories", "operations": ["list", "get"], "paginated": false, "versioned": true}
+      ]
+    },
+    {
+      "name": "cart-service",
+      "business_capability": "shopping cart",
+      "criticality": "medium",
+      "type": "api",
+      "stateful": true,
+      "replicated": false,
+      "owns_data": ["carts"],
+      "depends_on": ["catalog-service"],
+      "team": "commerce-team",
+      "data_stores": ["reservations-cache"],
+      "auth": "oauth2",
+      "base_path": "/carts",
+      "resources": [
+        {"name": "carts", "operations": ["get", "create", "update", "delete"], "versioned": false}
+      ]
+    },
+    {
+      "name": "auth-service",
+      "business_capability": "authentication and authorization",
+      "criticality": "high",
+      "type": "api",
+      "stateful": false,
+      "replicated": false,
+      "owns_data": ["users", "sessions"],
+      "depends_on": [],
+      "team": "platform-team",
+      "data_stores": ["users-db"]
+    },
+    {
+      "name": "notification-service",
+      "business_capability": "customer notification delivery",
+      "criticality": "low",
+      "type": "worker",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["notification_templates"],
+      "depends_on": [],
+      "consumes_events_from": ["order-service", "payment-service"],
+      "team": "platform-team",
+      "data_stores": [],
+      "has_dashboards": false,
+      "has_alerts": true
+    },
+    {
+      "name": "fulfillment-orchestrator",
+      "business_capability": "fulfillment workflow",
+      "criticality": "medium",
+      "type": "worker",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": ["fulfillment_jobs"],
+      "depends_on": ["inventory-service", "order-service"],
+      "consumes_events_from": ["payment-service"]
+    },
+    {
+      "name": "reporting-service",
+      "business_capability": "analytics and reporting",
+      "criticality": "low",
+      "type": "api",
+      "stateful": false,
+      "replicated": true,
+      "owns_data": [],
+      "depends_on": ["auth-service"],
+      "team": "platform-team",
+      "data_stores": ["analytics-db"],
+      "has_dashboards": false,
+      "has_alerts": false
+    }
+  ]
+}

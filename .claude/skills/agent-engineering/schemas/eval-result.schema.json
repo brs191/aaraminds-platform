@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds/agent-engineering/eval-result.schema.json",
+  "title": "Agent eval result",
+  "description": "Outcome of running one eval case against an agent. A result is never 'passed' unless executed or backed by supplied evidence.",
+  "type": "object",
+  "required": ["case_id", "agent", "agent_version", "executed", "passed", "grader"],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "agent": { "type": "string" },
+    "agent_version": { "type": "string" },
+    "executed": { "type": "boolean", "description": "true only if actually run; false blocks any 'production-ready' claim" },
+    "passed": { "type": "boolean" },
+    "score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "grader": { "enum": ["code", "judge", "human"] },
+    "category": { "enum": ["functional", "behavioral", "safety"] },
+    "pass_at_k": { "type": "number", "minimum": 0, "maximum": 1 },
+    "pass_caret_k": { "type": "number", "minimum": 0, "maximum": 1, "description": "all-k success (customer-facing reliability)" },
+    "tool_correctness": { "type": "number", "minimum": 0, "maximum": 1 },
+    "efficiency": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "latency_ms_p50": { "type": "number" },
+        "latency_ms_p95": { "type": "number" },
+        "total_tokens": { "type": "integer" },
+        "tool_calls": { "type": "integer" },
+        "retries": { "type": "integer" },
+        "loops_detected": { "type": "integer" },
+        "cost_usd": { "type": "number" }
+      }
+    },
+    "evidence": { "type": "string", "description": "Where the verdict came from (state check / transcript quote / file)" },
+    "evidence_override": { "type": "boolean", "default": false, "description": "Set true ONLY when passed is backed by supplied human evidence rather than an executed run; requires a non-empty evidence string" },
+    "transcript_ref": { "type": "string" },
+    "verify_flags": { "type": "array", "items": { "type": "string" }, "description": "[VERIFY] items / gaps" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "$comment": "Firewall: executed=false cannot be passed=true unless an explicit evidence_override (with evidence) is set.",
+      "if": {
+        "required": ["executed"],
+        "properties": { "executed": { "const": false } }
+      },
+      "then": {
+        "anyOf": [
+          { "properties": { "passed": { "const": false } } },
+          {
+            "required": ["evidence_override", "evidence"],
+            "properties": { "evidence_override": { "const": true }, "evidence": { "type": "string", "minLength": 1 } }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.local/schemas/eval-run.schema.json",
+  "title": "AAP Evaluation Run",
+  "type": "object",
+  "required": [
+    "eval_id",
+    "target_type",
+    "target_id",
+    "target_version",
+    "benchmark_ref",
+    "threshold_profile",
+    "started_at",
+    "completed_at",
+    "overall_result",
+    "gate_results"
+  ],
+  "properties": {
+    "eval_id": { "type": "string" },
+    "target_type": { "type": "string", "enum": ["agent", "skill", "tool"] },
+    "target_id": { "type": "string" },
+    "target_version": { "type": "string" },
+    "benchmark_ref": { "type": "string" },
+    "threshold_profile": { "type": "string" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "overall_result": { "type": "string", "enum": ["pass", "fail", "needs-review"] },
+    "gate_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gate", "result", "score", "evidence_ref"],
+        "properties": {
+          "gate": { "type": "string" },
+          "result": { "type": "string", "enum": ["pass", "fail", "needs-review"] },
+          "score": { "type": ["number", "null"] },
+          "evidence_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

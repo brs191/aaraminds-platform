@@ -1,0 +1,86 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "risks": [
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"api-gateway\" synchronously depends on 3 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "api-gateway",
+        "cart-service",
+        "catalog-service",
+        "order-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"order-service\" synchronously depends on 5 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "order-service",
+        "inventory-service",
+        "notification-service",
+        "payment-service",
+        "pricing-service",
+        "tax-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "missing_resilience",
+      "description": "high-criticality service \"api-gateway\" declares no resilience controls (retry, circuit_breaker, timeout, bulkhead)",
+      "components_affected": [
+        "api-gateway"
+      ],
+      "mitigation": "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+    },
+    {
+      "severity": "medium",
+      "likelihood": "medium",
+      "category": "missing_resilience",
+      "description": "high-criticality service \"auth-service\" declares no resilience controls (retry, circuit_breaker, timeout, bulkhead)",
+      "components_affected": [
+        "auth-service"
+      ],
+      "mitigation": "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+    },
+    {
+      "severity": "medium",
+      "likelihood": "medium",
+      "category": "shared_data_store",
+      "description": "data store \"analytics-db\" is accessed by 2 components; shared stores couple deployment, scaling, and failure domains and erode service ownership",
+      "components_affected": [
+        "pricing-service",
+        "reporting-service"
+      ],
+      "mitigation": "Give the data store a single owning service; other components access it through that service's API or via published events, not direct connections."
+    },
+    {
+      "severity": "medium",
+      "likelihood": "medium",
+      "category": "shared_data_store",
+      "description": "data store \"reservations-cache\" is accessed by 2 components; shared stores couple deployment, scaling, and failure domains and erode service ownership",
+      "components_affected": [
+        "cart-service",
+        "inventory-service"
+      ],
+      "mitigation": "Give the data store a single owning service; other components access it through that service's API or via published events, not direct connections."
+    }
+  ],
+  "missing_decisions": [
+    "recovery objectives (RTO/RPO) not stated"
+  ],
+  "next_steps": [
+    "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded.",
+    "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources.",
+    "Give the data store a single owning service; other components access it through that service's API or via published events, not direct connections."
+  ],
+  "risk_posture_score": 31,
+  "risk_rating": "Severe risk; the architecture needs rework before it is operable",
+  "summary": "Architecture risk report for ecommerce-order-platform: 12 services analyzed, 6 risks identified, risk-posture score 31/100."
+}

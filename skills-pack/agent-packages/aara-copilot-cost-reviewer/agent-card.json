@@ -1,0 +1,19 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "aara-copilot-cost-reviewer",
+  "description": "FinOps reviewer for enterprise GitHub Copilot spend: turns usage + billing data into a ranked, sourced cost-optimization verdict under the AI-Credit model. Human-gated (recommends, never enacts).",
+  "version": "1.0.0",
+  "url": "https://agents.aaraminds.internal/aara-copilot-cost-reviewer",
+  "preferredTransport": "JSONRPC",
+  "provider": { "organization": "AaraMinds", "url": "https://aaraminds.internal" },
+  "capabilities": { "streaming": false, "pushNotifications": false },
+  "securitySchemes": { "github": { "type": "oauth2" } },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    { "id": "copilot-cost-review", "name": "Copilot cost review",
+      "description": "Analyze org/enterprise Copilot usage + billing and recommend AI-Credit cost optimizations.",
+      "tags": ["finops","copilot","cost","ai-credits"],
+      "examples": ["our Copilot bill is too high — what can we cut?","turn our Copilot usage dashboard into cost recommendations"] }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "title": "Use Saga with Transactional Outbox for Order Workflow",
+  "status": "accepted",
+  "date": "2026-05-18",
+  "decided_by": "platform-team",
+  "drivers": [
+    "Cloud-native fit on Azure Container Apps",
+    "Reliability across the order/inventory/payment boundary",
+    "Avoid distributed two-phase commit"
+  ],
+  "context": "The order workflow spans order capture, inventory reservation, payment authorization, and fulfillment. Each service owns its own data, so a distributed database transaction is not appropriate. We need reliable event publication and compensation on failure, plus a story for retries that does not double-charge or double-reserve.",
+  "decision": "Use the Saga pattern coordinated by Azure Durable Functions, with each service publishing events via a transactional outbox and consumers implementing idempotency.",
+  "options": [
+    {
+      "name": "Distributed two-phase commit",
+      "pros": ["Strong consistency"],
+      "cons": ["Poor cloud fit", "Operational complexity", "Long locks across services"],
+      "rejected": true,
+      "rejected_because": "Cloud-native services cannot economically participate in 2PC across boundaries."
+    },
+    {
+      "name": "Single checkout service (monolith)",
+      "pros": ["Simpler initial implementation"],
+      "cons": ["Weak boundaries", "Limits independent scale"],
+      "rejected": true,
+      "rejected_because": "Conflicts with the architecture's bounded-context discipline and team ownership."
+    },
+    {
+      "name": "Saga + Outbox + Idempotent Consumer",
+      "pros": ["Cloud-native", "Recoverable", "Auditable"],
+      "cons": ["Requires compensation logic per step", "Eventual consistency must surface in UX"],
+      "rejected": false
+    }
+  ],
+  "consequences": {
+    "positive": [
+      "Services remain independently deployable",
+      "Workflow state is recoverable from the event log",
+      "New consumers (analytics, notifications) can subscribe without changing producers"
+    ],
+    "negative": [
+      "Compensation must be implemented and tested per step",
+      "Eventual consistency must be visible in product copy and UX states"
+    ],
+    "neutral": [
+      "Observability must include correlation IDs across all workflow steps",
+      "Saga state needs an operational dashboard for stuck-saga triage"
+    ]
+  },
+  "references": [
+    "skills/microservices/05-data-architecture.md",
+    "patterns/microservices/saga.md",
+    "patterns/microservices/transactional-outbox.md",
+    "patterns/microservices/idempotent-consumer.md"
+  ]
+}

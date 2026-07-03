@@ -1,0 +1,51 @@
+{
+  "tool_name": "get_project_context",
+  "contract_version": "1.0.0",
+  "action_type": "project_context_read",
+  "purpose": "Retrieve read-only project context for a BA Agent engagement from the approved knowledge source.",
+  "input_schema": {
+    "type": "object",
+    "required": ["engagement_id", "query"],
+    "properties": {
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "query": { "type": "string", "minLength": 1 },
+      "max_results": { "type": "integer", "minimum": 1, "maximum": 50 }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": { "type": "object", "required": ["results", "source_system"] },
+  "permissions_required": ["project_context:read"],
+  "approval_boundary": "none",
+  "data_classification": { "input": "client-confidential", "output": "client-confidential" },
+  "failure_modes": [
+    {
+      "code": "ENGAGEMENT_SCOPE_MISMATCH",
+      "meaning": "Requested engagement_id does not match active run context.",
+      "retryable": false,
+      "safe_user_message": "The request was blocked because it tried to access a different engagement scope."
+    }
+  ],
+  "timeout_ms": 5000,
+  "timeout_class": "interactive",
+  "retry_policy": { "max_attempts": 2, "backoff": "exponential" },
+  "audit_event_schema": {
+    "type": "object",
+    "required": ["run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"],
+    "properties": {
+      "run_id": { "type": "string", "minLength": 1 },
+      "tool_name": { "type": "string", "const": "get_project_context" },
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "run_engagement_id": { "type": "string", "minLength": 1 },
+      "input_hash": { "type": "string", "minLength": 1 },
+      "outcome": { "type": "string", "enum": ["success", "denied", "approval_required"] },
+      "timestamp": { "type": "string", "format": "date-time" },
+      "reason": { "type": "string" },
+      "approval_boundary": { "type": "string" },
+      "original_boundary": { "type": "string" },
+      "runtime_mode": { "type": "string" },
+      "action_type": { "type": "string" }
+    },
+    "additionalProperties": false
+  },
+  "example_invocation": { "engagement_id": "eng-example-001", "query": "sample requirements discovery acceptance criteria", "max_results": 5 }
+}

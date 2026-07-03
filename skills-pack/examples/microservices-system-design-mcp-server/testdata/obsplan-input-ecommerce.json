@@ -1,0 +1,16 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Observability planning for the e-commerce order platform.",
+  "non_functional_requirements": {
+    "availability_target": "99.9",
+    "latency_p99_ms": 300
+  },
+  "services": [
+    { "name": "api-gateway", "criticality": "high", "type": "gateway", "has_dashboards": true, "has_alerts": true },
+    { "name": "order-service", "criticality": "high", "type": "api", "has_dashboards": true, "has_alerts": false },
+    { "name": "payment-service", "criticality": "high", "type": "api", "has_dashboards": false, "has_alerts": false },
+    { "name": "inventory-service", "criticality": "medium", "type": "api", "has_dashboards": true, "has_alerts": true },
+    { "name": "fulfillment-worker", "criticality": "medium", "type": "worker", "has_dashboards": false, "has_alerts": true },
+    { "name": "reporting-service", "criticality": "low", "type": "api", "has_dashboards": false, "has_alerts": false }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "system_name": "patient-care-coordination-platform",
+  "api_contracts": [
+    {
+      "service": "api-gateway",
+      "base_path": "",
+      "security": "oauth2",
+      "endpoints": []
+    },
+    {
+      "service": "auth-service",
+      "base_path": "/auth",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "DELETE",
+          "path": "/auth/sessions/{id}",
+          "summary": "Delete a sessions",
+          "success_status": 204,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/auth/sessions/{id}",
+          "summary": "Get a sessions by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/auth/tokens",
+          "summary": "Create a tokens",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "patient-records-service",
+      "base_path": "/records",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/records/encounters",
+          "summary": "List encounters",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/records/encounters",
+          "summary": "Create a encounters",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/records/encounters/{id}",
+          "summary": "Get a encounters by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/records/records",
+          "summary": "Create a records",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/records/records/{id}",
+          "summary": "Get a records by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/records/records/{id}",
+          "summary": "Update a records",
+          "success_status": 200,
+          "error_responses": [
+            400,
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "scheduling-service",
+      "base_path": "/scheduling",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/scheduling/appointments",
+          "summary": "List appointments",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/scheduling/appointments",
+          "summary": "Create a appointments",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/scheduling/appointments/{id}",
+          "summary": "Delete a appointments",
+          "success_status": 204,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/scheduling/appointments/{id}",
+          "summary": "Get a appointments by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/scheduling/appointments/{id}",
+          "summary": "Update a appointments",
+          "success_status": 200,
+          "error_responses": [
+            400,
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "lab-results-service",
+      "base_path": "/labs",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/labs/orders",
+          "summary": "List orders",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/labs/orders",
+          "summary": "Create a orders",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/labs/orders/{id}",
+          "summary": "Get a orders by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/labs/results",
+          "summary": "List results",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/labs/results/{id}",
+          "summary": "Get a results by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    },
+    {
+      "service": "billing-service",
+      "base_path": "/billing",
+      "security": "oauth2",
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/billing/claims",
+          "summary": "List claims",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/billing/claims",
+          "summary": "Create a claims",
+          "success_status": 201,
+          "error_responses": [
+            400,
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/billing/claims/{id}",
+          "summary": "Get a claims by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/billing/invoices",
+          "summary": "List invoices",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            500
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/billing/invoices/{id}",
+          "summary": "Get a invoices by id",
+          "success_status": 200,
+          "error_responses": [
+            401,
+            404,
+            500
+          ]
+        }
+      ]
+    }
+  ],
+  "contract_findings": [],
+  "openapi_summary": {
+    "openapi_version": "3.1.0",
+    "total_paths": 16,
+    "total_operations": 24
+  },
+  "contract_score": 100,
+  "contract_rating": "Contract is production-ready; minor refinements only",
+  "summary": "API contract for patient-care-coordination-platform: 6 services, 24 operations generated, 0 contract findings, contract-readiness score 100/100."
+}

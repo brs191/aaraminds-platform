@@ -1,0 +1,31 @@
+{
+  "_comment": "A2A Agent Card template — one of the three mandatory package artifacts (with AGENT_SPEC.md and the runnable file). Host at /.well-known/agent-card.json. Fill {{...}}; never embed secrets; use authenticated extended cards + secured endpoints. Field reference: references/agent-package-contract.md.",
+  "protocolVersion": "0.3.0",
+  "name": "{{agent_name}}",
+  "description": "{{one_line_description}}",
+  "version": "{{version}}",
+  "url": "{{agent_endpoint_url}}",
+  "preferredTransport": "JSONRPC",
+  "provider": {
+    "organization": "AaraMinds",
+    "url": "{{provider_url}}"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "securitySchemes": {
+    "{{scheme_name}}": { "type": "{{oauth2 | bearer | mtls}}" }
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "{{skill_id}}",
+      "name": "{{skill_name}}",
+      "description": "{{what_it_does_and_when_to_use}}",
+      "tags": ["{{tag}}"],
+      "examples": ["{{example_trigger_phrase}}"]
+    }
+  ]
+}

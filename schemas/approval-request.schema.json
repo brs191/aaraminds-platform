@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.local/schemas/approval-request.schema.json",
+  "title": "AAP Approval Request",
+  "type": "object",
+  "required": [
+    "approval_request_id",
+    "run_id",
+    "tool_invocation_id",
+    "approval_boundary",
+    "requested_action",
+    "risk_summary",
+    "runtime_mode",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "approval_request_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "tool_invocation_id": { "type": "string" },
+    "approval_boundary": { "type": "string", "enum": ["soft", "hard"] },
+    "requested_action": { "type": "string" },
+    "risk_summary": { "type": "string" },
+    "runtime_mode": { "type": "string", "enum": ["interactive", "unattended"] },
+    "status": { "type": "string", "enum": ["pending", "approved", "denied", "expired"] },
+    "approver_id": { "type": ["string", "null"] },
+    "decision_reason": { "type": ["string", "null"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decided_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "additionalProperties": false
+}

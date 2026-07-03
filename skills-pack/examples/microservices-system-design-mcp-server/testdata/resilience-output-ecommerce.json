@@ -1,0 +1,157 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "dependency_controls": [
+    {
+      "from": "api-gateway",
+      "to": "auth-service",
+      "timeout": "1.5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (200ms base, max 2s)",
+      "circuit_breaker": "3 consecutive failures \u2192 open for 60s; half-open with one probe",
+      "idempotency_key": false,
+      "notes": "High-criticality boundary; budget retries tightly to preserve the caller's SLA. Idempotent operation: retry is safe without explicit idempotency key."
+    },
+    {
+      "from": "api-gateway",
+      "to": "order-service",
+      "timeout": "1.5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (200ms base, max 2s)",
+      "circuit_breaker": "3 consecutive failures \u2192 open for 60s; half-open with one probe",
+      "idempotency_key": true,
+      "notes": "High-criticality boundary; budget retries tightly to preserve the caller's SLA."
+    },
+    {
+      "from": "order-service",
+      "to": "inventory-service",
+      "timeout": "1.5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (200ms base, max 2s)",
+      "circuit_breaker": "3 consecutive failures \u2192 open for 60s; half-open with one probe",
+      "idempotency_key": true,
+      "notes": "High-criticality boundary; budget retries tightly to preserve the caller's SLA."
+    },
+    {
+      "from": "order-service",
+      "to": "payment-service",
+      "timeout": "1.5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (200ms base, max 2s)",
+      "circuit_breaker": "3 consecutive failures \u2192 open for 60s; half-open with one probe",
+      "idempotency_key": true,
+      "notes": "High-criticality boundary; budget retries tightly to preserve the caller's SLA."
+    },
+    {
+      "from": "order-service",
+      "to": "tax-jar",
+      "timeout": "5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (500ms base, max 4s)",
+      "circuit_breaker": "10% error rate over 1 min \u2192 open for 60s",
+      "idempotency_key": true,
+      "notes": "External dependency; classify errors and skip retry on 4xx; idempotency key mandatory for any mutation. Stated SLA unknown; treat as unreliable."
+    },
+    {
+      "from": "payment-service",
+      "to": "stripe-payments",
+      "timeout": "5s",
+      "retry_attempts": 2,
+      "retry_backoff": "exponential with jitter (500ms base, max 4s)",
+      "circuit_breaker": "10% error rate over 1 min \u2192 open for 60s",
+      "idempotency_key": true,
+      "notes": "External dependency; classify errors and skip retry on 4xx; idempotency key mandatory for any mutation."
+    }
+  ],
+  "bulkhead_notes": [
+    {
+      "service": "auth-service",
+      "notes": "Single-replica high-criticality service \u2014 replicate to at least 2 instances."
+    },
+    {
+      "service": "fulfillment-orchestrator",
+      "notes": "Worker \u2014 set a maximum concurrent message count per replica; reject overflow into DLQ."
+    },
+    {
+      "service": "notification-service",
+      "notes": "Worker \u2014 set a maximum concurrent message count per replica; reject overflow into DLQ."
+    }
+  ],
+  "load_leveling_notes": [
+    {
+      "service": "fulfillment-orchestrator",
+      "notes": "Front the worker with a queue (Service Bus or Storage Queue). Set max-delivery-count and DLQ; scale on queue depth."
+    },
+    {
+      "service": "notification-service",
+      "notes": "Front the worker with a queue (Service Bus or Storage Queue). Set max-delivery-count and DLQ; scale on queue depth."
+    }
+  ],
+  "fallbacks": [
+    {
+      "dependency": "auth-service",
+      "strategy": "fail_fast",
+      "detail": "On open breaker, return 503 to caller; surface in dashboard; do not synthesise data."
+    },
+    {
+      "dependency": "inventory-service",
+      "strategy": "degrade",
+      "detail": "On open breaker, serve cached/default; surface degraded status in response payload."
+    },
+    {
+      "dependency": "order-service",
+      "strategy": "fail_fast",
+      "detail": "On open breaker, return 503 to caller; surface in dashboard; do not synthesise data."
+    },
+    {
+      "dependency": "payment-service",
+      "strategy": "fail_fast",
+      "detail": "On open breaker, return 503 to caller; surface in dashboard; do not synthesise data."
+    },
+    {
+      "dependency": "stripe-payments",
+      "strategy": "degrade",
+      "detail": "Cache the last successful response; serve cached on breaker open; queue mutations for replay."
+    },
+    {
+      "dependency": "tax-jar",
+      "strategy": "degrade",
+      "detail": "Cache the last successful response; serve cached on breaker open; queue mutations for replay."
+    }
+  ],
+  "detection_signals": [
+    {
+      "signal": "circuit_breaker_state",
+      "source": "Application Insights custom metric",
+      "alert_when": "state = open for > 60s"
+    },
+    {
+      "signal": "retry_count_per_request",
+      "source": "Application Insights logs",
+      "alert_when": "avg retries/req > 0.5 over 5 min"
+    },
+    {
+      "signal": "dependency_latency_p99_ms",
+      "source": "Application Insights dependency telemetry",
+      "alert_when": "p99 > target \u00d7 2 over 5 min"
+    },
+    {
+      "signal": "dlq_depth",
+      "source": "Service Bus metric",
+      "alert_when": "DLQ depth > 0 (any message warrants triage)"
+    },
+    {
+      "signal": "request_rejection_rate",
+      "source": "ingress/app logs",
+      "alert_when": "rejected (503/429) > 1% over 5 min"
+    }
+  ],
+  "next_steps": [
+    "Implement the dependency controls above using a resilience library (Polly, gobreaker, or platform mesh).",
+    "Verify idempotency keys are propagated on every retryable mutation in code review.",
+    "Wire the detection signals into Application Insights with dashboards and alerts.",
+    "Run a chaos test that opens a circuit breaker in staging and confirms the fallback behaves as designed.",
+    "Document the runbook for the most likely incident shape (one downstream becomes slow)."
+  ],
+  "coverage_score": 100,
+  "summary": "Resilience plan for ecommerce-order-platform: 6 dependency control(s), 3 bulkhead note(s), 2 load-leveling note(s), 6 fallback(s); coverage 100."
+}

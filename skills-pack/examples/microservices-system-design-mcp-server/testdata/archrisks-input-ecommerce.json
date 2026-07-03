@@ -1,0 +1,85 @@
+{
+  "system_name": "ecommerce-order-platform",
+  "description": "Customer-facing order capture and fulfillment for mid-market e-commerce on Azure microservices.",
+  "deployment_target": "aks",
+  "constraints": [
+    "must satisfy PCI-DSS for card data",
+    "EU data residency required"
+  ],
+  "non_functional_requirements": {
+    "availability_target": "99.9",
+    "latency_p99_ms": 300
+  },
+  "services": [
+    {
+      "name": "order-service",
+      "criticality": "high",
+      "stateful": false,
+      "replicated": true,
+      "depends_on": ["auth-service", "inventory-service", "pricing-service", "payment-service"],
+      "consumes_events_from": ["notification-service"],
+      "data_stores": ["orders-db"],
+      "resilience": ["timeout", "retry"]
+    },
+    {
+      "name": "auth-service",
+      "criticality": "high",
+      "stateful": false,
+      "replicated": false,
+      "depends_on": [],
+      "data_stores": ["users-db"]
+    },
+    {
+      "name": "inventory-service",
+      "criticality": "medium",
+      "replicated": true,
+      "depends_on": ["auth-service"],
+      "data_stores": ["inventory-db", "analytics-db"],
+      "resilience": ["timeout"]
+    },
+    {
+      "name": "pricing-service",
+      "criticality": "medium",
+      "replicated": true,
+      "depends_on": ["auth-service"],
+      "data_stores": ["pricing-db", "analytics-db"],
+      "resilience": ["timeout"]
+    },
+    {
+      "name": "payment-service",
+      "criticality": "high",
+      "replicated": true,
+      "depends_on": ["auth-service"],
+      "data_stores": ["payments-db"],
+      "resilience": ["timeout", "circuit_breaker", "retry"]
+    },
+    {
+      "name": "cart-service",
+      "criticality": "medium",
+      "stateful": true,
+      "replicated": false,
+      "depends_on": ["auth-service"]
+    },
+    {
+      "name": "reporting-service",
+      "criticality": "low",
+      "replicated": true,
+      "depends_on": ["auth-service"],
+      "data_stores": ["analytics-db"]
+    },
+    {
+      "name": "notification-service",
+      "criticality": "low",
+      "replicated": true,
+      "data_stores": []
+    }
+  ],
+  "data_stores": [
+    { "name": "orders-db", "kind": "postgres", "encrypted": true },
+    { "name": "users-db", "kind": "postgres", "classification": "pii", "encrypted": false },
+    { "name": "payments-db", "kind": "postgres", "classification": "pci", "encrypted": true },
+    { "name": "inventory-db", "kind": "postgres", "encrypted": true },
+    { "name": "pricing-db", "kind": "postgres", "encrypted": true },
+    { "name": "analytics-db", "kind": "cosmos", "encrypted": true }
+  ]
+}

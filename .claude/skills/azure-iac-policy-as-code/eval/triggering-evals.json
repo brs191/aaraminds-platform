@@ -1,0 +1,24 @@
+{
+  "skill": "azure-iac-policy-as-code",
+  "purpose": "Measure triggering accuracy: fire on policy/compliance-gate requests for Azure Terraform; defer to the reachability analyzer, the generator, and audit-mapping skills. Run with the ai-evaluation-harness.",
+  "version": "1.0.0",
+  "should_trigger": [
+    {"prompt": "Add a Checkov + OPA policy gate to our Terraform pipeline so misconfigs block the PR.", "why": "core: policy-as-code gate"},
+    {"prompt": "Write a Conftest rule that denies any VNet outside eastus2/westus2 and requires an environment tag.", "why": "core: custom Rego org policy"},
+    {"prompt": "How do I scan the terraform plan JSON for public storage accounts and missing TLS before merge?", "why": "core: plan-JSON compliance scan"},
+    {"prompt": "We need a compliance gate on generated Terraform — encryption, tagging, approved regions.", "why": "core: broad compliance surface in the generate pipeline"},
+    {"prompt": "Block this Terraform if it creates a public IP on a sensitive subnet, as a CI policy.", "why": "core: policy gate (note: reachability is a separate gate)"}
+  ],
+  "should_not_trigger": [
+    {"prompt": "Is this NSG actually reachable from the internet across our peering and routes?", "routes_to": "azure-network-topology-analysis", "why": "reachability axis, not policy rules"},
+    {"prompt": "Generate the Terraform for a new hub-and-spoke topology from this intent.", "routes_to": "azure-network-iac-generation", "why": "generation, not gating"},
+    {"prompt": "Map our findings to SOC 2 and ISO 27001 controls for the auditor.", "routes_to": "soc2-iso27001-controls-mapping", "why": "audit-control mapping"},
+    {"prompt": "Forecast the cost of adding an Azure Firewall.", "routes_to": "azure-network-cost-forecasting", "why": "cost"},
+    {"prompt": "Add a Checkov policy gate to our AWS CloudFormation.", "routes_to": "(none — out of scope)", "why": "non-Azure / non-Terraform: decline"}
+  ],
+  "scoring": {
+    "trigger_recall": "should_trigger routed here (target >= 0.95)",
+    "trigger_precision": "1 - should_not_trigger wrongly routed here (target = 1.0)"
+  },
+  "notes": "Hard boundary: policy/compliance RULES (this skill) vs reachability/exposure PATHS (analysis skill). The should_not_trigger #1 (reachability) is the most likely leak."
+}

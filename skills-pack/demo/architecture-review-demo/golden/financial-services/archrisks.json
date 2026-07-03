@@ -1,0 +1,53 @@
+{
+  "system_name": "retail-banking-platform",
+  "risks": [
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"api-gateway\" synchronously depends on 4 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "api-gateway",
+        "account-service",
+        "auth-service",
+        "statement-service",
+        "transfer-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "cascading_failure",
+      "description": "high-criticality service \"transfer-service\" synchronously depends on 4 services; a slowdown in any of them propagates to this critical path",
+      "components_affected": [
+        "transfer-service",
+        "account-service",
+        "auth-service",
+        "fraud-service",
+        "ledger-service"
+      ],
+      "mitigation": "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded."
+    },
+    {
+      "severity": "high",
+      "likelihood": "medium",
+      "category": "missing_resilience",
+      "description": "high-criticality service \"api-gateway\" declares no resilience controls (retry, circuit_breaker, timeout, bulkhead)",
+      "components_affected": [
+        "api-gateway"
+      ],
+      "mitigation": "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+    }
+  ],
+  "missing_decisions": [
+    "recovery objectives (RTO/RPO) not stated"
+  ],
+  "next_steps": [
+    "Introduce timeouts and circuit breakers on each synchronous call, and convert non-essential dependencies to asynchronous events so the critical path can complete degraded.",
+    "Add explicit timeout, retry-with-backoff, and circuit-breaker policies on outbound calls; isolate critical work with bulkheads so one slow dependency cannot exhaust shared resources."
+  ],
+  "risk_posture_score": 55,
+  "risk_rating": "High risk; significant rework recommended before proceeding",
+  "summary": "Architecture risk report for retail-banking-platform: 10 services analyzed, 3 risks identified, risk-posture score 55/100."
+}

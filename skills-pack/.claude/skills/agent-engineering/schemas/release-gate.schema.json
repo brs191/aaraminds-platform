@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds/agent-engineering/release-gate.schema.json",
+  "title": "Agent release-gate decision",
+  "description": "Machine-readable staged go/no-go. Firewall (design-vs-behavior): a production-candidate/production stage cannot receive a PASS without executed eval results + behavior_evaluated. CONDITIONAL_PASS at those stages is allowed when the documented condition is to run and pass the behavioral eval suite before production release.",
+  "type": "object",
+  "required": ["agent", "agent_version", "requested_stage", "decision", "design_score"],
+  "additionalProperties": false,
+  "properties": {
+    "agent": { "type": "string" },
+    "agent_version": { "type": "string" },
+    "requested_stage": { "enum": ["prototype", "pilot", "production_candidate", "production"] },
+    "decision": { "enum": ["PASS", "CONDITIONAL_PASS", "FAIL"] },
+    "design_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "design_band": { "enum": ["production_ready_candidate", "strong_pilot_candidate", "prototype", "weak", "redesign"] },
+    "behavior_evaluated": { "type": "boolean" },
+    "evidence": {
+      "type": "object",
+      "description": "Presence of each required artifact for the requested stage",
+      "additionalProperties": false,
+      "properties": {
+        "runnable_artifact": { "type": "boolean" },
+        "agent_spec": { "type": "boolean" },
+        "io_contracts": { "type": "boolean" },
+        "tool_contract": { "type": "boolean" },
+        "guardrails": { "type": "boolean" },
+        "review_scorecard": { "type": "boolean" },
+        "eval_plan": { "type": "boolean" },
+        "executed_eval_results": { "type": "boolean" },
+        "security_review": { "type": "boolean" },
+        "monitoring_plan": { "type": "boolean", "description": "monitoring spec/thresholds defined (production-candidate)" },
+        "rollback_runbook": { "type": "boolean", "description": "rollback/kill-switch runbook exists + tested (production-candidate)" },
+        "monitoring": { "type": "boolean", "description": "monitoring LIVE in production (production stage)" },
+        "rollback_kill_switch": { "type": "boolean", "description": "rollback/kill-switch LIVE + exercised (production stage)" },
+        "canary": { "type": "boolean", "description": "progressive/canary rollout done (production stage)" },
+        "human_approval_model": { "type": "boolean" }
+      }
+    },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "conditions": { "type": "array", "items": { "type": "string" } },
+    "residual_risks": { "type": "array", "items": { "type": "string" } },
+    "required_fixes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["priority", "fix"],
+        "additionalProperties": false,
+        "properties": {
+          "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+          "fix": { "type": "string" },
+          "owner": { "type": "string" },
+          "required_before": { "enum": ["pilot", "production", "none"] }
+        }
+      }
+    },
+    "next_review_triggers": { "type": "array", "items": { "type": "string" } }
+  },
+  "allOf": [
+    {
+      "$comment": "Firewall: a PASS at production_candidate/production requires executed eval results + behavior_evaluated.",
+      "if": {
+        "required": ["requested_stage", "decision"],
+        "properties": {
+          "requested_stage": { "enum": ["production_candidate", "production"] },
+          "decision": { "const": "PASS" }
+        }
+      },
+      "then": {
+        "required": ["evidence", "behavior_evaluated"],
+        "properties": {
+          "behavior_evaluated": { "const": true },
+          "evidence": {
+            "required": ["executed_eval_results"],
+            "properties": { "executed_eval_results": { "const": true } }
+          }
+        }
+      }
+    }
+  ]
+}
