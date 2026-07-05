@@ -5,7 +5,7 @@ _Consolidated 2026-05-24. This is the **master copy** — the single canonical r
 - `skills-pack/ranking.md` — engineering skills, agents, hooks, MCP tools (v8, 2026-05-24) — **consolidated here and deleted**
 - `instruction-os/Persona/Rankings.md` — personas and system modules (2026-05-21) — **consolidated here and deleted**
 
-`AaraMind_Factory.md` — the earlier combined inventory (2026-05-22) — is retained as a dated point-in-time snapshot and carries a banner pointing here. For dated audit history, see `instruction-os/Persona/Validation_History.md`.
+`governance/archive/AaraMind_Factory.md` — the earlier combined inventory (2026-05-22) — is retained as a dated point-in-time snapshot and carries a banner pointing here. For dated audit history, see `instruction-os/Persona/Validation_History.md`.
 
 ---
 

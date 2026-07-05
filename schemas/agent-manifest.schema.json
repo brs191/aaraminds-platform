@@ -46,7 +46,7 @@
         "required": ["tool_name", "contract_version", "approval_boundary"],
         "properties": {
           "tool_name": { "type": "string", "minLength": 1 },
-          "contract_version": { "type": "string", "minLength": 1 },
+          "contract_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
           "approval_boundary": { "type": "string", "enum": ["none", "soft", "hard", "blocked"] }
         },
         "additionalProperties": false

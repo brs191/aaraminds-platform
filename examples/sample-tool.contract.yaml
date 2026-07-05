@@ -1,6 +1,7 @@
 {
   "tool_name": "get_project_context",
   "contract_version": "1.0.0",
+  "action_type": "project_context_read",
   "purpose": "Retrieve read-only project context for a BA Agent engagement from the approved knowledge source.",
   "input_schema": {
     "type": "object",
@@ -12,7 +13,8 @@
       },
       "query": { "type": "string", "minLength": 3, "maxLength": 500 },
       "max_results": { "type": "integer", "minimum": 1, "maximum": 20, "default": 10 }
-    }
+    },
+    "additionalProperties": false
   },
   "output_schema": {
     "type": "object",
@@ -28,11 +30,13 @@
             "excerpt": { "type": "string" },
             "source_ref": { "type": "string" },
             "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
-          }
+          },
+          "additionalProperties": false
         }
       },
       "source_system": { "type": "string" }
-    }
+    },
+    "additionalProperties": false
   },
   "permissions_required": ["project_context:read"],
   "approval_boundary": "none",
@@ -59,7 +63,27 @@
   "retry_policy": { "max_attempts": 2, "backoff": "exponential" },
   "audit_event_schema": {
     "type": "object",
-    "required": ["run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"]
+    "required": ["run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"],
+    "properties": {
+      "run_id": { "type": "string", "minLength": 1 },
+      "tool_name": { "type": "string", "const": "get_project_context" },
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "run_engagement_id": { "type": "string", "minLength": 1 },
+      "input_hash": { "type": "string", "minLength": 1 },
+      "outcome": { "type": "string", "enum": ["success", "denied", "approval_required"] },
+      "timestamp": { "type": "string", "format": "date-time" },
+      "reason": { "type": "string" },
+      "approval_boundary": { "type": "string" },
+      "original_boundary": { "type": "string" },
+      "runtime_mode": { "type": "string" },
+      "action_type": { "type": "string" },
+      "output_hash": { "type": "string" },
+      "elapsed_ms": { "type": "integer" },
+      "attempts": { "type": "integer" },
+      "approval_request_id": { "type": "string" },
+      "approved_by": { "type": "string" }
+    },
+    "additionalProperties": false
   },
   "example_invocation": {
     "engagement_id": "eng-example-001",

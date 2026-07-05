@@ -1,6 +1,7 @@
 package aapruntime
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -24,22 +25,65 @@ func RunPhase1Proof(root string) (ProofReport, error) {
 	if err := engine.Start(ctx); err != nil {
 		return ProofReport{}, err
 	}
+	defer func() { _ = engine.EndRun(context.Background()) }()
 
-	allowed := engine.InvokeTool("get_project_context", map[string]any{
+	projectContextInput := map[string]any{
 		"engagement_id": ctx.EngagementID,
 		"query":         "sample requirements discovery acceptance criteria",
-	}, RuntimeInteractive, true)
+	}
+	projectContextOutput := map[string]any{
+		"results": []any{
+			map[string]any{
+				"title":      "Discovery note",
+				"excerpt":    "Stakeholders need approval-gated requirements drafts.",
+				"source_ref": "source://example/discovery-note",
+				"confidence": 0.94,
+			},
+		},
+		"source_system": "proof-fixture",
+	}
+	allowed := engine.InvokeTool("get_project_context", projectContextInput, RuntimeInteractive, true)
+	// Denied results do not consume the pending invocation; the accepted
+	// result does, so it is recorded last and a duplicate must be denied.
+	invalidOutput := engine.RecordToolResult("get_project_context", projectContextInput, map[string]any{
+		"results": []any{},
+	}, 1200*time.Millisecond, 1)
+	timeoutViolation := engine.RecordToolResult("get_project_context", projectContextInput, projectContextOutput, 6*time.Second, 1)
+	retryViolation := engine.RecordToolResult("get_project_context", projectContextInput, projectContextOutput, 1200*time.Millisecond, 4)
+	acceptedOutput := engine.RecordToolResult("get_project_context", projectContextInput, projectContextOutput, 1200*time.Millisecond, 1)
+	duplicateResult := engine.RecordToolResult("get_project_context", projectContextInput, projectContextOutput, 1200*time.Millisecond, 1)
 
 	denied := engine.InvokeTool("delete_production_record", map[string]any{
 		"engagement_id": ctx.EngagementID,
 		"record_id":     "sample-record",
 	}, RuntimeInteractive, true)
+	engine.contracts["delete_production_record"] = proofBlockedActionContract()
+	engine.manifest.AllowedTools = append(engine.manifest.AllowedTools, ManifestTool{
+		ToolName:         "delete_production_record",
+		ContractVersion:  "1.0.0",
+		ApprovalBoundary: BoundaryNone,
+	})
+	blockedAction := engine.InvokeTool("delete_production_record", map[string]any{
+		"engagement_id": ctx.EngagementID,
+		"record_id":     "sample-record",
+	}, RuntimeInteractive, true)
 
-	approval := engine.InvokeTool("create_requirements_draft", map[string]any{
+	invalidInput := engine.InvokeTool("create_requirements_draft", map[string]any{
+		"engagement_id": ctx.EngagementID,
+		"title":         "Sample discovery requirements",
+	}, RuntimeInteractive, true)
+
+	draftInput := map[string]any{
 		"engagement_id": ctx.EngagementID,
 		"title":         "Sample discovery requirements",
 		"evidence_refs": []string{"source://example/discovery-note"},
-	}, RuntimeUnattended, false)
+	}
+	approval := engine.InvokeTool("create_requirements_draft", draftInput, RuntimeUnattended, false)
+	if err := engine.ResolveApproval(approval.ApprovalRequestID, "approver-example-001", true, "reviewed evidence refs and approved draft creation"); err != nil {
+		return ProofReport{}, err
+	}
+	approvedExec := engine.InvokeTool("create_requirements_draft", draftInput, RuntimeUnattended, false)
+	repeatAfterConsume := engine.InvokeTool("create_requirements_draft", draftInput, RuntimeUnattended, false)
 
 	err = engine.WriteMemory(MemoryRecord{
 		MemoryID:       "mem-proof-001",
@@ -61,20 +105,57 @@ func RunPhase1Proof(root string) (ProofReport, error) {
 	if err != nil {
 		return ProofReport{}, err
 	}
+	err = engine.WriteMemory(MemoryRecord{
+		MemoryID:       "mem-proof-expiring",
+		AgentID:        ctx.AgentID,
+		EngagementID:   ctx.EngagementID,
+		Classification: "client-confidential",
+		ContentRef:     "memory://eng-example-001/mem-proof-expiring",
+		ContentHash:    hashPayload("short lived cited memory"),
+		SourceCitation: SourceCitation{
+			RunID:     ctx.RunID,
+			TraceID:   "trace-" + ctx.RunID,
+			SpanID:    "span-proof-source",
+			SourceRef: "source://example/discovery-note",
+		},
+		CreatedAt: time.Now().UTC(),
+		ExpiresAt: time.Now().UTC().Add(50 * time.Millisecond),
+		Status:    "active",
+	})
+	if err != nil {
+		return ProofReport{}, err
+	}
+	time.Sleep(100 * time.Millisecond)
 
 	leaked := engine.QueryMemory("eng-other-001")
+	expired := countMemoryID(engine.QueryMemory(ctx.EngagementID), "mem-proof-expiring")
 	report := ProofReport{
-		RunContext:               engine.RunContext(),
-		ValidManifestStarted:     true,
-		AllowedToolExecuted:      allowed.Outcome == "success",
-		OffManifestToolDenied:    denied.Outcome == "denied",
-		DenialAuditLogged:        hasAuditEvent(engine.AuditEvents(), "tool_denied", denied.AuditEventID),
-		SoftUnattendedEscalated:  approval.Outcome == "approval_required" && approval.ApprovalBoundary == BoundaryHard,
-		MemoryLeakageReturned:    len(leaked),
-		RunScopedAuditsHaveRunID: AuditRunEventsHaveRunID(engine.AuditEvents()),
-		TraceSpanCount:           len(engine.TraceSpans()),
-		AuditEvents:              engine.AuditEvents(),
-		ToolDecisions:            []ToolDecision{allowed, denied, approval},
+		RunContext:                  engine.RunContext(),
+		ValidManifestStarted:        true,
+		AllowedToolExecuted:         allowed.Outcome == "success",
+		ToolOutputAccepted:          acceptedOutput.Outcome == "success",
+		OffManifestToolDenied:       denied.Outcome == "denied",
+		BlockedActionDenied:         blockedAction.Outcome == "denied" && blockedAction.Reason == "tool action type is blocked",
+		InvalidInputDenied:          invalidInput.Outcome == "denied" && invalidInput.Reason == "tool input does not match contract schema",
+		OutputSchemaViolationDenied: invalidOutput.Outcome == "denied" && invalidOutput.Reason == "tool output does not match contract schema",
+		TimeoutViolationDenied:      timeoutViolation.Outcome == "denied" && timeoutViolation.Reason == "tool execution exceeded contract timeout",
+		RetryPolicyViolationDenied:  retryViolation.Outcome == "denied" && retryViolation.Reason == "tool retry policy exceeded",
+		DuplicateResultDenied:       duplicateResult.Outcome == "denied" && duplicateResult.Reason == "tool result has no successful invocation",
+		DenialAuditLogged:           hasAuditEvent(engine.AuditEvents(), "tool_denied", denied.AuditEventID),
+		SoftUnattendedEscalated:     approval.Outcome == "approval_required" && approval.ApprovalBoundary == BoundaryHard && approval.ApprovalRequestID != "",
+		ApprovalGrantAudited:        hasAuditEventType(engine.AuditEvents(), "approval_granted", "approver"),
+		ApprovedInvocationExecuted:  approvedExec.Outcome == "success" && approvedExec.ApprovalRequestID == approval.ApprovalRequestID,
+		ApprovalGrantSingleUse:      repeatAfterConsume.Outcome == "approval_required" && repeatAfterConsume.ApprovalRequestID != approval.ApprovalRequestID,
+		AuditTrailReplayable:        VerifyAuditTrail(engine.AuditEvents(), engine.AuditPayloads()),
+		AuditChainValid:             VerifyAuditChain(engine.AuditEvents()),
+		MemoryLeakageReturned:       len(leaked),
+		ExpiredMemoryReturned:       expired,
+		RunScopedAuditsHaveRunID:    AuditRunEventsHaveRunID(engine.AuditEvents()),
+		TraceSpanCount:              len(engine.TraceSpans()),
+		AuditEvents:                 engine.AuditEvents(),
+		ApprovalRequests:            engine.ApprovalRequests(),
+		AuditPayloads:               engine.AuditPayloads(),
+		ToolDecisions:               []ToolDecision{allowed, invalidOutput, timeoutViolation, retryViolation, acceptedOutput, duplicateResult, denied, blockedAction, invalidInput, approval, approvedExec, repeatAfterConsume},
 	}
 	return report, nil
 }
@@ -91,6 +172,15 @@ func WriteProofReport(root string, report ProofReport, relPath string) error {
 	return os.WriteFile(outPath, append(b, '\n'), 0o644)
 }
 
+func hasAuditEventType(events []AuditEvent, eventType, actorType string) bool {
+	for _, event := range events {
+		if event.EventType == eventType && event.ActorType == actorType {
+			return true
+		}
+	}
+	return false
+}
+
 func hasAuditEvent(events []AuditEvent, eventType, auditID string) bool {
 	for _, event := range events {
 		if event.EventType == eventType && event.AuditEventID == auditID {
@@ -98,4 +188,83 @@ func hasAuditEvent(events []AuditEvent, eventType, auditID string) bool {
 		}
 	}
 	return false
+}
+
+func countMemoryID(records []MemoryRecord, memoryID string) int {
+	count := 0
+	for _, record := range records {
+		if record.MemoryID == memoryID {
+			count++
+		}
+	}
+	return count
+}
+
+func proofBlockedActionContract() ToolContract {
+	return ToolContract{
+		ToolName:        "delete_production_record",
+		ContractVersion: "1.0.0",
+		ActionType:      "production_delete",
+		Purpose:         "Negative proof fixture for blocked production deletion.",
+		InputSchema: map[string]any{
+			"type":     "object",
+			"required": []any{"engagement_id", "record_id"},
+			"properties": map[string]any{
+				"engagement_id": map[string]any{"type": "string", "minLength": 1},
+				"record_id":     map[string]any{"type": "string", "minLength": 1},
+			},
+			"additionalProperties": false,
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"status": map[string]any{"type": "string"},
+			},
+			"additionalProperties": false,
+		},
+		PermissionsRequired: []string{"production:record:delete"},
+		ApprovalBoundary:    BoundaryNone,
+		DataClassification: DataClassification{
+			Input:  "client-confidential",
+			Output: "client-confidential",
+		},
+		FailureModes: []FailureMode{
+			{
+				Code:            "BLOCKED",
+				Meaning:         "Production deletion is blocked.",
+				Retryable:       false,
+				SafeUserMessage: "This action is blocked.",
+			},
+		},
+		TimeoutMS:    10000,
+		TimeoutClass: "interactive",
+		RetryPolicy: RetryPolicy{
+			MaxAttempts: 0,
+			Backoff:     "none",
+		},
+		AuditEventSchema: map[string]any{
+			"type":     "object",
+			"required": []any{"run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"},
+			"properties": map[string]any{
+				"run_id":            map[string]any{"type": "string", "minLength": 1},
+				"tool_name":         map[string]any{"type": "string", "const": "delete_production_record"},
+				"engagement_id":     map[string]any{"type": "string", "minLength": 1},
+				"input_hash":        map[string]any{"type": "string", "minLength": 1},
+				"outcome":           map[string]any{"type": "string", "enum": []any{"success", "denied", "approval_required"}},
+				"timestamp":         map[string]any{"type": "string", "format": "date-time"},
+				"reason":            map[string]any{"type": "string"},
+				"action_type":       map[string]any{"type": "string"},
+				"output_hash":       map[string]any{"type": "string"},
+				"elapsed_ms":        map[string]any{"type": "integer"},
+				"attempts":          map[string]any{"type": "integer"},
+				"runtime_mode":      map[string]any{"type": "string"},
+				"approval_boundary": map[string]any{"type": "string"},
+			},
+			"additionalProperties": false,
+		},
+		ExampleInvocation: map[string]interface{}{
+			"engagement_id": "eng-example-001",
+			"record_id":     "sample-record",
+		},
+	}
 }

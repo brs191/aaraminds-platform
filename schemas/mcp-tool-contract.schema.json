@@ -22,11 +22,11 @@
   ],
   "properties": {
     "tool_name": { "type": "string", "minLength": 1 },
-    "contract_version": { "type": "string", "minLength": 1 },
-    "action_type": { "type": "string", "minLength": 1 },
+    "contract_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "action_type": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
     "purpose": { "type": "string", "minLength": 1 },
-    "input_schema": { "type": "object" },
-    "output_schema": { "type": "object" },
+    "input_schema": { "$ref": "#/$defs/objectJsonSchema" },
+    "output_schema": { "$ref": "#/$defs/objectJsonSchema" },
     "permissions_required": { "type": "array", "items": { "type": "string" } },
     "approval_boundary": { "type": "string", "enum": ["none", "soft", "hard", "blocked"] },
     "data_classification": {
@@ -64,8 +64,36 @@
       },
       "additionalProperties": false
     },
-    "audit_event_schema": { "type": "object" },
+    "audit_event_schema": { "$ref": "#/$defs/objectJsonSchema" },
     "example_invocation": { "type": "object" }
+  },
+  "$defs": {
+    "objectJsonSchema": {
+      "type": "object",
+      "required": ["type", "properties", "additionalProperties"],
+      "properties": {
+        "type": { "const": "object" },
+        "required": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "properties": { "type": "object", "minProperties": 1 },
+        "additionalProperties": { "type": "boolean" },
+        "$schema": { "type": "string" },
+        "$id": { "type": "string" },
+        "description": { "type": "string" },
+        "allOf": { "type": "array" },
+        "anyOf": { "type": "array" },
+        "oneOf": { "type": "array" },
+        "not": { "type": "object" },
+        "if": { "type": "object" },
+        "then": { "type": "object" },
+        "else": { "type": "object" },
+        "dependentRequired": { "type": "object" }
+      },
+      "additionalProperties": true
+    }
   },
   "additionalProperties": false
 }

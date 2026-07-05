@@ -65,6 +65,18 @@ func LoadContractsWithSchema(dir, schemaPath string) (map[string]ToolContract, e
 		if contract.ToolName == "" {
 			return nil, fmt.Errorf("tool contract %q has empty tool_name", path)
 		}
+		if _, err := compileValueSchema(contract.InputSchema, contract.ToolName+" input_schema"); err != nil {
+			return nil, fmt.Errorf("tool contract %q has invalid input_schema: %w", path, err)
+		}
+		if err := requireEngagementScopedInput(contract.InputSchema); err != nil {
+			return nil, fmt.Errorf("tool contract %q: %w", path, err)
+		}
+		if _, err := compileValueSchema(contract.OutputSchema, contract.ToolName+" output_schema"); err != nil {
+			return nil, fmt.Errorf("tool contract %q has invalid output_schema: %w", path, err)
+		}
+		if _, err := compileValueSchema(contract.AuditEventSchema, contract.ToolName+" audit_event_schema"); err != nil {
+			return nil, fmt.Errorf("tool contract %q has invalid audit_event_schema: %w", path, err)
+		}
 		if err := validateValueAgainstSchema(contract.ExampleInvocation, contract.InputSchema, contract.ToolName+" example_invocation"); err != nil {
 			return nil, fmt.Errorf("tool contract %q has invalid example_invocation: %w", path, err)
 		}
@@ -74,6 +86,31 @@ func LoadContractsWithSchema(dir, schemaPath string) (map[string]ToolContract, e
 		contracts[contract.ToolName] = contract
 	}
 	return contracts, nil
+}
+
+// requireEngagementScopedInput enforces that every tool contract declares
+// engagement_id as a required string property in its input_schema. This makes
+// engagement scoping a structural invariant checked at load time, instead of a
+// convention that contract authors must remember. Without it, a contract that
+// omits engagement_id would silently skip the runtime engagement-scope check.
+func requireEngagementScopedInput(schema map[string]any) error {
+	required, _ := schema["required"].([]any)
+	found := false
+	for _, item := range required {
+		if item == "engagement_id" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.New("input_schema must list engagement_id in required")
+	}
+	properties, _ := schema["properties"].(map[string]any)
+	property, _ := properties["engagement_id"].(map[string]any)
+	if propertyType, _ := property["type"].(string); propertyType != "string" {
+		return errors.New("input_schema must declare engagement_id as a string property")
+	}
+	return nil
 }
 
 func ValidateStructuredFile(path, schemaPath string) error {
@@ -91,6 +128,23 @@ func ValidateStructuredFile(path, schemaPath string) error {
 	return nil
 }
 
+func compileValueSchema(schemaDoc map[string]any, name string) (*jsonschema.Schema, error) {
+	if schemaDoc == nil {
+		return nil, errors.New("schema document is required")
+	}
+	compiler := jsonschema.NewCompiler()
+	compiler.DefaultDraft(jsonschema.Draft2020)
+	compiler.AssertFormat()
+	if err := compiler.AddResource(name, schemaDoc); err != nil {
+		return nil, fmt.Errorf("load %s schema: %w", name, err)
+	}
+	schema, err := compiler.Compile(name)
+	if err != nil {
+		return nil, fmt.Errorf("compile %s schema: %w", name, err)
+	}
+	return schema, nil
+}
+
 func validateValueAgainstSchema(value any, schemaDoc map[string]any, name string) error {
 	if schemaDoc == nil {
 		return errors.New("schema document is required")
@@ -99,15 +153,9 @@ func validateValueAgainstSchema(value any, schemaDoc map[string]any, name string
 	if err != nil {
 		return fmt.Errorf("normalise %s value: %w", name, err)
 	}
-	compiler := jsonschema.NewCompiler()
-	compiler.DefaultDraft(jsonschema.Draft2020)
-	compiler.AssertFormat()
-	if err := compiler.AddResource(name, schemaDoc); err != nil {
-		return fmt.Errorf("load %s schema: %w", name, err)
-	}
-	schema, err := compiler.Compile(name)
+	schema, err := compileValueSchema(schemaDoc, name)
 	if err != nil {
-		return fmt.Errorf("compile %s schema: %w", name, err)
+		return err
 	}
 	if err := schema.Validate(doc); err != nil {
 		return fmt.Errorf("%s schema violation: %w", name, err)

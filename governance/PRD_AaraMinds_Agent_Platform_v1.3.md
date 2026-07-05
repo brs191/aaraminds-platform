@@ -4,6 +4,8 @@
 **Related:** `Ranking.md`, `skills-pack/`, `instruction-os/`, `governance/AaraMinds_GTM_Plans_2026-06-03.md`  
 **Changelog v1.2 → v1.3:** Fixed build-blocking defects found in repo review: BA Agent manifest now references existing flat package artifacts, Phase 3 reconciles existing BA package release artifacts instead of creating duplicates, client-like sample IDs replaced with synthetic examples, `AuditEvent` supports runless governance events, release gate requires production-safe telemetry payload mode, unattended soft approvals escalate to hard, approval gate threshold now uses a defined golden suite, blocked-actions artifact added to minimum build list, memory purge semantics clarified, and long-running tool timeout policy corrected.
 
+**Position in the document set (see `/DOCUMENT-MAP.md`):** This PRD is authoritative for the **runtime substrate** — manifests, tool contracts, approval boundaries, memory, audit, and the evaluation release gate. The business case and roadmap sit above it in `governance/AaraMinds_Agent_Platform_BRD_v2.1.docx`; the Agent Factory layer (intake → classification → readiness verdict) sits alongside it in `execution-package/` and consumes this PRD's proof gates. On data shape, `schemas/` wins.
+
 ---
 
 ## 1. Positioning

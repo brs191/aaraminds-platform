@@ -17,7 +17,15 @@
     },
     "additionalProperties": false
   },
-  "output_schema": { "type": "object", "required": ["draft_ref", "status"] },
+  "output_schema": {
+    "type": "object",
+    "required": ["draft_ref", "status"],
+    "properties": {
+      "draft_ref": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["draft_created", "draft_updated", "pending_review"] }
+    },
+    "additionalProperties": false
+  },
   "permissions_required": ["requirements:draft:create"],
   "approval_boundary": "soft",
   "data_classification": { "input": "client-confidential", "output": "client-confidential" },
@@ -47,7 +55,12 @@
       "approval_boundary": { "type": "string" },
       "original_boundary": { "type": "string" },
       "runtime_mode": { "type": "string" },
-      "action_type": { "type": "string" }
+      "approval_request_id": { "type": "string" },
+      "approved_by": { "type": "string" },
+      "action_type": { "type": "string" },
+      "output_hash": { "type": "string" },
+      "elapsed_ms": { "type": "integer" },
+      "attempts": { "type": "integer" }
     },
     "additionalProperties": false
   },

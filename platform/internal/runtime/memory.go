@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 )
 
 type MemoryStore struct {
@@ -28,6 +29,16 @@ func (s *MemoryStore) Write(record MemoryRecord, allowed []string, piiAllowed bo
 	if record.SourceCitation.RunID == "" || record.SourceCitation.TraceID == "" || record.SourceCitation.SpanID == "" || record.SourceCitation.SourceRef == "" {
 		return errors.New("memory write requires complete source citation")
 	}
+	now := time.Now().UTC()
+	if record.CreatedAt.IsZero() {
+		record.CreatedAt = now
+	}
+	if record.ExpiresAt.IsZero() {
+		return errors.New("memory record requires expires_at")
+	}
+	if !record.ExpiresAt.After(now) {
+		return errors.New("memory record expires_at must be in the future")
+	}
 	if record.Classification == "pii" && !piiAllowed {
 		return errors.New("manifest does not allow pii memory")
 	}
@@ -48,9 +59,13 @@ func (s *MemoryStore) Query(engagementID, scope, agentID string) []MemoryRecord 
 	if scope == "none" {
 		return nil
 	}
+	now := time.Now().UTC()
 	out := make([]MemoryRecord, 0)
 	for _, record := range s.records {
 		if record.EngagementID != engagementID || record.Status != "active" {
+			continue
+		}
+		if !record.ExpiresAt.IsZero() && !record.ExpiresAt.After(now) {
 			continue
 		}
 		if scope == "agent" && record.AgentID != agentID {

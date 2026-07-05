@@ -10,8 +10,9 @@ import (
 )
 
 type RuntimeSchemas struct {
-	MemoryRecord *jsonschema.Schema
-	AuditEvent   *jsonschema.Schema
+	MemoryRecord    *jsonschema.Schema
+	AuditEvent      *jsonschema.Schema
+	ApprovalRequest *jsonschema.Schema
 }
 
 func LoadRuntimeSchemas(root string) (RuntimeSchemas, error) {
@@ -23,9 +24,14 @@ func LoadRuntimeSchemas(root string) (RuntimeSchemas, error) {
 	if err != nil {
 		return RuntimeSchemas{}, err
 	}
+	approvalSchema, err := compileSchema(filepath.Join(root, "schemas", "approval-request.schema.json"))
+	if err != nil {
+		return RuntimeSchemas{}, err
+	}
 	return RuntimeSchemas{
-		MemoryRecord: memorySchema,
-		AuditEvent:   auditSchema,
+		MemoryRecord:    memorySchema,
+		AuditEvent:      auditSchema,
+		ApprovalRequest: approvalSchema,
 	}, nil
 }
 
@@ -53,6 +59,20 @@ func (s RuntimeSchemas) ValidateAuditEvent(event AuditEvent) error {
 	}
 	if err := s.AuditEvent.Validate(doc); err != nil {
 		return fmt.Errorf("audit event schema violation: %w", err)
+	}
+	return nil
+}
+
+func (s RuntimeSchemas) ValidateApprovalRequest(request ApprovalRequest) error {
+	if s.ApprovalRequest == nil {
+		return nil
+	}
+	doc, err := structToSchemaDocument(request)
+	if err != nil {
+		return fmt.Errorf("prepare approval request for schema validation: %w", err)
+	}
+	if err := s.ApprovalRequest.Validate(doc); err != nil {
+		return fmt.Errorf("approval request schema violation: %w", err)
 	}
 	return nil
 }

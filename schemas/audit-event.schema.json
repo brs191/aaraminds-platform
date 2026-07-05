@@ -12,6 +12,7 @@
     "context_id",
     "payload_ref",
     "payload_hash",
+    "prev_event_hash",
     "timestamp"
   ],
   "properties": {
@@ -22,6 +23,8 @@
         "agent_started",
         "manifest_validated",
         "tool_invoked",
+        "tool_result_accepted",
+        "tool_result_denied",
         "tool_denied",
         "approval_requested",
         "approval_granted",
@@ -41,6 +44,7 @@
     "run_id": { "type": ["string", "null"] },
     "payload_ref": { "type": "string" },
     "payload_hash": { "type": "string" },
+    "prev_event_hash": { "type": "string" },
     "timestamp": { "type": "string", "format": "date-time" }
   },
   "allOf": [

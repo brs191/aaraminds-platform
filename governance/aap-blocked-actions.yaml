@@ -11,6 +11,11 @@
     "external_customer_send_without_owner_approval",
     "compliance_attestation_without_reviewer"
   ],
+  "classified_actions": [
+    "project_context_read",
+    "knowledge_search",
+    "requirements_draft_create"
+  ],
   "default_unclassified_boundary": "hard",
   "missing_contract_boundary": "blocked"
 }

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/readiness-report.schema.json",
+  "title": "AAP Agent Readiness Report",
+  "description": "Hero artifact per BRD v2.1 §18.3. Every field is populated from verifiable checks, never self-attestation.",
+  "type": "object",
+  "required": ["agent_id", "agent_version", "rubric_version", "generated_at", "owners", "autonomy", "areas", "critical_blockers", "score", "verdict", "approvals_required"],
+  "properties": {
+    "agent_id": { "type": "string" },
+    "agent_version": { "type": "string" },
+    "rubric_version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "owners": {
+      "type": "object",
+      "required": ["business_owner", "technical_owner"],
+      "properties": {
+        "business_owner": { "type": "string" },
+        "technical_owner": { "type": "string" }
+      }
+    },
+    "autonomy": {
+      "type": "object",
+      "required": ["level", "justification", "risk_tier"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "justification": { "type": "string" },
+        "risk_tier": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "signoffs": { "type": "array", "items": { "type": "object", "required": ["role", "approver", "at"], "properties": { "role": { "type": "string" }, "approver": { "type": "string" }, "at": { "type": "string", "format": "date-time" } } } }
+      }
+    },
+    "areas": {
+      "type": "array",
+      "minItems": 9,
+      "items": {
+        "type": "object",
+        "required": ["area", "weight", "checks_total", "checks_passed", "score", "evidence"],
+        "properties": {
+          "area": { "type": "string" },
+          "weight": { "type": "number" },
+          "checks_total": { "type": "integer" },
+          "checks_passed": { "type": "integer" },
+          "score": { "type": "number" },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["check", "result", "mechanism", "evidence_ref"],
+              "properties": {
+                "check": { "type": "string" },
+                "result": { "type": "string", "enum": ["pass", "fail", "not-applicable"] },
+                "mechanism": { "type": "string", "enum": ["schema-validation", "contract-lint", "harness-gate", "eval-run", "catalog-record", "export-roundtrip"] },
+                "evidence_ref": { "type": "string", "description": "Path, audit event id, or eval_id proving the result." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "critical_blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["blocker_id", "description", "failing_artifact", "failing_field", "required_fix"],
+        "properties": {
+          "blocker_id": { "type": "string" },
+          "description": { "type": "string" },
+          "failing_artifact": { "type": "string" },
+          "failing_field": { "type": "string" },
+          "required_fix": { "type": "string" }
+        }
+      }
+    },
+    "score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "verdict": { "type": "string", "enum": ["pass", "defer", "block"] },
+    "approvals_required": {
+      "type": "array",
+      "items": { "type": "object", "required": ["role"], "properties": { "role": { "type": "string" }, "named_approver": { "type": "string" } } }
+    }
+  }
+}
