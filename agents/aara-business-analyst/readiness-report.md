@@ -1,10 +1,10 @@
 # Agent Readiness Report — aara-business-analyst
 
-Generated 2026-07-05T12:34:12Z · rubric 0.1.0 · agent version 0.1.0
+Generated 2026-07-05T12:43:41Z · rubric 0.1.0 · agent version 0.1.0
 
 ## Verdict
 
-**DEFER** — score 83.0/100
+**PASS** — score 86.8/100
 
 Every field below is populated from verifiable checks, never self-attestation.
 
@@ -24,7 +24,7 @@ Every field below is populated from verifiable checks, never self-attestation.
 |---|---:|---:|---:|
 | Business scope and ownership | 10 | 3/3 | 10.00 |
 | Autonomy and approval boundaries | 15 | 4/4 | 15.00 |
-| MCP tool contract completeness | 15 | 3/4 | 11.25 |
+| MCP tool contract completeness | 15 | 4/4 | 15.00 |
 | Identity and permissions | 15 | 2/3 | 10.00 |
 | Data and source-of-truth mapping | 10 | 3/3 | 10.00 |
 | Evaluation plan and test coverage | 15 | 3/4 | 11.25 |
@@ -34,8 +34,6 @@ Every field below is populated from verifiable checks, never self-attestation.
 
 ## Failing Checks and Required Fixes
 
-- `manifest-agent-match` (MCP tool contract completeness, schema-validation)
-  - Evidence: ../examples/ba-agent.manifest.yaml
 - `identity-complete` (Identity and permissions, schema-validation)
   - Evidence: ../agents/aara-business-analyst/agent-identity-spec.json
 - `eval-runs-present` (Evaluation plan and test coverage, eval-run)
@@ -59,7 +57,7 @@ Every field below is populated from verifiable checks, never self-attestation.
 | contracts-exist | pass | contract-lint | ../tool-contracts |
 | contracts-lint | pass | contract-lint | ../tool-contracts |
 | contracts-pinned | pass | contract-lint | ../examples/ba-agent.manifest.yaml |
-| manifest-agent-match | fail | schema-validation | ../examples/ba-agent.manifest.yaml |
+| manifest-agent-match | pass | schema-validation | ../examples/ba-agent.manifest.yaml |
 | identity-valid | pass | schema-validation | ../agents/aara-business-analyst/agent-identity-spec.json |
 | identity-complete | fail | schema-validation | ../agents/aara-business-analyst/agent-identity-spec.json |
 | identity-scopes-match | pass | schema-validation | ../agents/aara-business-analyst/agent-identity-spec.json |

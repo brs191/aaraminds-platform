@@ -11,6 +11,7 @@ Single entry point for the AaraMinds Platform document set. When documents disag
 | 3 | `execution-package/mvp-prd.md` (+ rubric, backlog, schemas doc, plans) | Agent Factory layer: intake → classification → generation → readiness verdict | Draft v0.1, 2026-07-05 |
 | 4 | `docs/` (proof flow, release-gate thresholds, runtime verification notes) | Implementation-facing notes for the harness in `platform/` | Active |
 | — | `schemas/*.schema.json` | Machine contracts of record, shared by levels 2–4 | Enforced by `aapctl validate` |
+| — | `governance/readiness-rubric.yaml` | Canonical readiness scoring config (weights, thresholds, critical checks) | Enforced by `aapctl readiness`; the narrative in `execution-package/readiness-scoring-rubric.md` is rationale only |
 
 ## How the layers reconcile
 

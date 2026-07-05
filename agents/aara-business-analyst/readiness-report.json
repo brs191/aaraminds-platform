@@ -2,7 +2,7 @@
   "agent_id": "aara-business-analyst",
   "agent_version": "0.1.0",
   "rubric_version": "0.1.0",
-  "generated_at": "2026-07-05T12:34:12Z",
+  "generated_at": "2026-07-05T12:43:41Z",
   "owners": {
     "business_owner": "Raja Shekar Bollam",
     "technical_owner": "Raja Shekar Bollam (acting engineering lead)"
@@ -77,8 +77,8 @@
       "area": "MCP tool contract completeness",
       "weight": 15,
       "checks_total": 4,
-      "checks_passed": 3,
-      "score": 11.25,
+      "checks_passed": 4,
+      "score": 15,
       "evidence": [
         {
           "check": "contracts-exist",
@@ -100,7 +100,7 @@
         },
         {
           "check": "manifest-agent-match",
-          "result": "fail",
+          "result": "pass",
           "mechanism": "schema-validation",
           "evidence_ref": "../examples/ba-agent.manifest.yaml"
         }
@@ -282,8 +282,8 @@
     }
   ],
   "critical_blockers": [],
-  "score": 83,
-  "verdict": "defer",
+  "score": 86.75,
+  "verdict": "pass",
   "approvals_required": [
     {
       "role": "business-owner"

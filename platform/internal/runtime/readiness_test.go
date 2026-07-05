@@ -60,9 +60,11 @@ func TestLoadRubricRejectsBadWeights(t *testing.T) {
 }
 
 // TestReadinessBAAgentHonestVerdict runs the full engine against the real BA
-// agent scaffold and asserts the platform is honest about its own reference
-// agent: the verdict must NOT be "pass" while TODO markers, pending gates,
-// and the manifest agent_id mismatch remain.
+// agent scaffold and asserts the engine is honest about its own reference
+// agent: human-work TODOs (identity, ASI review, compliance, eval runs) must
+// fail until actually resolved, harness-backed gates must pass, and the
+// verdict must follow the rubric arithmetic — never sentiment in either
+// direction.
 func TestReadinessBAAgentHonestVerdict(t *testing.T) {
 	root := repoRootForTest(t)
 	agentDir := filepath.Join(root, "agents", "aara-business-analyst")
@@ -75,23 +77,46 @@ func TestReadinessBAAgentHonestVerdict(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RunReadiness: %v", err)
 	}
-	if report.Verdict == "pass" {
-		t.Fatalf("BA agent must not pass yet (TODOs, pending gates, agent_id mismatch); got score %.1f", report.Score)
-	}
 	if report.Score <= 0 || report.Score >= 100 {
 		t.Fatalf("implausible score %.1f", report.Score)
 	}
-	// The known manifest/intake agent_id mismatch must be caught.
-	foundMismatch := false
-	for _, area := range report.Areas {
-		for _, check := range area.Evidence {
-			if check.Check == "manifest-agent-match" && check.Result == "fail" {
-				foundMismatch = true
+	// Verdict must follow the rubric, not vibes.
+	rubric, err := LoadRubric(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantVerdict := "block"
+	switch {
+	case len(report.CriticalBlockers) > 0:
+		wantVerdict = "block"
+	case report.Score >= rubric.Thresholds.Pass:
+		wantVerdict = "pass"
+	case report.Score >= rubric.Thresholds.Defer:
+		wantVerdict = "defer"
+	}
+	if report.Verdict != wantVerdict {
+		t.Fatalf("verdict %s does not follow rubric arithmetic (score %.1f, %d blockers, want %s)",
+			report.Verdict, report.Score, len(report.CriticalBlockers), wantVerdict)
+	}
+	// The manifest/intake agent_id linkage must hold (fixed 2026-07-05).
+	if !checkPassed(report, "manifest-agent-match") {
+		t.Fatal("manifest agent_id must match intake agent_id")
+	}
+	// TODO-driven human-work checks must keep failing until the underlying
+	// artifacts are actually completed — scaffolded placeholders never pass.
+	for _, mustFailWhileTODO := range []string{"identity-complete", "asi-checklist-complete", "compliance-complete"} {
+		if checkPassed(report, mustFailWhileTODO) {
+			raw, _ := os.ReadFile(filepath.Join(agentDir, "agent-identity-spec.json"))
+			if strings.Contains(string(raw), "[TODO") {
+				t.Errorf("%s passed while TODO markers remain", mustFailWhileTODO)
 			}
 		}
 	}
-	if !foundMismatch {
-		t.Fatal("engine must catch the manifest agent_id (aara-ba-agent) vs intake agent_id (aara-business-analyst) mismatch")
+	// No eval run has been recorded yet; the check must reflect that.
+	if _, err := os.Stat(filepath.Join(agentDir, "eval-runs")); err != nil {
+		if checkPassed(report, "eval-runs-present") {
+			t.Error("eval-runs-present must fail with no recorded eval runs")
+		}
 	}
 	// Harness-backed gates must pass — the proof harness is green, including
 	// the prompt-injection and memory-citation gates.

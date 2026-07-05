@@ -1,5 +1,5 @@
 {
-  "agent_id": "aara-ba-agent",
+  "agent_id": "aara-business-analyst",
   "manifest_version": "1.0.0",
   "owner": "Raja",
   "runtime": "claude-agent-sdk",

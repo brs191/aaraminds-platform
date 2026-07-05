@@ -1,6 +1,14 @@
 # MVP Backlog (Brownfield Delta)
 
-Status legend: **EXISTS** (harness already does it), **EXTEND** (modify existing code), **NEW** (build). Estimate class: S (≤1 day), M (2–4 days), L (1–2 weeks).
+Status legend: **EXISTS** (harness already does it), **EXTEND** (modify existing code), **NEW** (build), **DONE ✓** (shipped). Estimate class: S (≤1 day), M (2–4 days), L (1–2 weeks).
+
+> **Progress (2026-07-05):** Epics 1–4 (intake, classifier, scaffold + section
+> validator, contract lint), Epic 8 (Readiness Engine incl. state enforcement),
+> and Epic 9 (export round-trip) are **DONE ✓** — see `aapctl intake|classify|
+> scaffold|sections|readiness|export`. The prompt-injection and memory-citation
+> proof gates shipped with Epic 8 follow-up. Remaining: Epic 5 identity
+> provisioning spike, Epic 6 consistency check, Epic 7 golden-suite population,
+> Epics 10–12, and the two non-BA templates.
 
 ## Epic 1 — Agent Intake and Catalog
 | Story | Status | Est |

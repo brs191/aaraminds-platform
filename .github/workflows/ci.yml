@@ -35,6 +35,32 @@ jobs:
           go test -race ./...
           go vet ./...
           go run ./cmd/aapctl validate
+          go run ./cmd/aapctl contracts
+          go run ./cmd/aapctl mcp-tools
+          go run ./cmd/aapctl prove
+
+      - name: Agent Factory pipeline
+        working-directory: platform
+        run: |
+          go build -o /tmp/aapctl ./cmd/aapctl
+          /tmp/aapctl intake -root ..
+          /tmp/aapctl classify -root ..
+          /tmp/aapctl sections -root .. -dir agents/aara-business-analyst
+
+      - name: Readiness gate (defer allowed, block fails)
+        working-directory: platform
+        run: |
+          # aapctl readiness exit codes: 0 pass, 3 defer, 4 block, 1 error.
+          # A PR may leave the BA agent deferred, but must never block it or
+          # break the engine. go run wraps exit codes, so use the built binary.
+          set +e
+          /tmp/aapctl readiness -root ..
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then
+            echo "readiness exited $code (block or error) — failing CI"
+            exit 1
+          fi
 
       - name: Verify MCP server formatting
         run: |

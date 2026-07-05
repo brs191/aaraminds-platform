@@ -16,7 +16,7 @@ func RunPhase1Proof(root string) (ProofReport, error) {
 	}
 	ctx := RunContext{
 		RunID:           "run-proof-001",
-		AgentID:         "aara-ba-agent",
+		AgentID:         "aara-business-analyst",
 		ManifestVersion: "1.0.0",
 		EngagementID:    "eng-example-001",
 		UserID:          "user-example-001",

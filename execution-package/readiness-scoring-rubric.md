@@ -3,6 +3,11 @@
 Status: draft for Phase 0 review. Implements BRD v2.1 BR-010 / AC-008.
 Principle: **every point is earned by a verifiable check, never self-attestation.**
 
+> **Canonical source:** the machine-readable rubric is `governance/readiness-rubric.yaml`
+> (validated against `schemas/readiness-rubric.schema.json` and enforced by
+> `aapctl readiness`). This document is the narrative rationale; where the two
+> disagree, the YAML wins. Check implementation status below reflects 2026-07-05.
+
 ## How scoring works
 
 Each readiness area has a weight and a set of checks. An area's score = weight × (passed checks / total applicable checks). Checks marked **[HARNESS]** are automated today via `aapctl validate` / `aapctl prove` and `docs/release-gate-thresholds.md`; checks marked **[NEW]** need building in the Readiness Engine (see mvp-backlog.md, Epic 8).
@@ -15,9 +20,9 @@ Each readiness area has a weight and a set of checks. An area's score = weight �
 | 2 | Autonomy and approval boundaries | 15 | Autonomy level assigned with justification [NEW]; `approval_boundaries.default` set and `blocked_actions_ref` resolves [HARNESS]; every write-action tool has boundary `soft`/`hard`/`blocked` [HARNESS]; approval golden suite N≥50 at 100% pass [HARNESS] |
 | 3 | MCP tool contract completeness | 15 | Every `allowed_tools` entry pins a contract version [HARNESS]; contracts validate against `schemas/mcp-tool-contract.schema.json` [HARNESS]; example invocation validates against `input_schema` [HARNESS]; failure modes + audit_event_schema present [HARNESS] |
 | 4 | Identity and permissions | 15 | Identity spec validates against `schemas/agent-identity-spec.schema.json` [NEW]; principal, credential pattern, scopes, lifecycle defined [NEW]; no shared/production credentials in local dev config [NEW] |
-| 5 | Data / source-of-truth mapping | 10 | Every data domain referenced by tools maps to an authoritative source [NEW]; memory `allowed_classifications` consistent with data-evidence contract [HARNESS partial]; memory citation enforcement 100% [NEW — gate defined in thresholds; citation link not yet explicitly tested in proof.go] |
+| 5 | Data / source-of-truth mapping | 10 | Every data domain referenced by tools maps to an authoritative source [HARNESS: domains-mapped]; memory `allowed_classifications` consistent with data-evidence contract [HARNESS partial]; memory citation enforcement 100% [HARNESS: proof gates UncitedMemoryWriteDenied + UncitedMemoryDenialAudited] |
 | 6 | Evaluation plan and test coverage | 15 | Eval plan contains all 7 categories (golden, tool accuracy, retrieval/evidence, safety/prompt-injection, latency, cost, regression) [NEW]; `evaluation_gate.required=true` with resolvable `benchmark_ref` [HARNESS]; eval-run results meet `release-gate-thresholds.md` where executed [HARNESS] |
-| 7 | Security / governance controls | 10 | OWASP ASI01–ASI10 mapping complete [NEW]; prompt-injection tool-escalation tests 100% pass [NEW — gate defined in thresholds; no proof.go implementation yet]; tool-denial tests 100% pass [HARNESS]; audit coverage 100% [HARNESS] |
+| 7 | Security / governance controls | 10 | OWASP ASI01–ASI10 mapping complete [HARNESS: asi-checklist-complete]; prompt-injection tool-escalation tests 100% pass [HARNESS: proof gates InjectionToolDenied + InjectionApprovalEnforced + InjectionManifestUnchanged]; tool-denial tests 100% pass [HARNESS]; audit coverage 100% [HARNESS] |
 | 8 | Compliance evidence | 5 | AI Act role assessed (deployer/provider) [NEW]; ISO 42001 registry fields populated in catalog record [NEW] |
 | 9 | Export / build readiness | 5 | Artifact folder complete per artifact-schemas.md [NEW]; export round-trips (re-import reproduces validation results) [NEW]; telemetry `payload_mode=hash-and-reference` for active/platform-ready [HARNESS] |
 

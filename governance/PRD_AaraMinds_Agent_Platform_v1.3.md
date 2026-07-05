@@ -259,7 +259,7 @@ Every agent must have a manifest. An agent without a valid manifest cannot start
 ### 10.2 Example BA Agent manifest
 
 ```yaml
-agent_id: aara-ba-agent
+agent_id: aara-business-analyst
 manifest_version: 1.0.0
 owner: Raja
 runtime: claude-agent-sdk
@@ -616,7 +616,7 @@ The BA Agent is the reference implementation and release proof. The flow below m
 
 ```text
 1. User submits BA engagement brief.
-2. Runtime loads `aara-ba-agent` manifest.
+2. Runtime loads the `aara-business-analyst` manifest.
 3. Runtime validates manifest schema and pins skill/tool contract versions.
 4. Runtime resolves allowed skills from `skills-pack/`.
 5. Runtime initializes run context:

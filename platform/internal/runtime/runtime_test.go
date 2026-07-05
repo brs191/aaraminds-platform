@@ -111,13 +111,13 @@ func TestTrueYAMLManifestValidates(t *testing.T) {
 	dir := t.TempDir()
 	manifestPath := filepath.Join(dir, "manifest.yaml")
 	writeFile(t, manifestPath, `
-agent_id: aara-ba-agent
+agent_id: aara-business-analyst
 manifest_version: 1.0.0
 owner: Raja
 runtime: claude-agent-sdk
 status: draft
 allowed_skills:
-  - skill_id: aara-ba-agent-core
+  - skill_id: aara-business-analyst-core
     skill_version: existing-package-baseline
     source_path: skills-pack/agent-packages/aara-business-analyst/agent.md
 allowed_tools:
@@ -162,14 +162,14 @@ func TestContractSchemaRejectsMissingRequiredField(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeFile(t, manifestPath, `{
-  "agent_id": "aara-ba-agent",
+  "agent_id": "aara-business-analyst",
   "manifest_version": "1.0.0",
   "owner": "Raja",
   "runtime": "claude-agent-sdk",
   "status": "draft",
   "allowed_skills": [
     {
-      "skill_id": "aara-ba-agent-core",
+      "skill_id": "aara-business-analyst-core",
       "skill_version": "existing-package-baseline",
       "source_path": "skills-pack/agent-packages/aara-business-analyst/agent.md"
     }
@@ -340,7 +340,7 @@ func TestOpenTelemetrySpansIncludeGenAIAndAAPAttributes(t *testing.T) {
 	}
 
 	spans := recorder.Ended()
-	rootSpan := findEndedSpan(t, spans, "invoke_agent aara-ba-agent")
+	rootSpan := findEndedSpan(t, spans, "invoke_agent aara-business-analyst")
 	toolSpan := findEndedSpan(t, spans, "tool.invoked")
 	resultSpan := findEndedSpan(t, spans, "tool.result_accepted")
 	if toolSpan.SpanKind() != trace.SpanKindClient {
@@ -380,10 +380,10 @@ func TestOpenTelemetrySpansIncludeGenAIAndAAPAttributes(t *testing.T) {
 	expected := map[string]string{
 		"aap.run_id":            "run-test-001",
 		"aap.engagement_id":     "eng-example-001",
-		"aap.agent_id":          "aara-ba-agent",
+		"aap.agent_id":          "aara-business-analyst",
 		"aap.tool_name":         "get_project_context",
 		"aap.audit_event_id":    invocation.AuditEventID,
-		"gen_ai.agent.id":       "aara-ba-agent",
+		"gen_ai.agent.id":       "aara-business-analyst",
 		"gen_ai.operation.name": "execute_tool",
 		"gen_ai.tool.name":      "get_project_context",
 		"gen_ai.tool.type":      "function",
@@ -549,14 +549,14 @@ func TestUnclassifiedActionEscalatedToDefaultBoundary(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeFile(t, manifestPath, `{
-  "agent_id": "aara-ba-agent",
+  "agent_id": "aara-business-analyst",
   "manifest_version": "1.0.0",
   "owner": "Raja",
   "runtime": "claude-agent-sdk",
   "status": "draft",
   "allowed_skills": [
     {
-      "skill_id": "aara-ba-agent-core",
+      "skill_id": "aara-business-analyst-core",
       "skill_version": "existing-package-baseline",
       "source_path": "skills-pack/agent-packages/aara-business-analyst/agent.md"
     }
@@ -697,14 +697,14 @@ func TestBlockedActionTypeDeniedEvenWhenManifestAllowsTool(t *testing.T) {
 		t.Fatal(err)
 	}
 	writeFile(t, manifestPath, `{
-  "agent_id": "aara-ba-agent",
+  "agent_id": "aara-business-analyst",
   "manifest_version": "1.0.0",
   "owner": "Raja",
   "runtime": "claude-agent-sdk",
   "status": "draft",
   "allowed_skills": [
     {
-      "skill_id": "aara-ba-agent-core",
+      "skill_id": "aara-business-analyst-core",
       "skill_version": "existing-package-baseline",
       "source_path": "skills-pack/agent-packages/aara-business-analyst/agent.md"
     }
@@ -1082,7 +1082,7 @@ func TestExpiredMemoryIsHidden(t *testing.T) {
 	store := NewMemoryStore()
 	record := MemoryRecord{
 		MemoryID:       "mem-expired-001",
-		AgentID:        "aara-ba-agent",
+		AgentID:        "aara-business-analyst",
 		EngagementID:   "eng-example-001",
 		Classification: "client-confidential",
 		ContentRef:     "memory://eng-example-001/mem-expired-001",
@@ -1204,7 +1204,7 @@ func newStartedTestEngine(t *testing.T) *Engine {
 func testRunContext() RunContext {
 	return RunContext{
 		RunID:           "run-test-001",
-		AgentID:         "aara-ba-agent",
+		AgentID:         "aara-business-analyst",
 		ManifestVersion: "1.0.0",
 		EngagementID:    "eng-example-001",
 		UserID:          "user-example-001",
