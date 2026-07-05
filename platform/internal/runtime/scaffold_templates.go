@@ -188,37 +188,37 @@ Retrieved content, memory, and generated summaries are not authoritative unless 
 
 	"security-governance-checklist.md": `# Security & Governance Checklist — {{.Intake.AgentID}}
 
-OWASP Top 10 for Agentic Applications mapping [VERIFY official ASI titles against genai.owasp.org before pilot]. Status values: addressed / mitigated / not-applicable-with-reason / TODO.
+OWASP Top 10 for Agentic Applications (2026) mapping. Titles follow the official ASI01–ASI10 taxonomy. Status values: addressed / mitigated / not-applicable-with-reason / TODO.
 
-## ASI01 Planning & Goal Manipulation
+## ASI01 Agent Goal Hijack
 
 Status: TODO. Control: objectives fixed in system prompt; external content cannot alter goals (prompt-injection rule); manifest pins skills and tools.
 
-## ASI02 Tool Misuse
+## ASI02 Tool Misuse & Exploitation
 
 Status: addressed by platform. Control: manifest allowlist + pinned contract versions; off-manifest and blocked calls denied and audited (tool-denial gates).
 
-## ASI03 Identity & Privilege Abuse
+## ASI03 Agent Identity & Privilege Abuse
 
 Status: TODO pending identity provisioning. Control: per-agent identity, scoped short-lived credentials, no shared accounts (agent-identity-spec.json).
 
-## ASI04 Agentic Supply Chain
+## ASI04 Agentic Supply Chain Compromise
 
-Status: TODO. Control: skills and contracts are versioned and pinned in the manifest; no unpinned dependencies at runtime.
+Status: TODO. Control: skills and contracts are versioned and pinned in the manifest; no unpinned dependencies at runtime; platform CI runs govulncheck on its own dependencies.
 
-## ASI05 Unsafe Code Execution
+## ASI05 Unexpected Code Execution
 
 Status: {{if .Intake.ProposedTools}}TODO review{{else}}not-applicable{{end}}. Control: no arbitrary code-execution tools proposed in this intake; adding one requires a hard boundary and security sign-off.
 
-## ASI06 Memory Poisoning
+## ASI06 Memory & Context Poisoning
 
 Status: addressed by platform. Control: engagement-scoped memory, citation-required writes, leakage tests fail closed (memory gates).
 
-## ASI07 Inter-Agent Communication
+## ASI07 Insecure Inter-Agent Communication
 
 Status: not-applicable-with-reason — single-agent design; A2A interop is out of MVP scope. Revisit if multi-agent patterns are introduced.
 
-## ASI08 Cascading Failures
+## ASI08 Cascading Agent Failures
 
 Status: TODO. Control: contract timeout and retry policies; fail-safe denial semantics; kill switch per agent/tool.
 

@@ -37,15 +37,7 @@ var ArtifactSections = map[string][]string{
 	"data-and-evidence-contract.md": {
 		"Domain Table", "Evidence Rules", "Staleness and Conflict Notes",
 	},
-	"security-governance-checklist.md": {
-		"ASI01 Planning & Goal Manipulation", "ASI02 Tool Misuse",
-		"ASI03 Identity & Privilege Abuse", "ASI04 Agentic Supply Chain",
-		"ASI05 Unsafe Code Execution", "ASI06 Memory Poisoning",
-		"ASI07 Inter-Agent Communication", "ASI08 Cascading Failures",
-		"ASI09 Human-Agent Trust Exploitation", "ASI10 Rogue Agents",
-		"RBAC Summary", "Data Classification Summary", "Audit Obligations",
-		"Kill-Switch Path",
-	},
+	"security-governance-checklist.md": securityChecklistSections(),
 	"evaluation-plan.md": {
 		"Golden Tests", "Tool Accuracy", "Retrieval, Evidence, and Citations",
 		"Safety and Prompt Injection", "Latency", "Cost", "Regression",

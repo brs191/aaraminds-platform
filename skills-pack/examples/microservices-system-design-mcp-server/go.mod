@@ -1,6 +1,6 @@
 module github.com/example/microservices-system-design-mcp-server
 
-go 1.25.5
+go 1.25.11
 
 // MCP Go SDK pin. Re-verify against skills/mcp/00-ecosystem-facts.md
 // before production use. As of May 2026 the verified-current versions are:
