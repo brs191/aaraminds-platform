@@ -28,11 +28,26 @@ func ScaffoldAgent(root, intakePath, outDir string, force bool) (string, []strin
 	}
 
 	dir := filepath.Join(outDir, intake.AgentID)
-	if entries, err := os.ReadDir(dir); err == nil && len(entries) > 0 && !force {
+	entries, readErr := os.ReadDir(dir)
+	switch {
+	case readErr == nil && len(entries) > 0 && !force:
 		return "", nil, fmt.Errorf("scaffold target %s is not empty; use force to overwrite", dir)
+	case readErr != nil && !os.IsNotExist(readErr):
+		return "", nil, fmt.Errorf("inspect scaffold target %s: %w", dir, readErr)
 	}
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", nil, fmt.Errorf("create scaffold dir: %w", err)
+	}
+	if force {
+		// Remove previously generated artifacts so a re-scaffold cannot leave
+		// stale files behind (matters for the export round-trip, AC-009).
+		// Only known generated names are removed; hand-added files survive.
+		stale := append(sortedArtifactNames(), generatedJSONArtifacts...)
+		for _, name := range stale {
+			if err := os.Remove(filepath.Join(dir, name)); err != nil && !os.IsNotExist(err) {
+				return "", nil, fmt.Errorf("remove stale artifact %s: %w", name, err)
+			}
+		}
 	}
 
 	data := scaffoldData{
@@ -98,6 +113,14 @@ func ScaffoldAgent(root, intakePath, outDir string, force bool) (string, []strin
 	return dir, files, nil
 }
 
+// generatedJSONArtifacts are the machine-validated JSON files the scaffold
+// owns alongside the Markdown artifacts.
+var generatedJSONArtifacts = []string{
+	"agent-identity-spec.json",
+	"data-evidence-contract.json",
+	"classification.json",
+}
+
 type scaffoldData struct {
 	Intake         AgentIntake
 	Class          Classification
@@ -159,6 +182,17 @@ func identitySpec(intake AgentIntake) map[string]any {
 			"permission":    permission,
 			"environment":   "dev",
 			"justification": tool.Description,
+		})
+	}
+	if len(scopes) == 0 {
+		// The identity schema requires at least one scope. An advise-only
+		// agent with no tools still reads approved sources; emit a placeholder
+		// that passes the schema and prompts the architect.
+		scopes = append(scopes, map[string]any{
+			"resource":      "[TODO: approved read-only source]",
+			"permission":    "read",
+			"environment":   "dev",
+			"justification": "advisory agent reads approved sources only; no tools proposed at intake",
 		})
 	}
 	return map[string]any{

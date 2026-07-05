@@ -1,6 +1,9 @@
 package aapruntime
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func intakeWith(intent string, in ClassificationInputs, tools ...IntakeTool) AgentIntake {
 	return AgentIntake{
@@ -122,12 +125,43 @@ func TestClassifyWriteToolRationale(t *testing.T) {
 	}
 	found := false
 	for _, r := range c.Rationale {
-		if containsSubstring(r, "create_draft") {
+		if strings.Contains(r, "create_draft") {
 			found = true
 		}
 	}
 	if !found {
 		t.Fatalf("expected write-tool rationale, got %v", c.Rationale)
+	}
+}
+
+func TestClassifyWriteToolForcesRiskFloor(t *testing.T) {
+	// Self-attested "low" action risk must be floored to medium when the
+	// intake itself declares write tools.
+	c, err := ClassifyAgent(intakeWith("draft-outputs", lowInputs(),
+		IntakeTool{ToolName: "create_draft", ActionType: "draft_create", Writes: true, Description: "d"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.RiskScore != 1 {
+		t.Fatalf("expected risk score 1 (floored medium action risk), got %d", c.RiskScore)
+	}
+	floored := false
+	for _, r := range c.Rationale {
+		if strings.Contains(r, "floored") {
+			floored = true
+		}
+	}
+	if !floored {
+		t.Fatalf("expected floor rationale, got %v", c.Rationale)
+	}
+	// Read-only agent with identical inputs keeps score 0.
+	readonly, err := ClassifyAgent(intakeWith("draft-outputs", lowInputs(),
+		IntakeTool{ToolName: "read_thing", ActionType: "thing_read", Writes: false, Description: "d"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if readonly.RiskScore != 0 {
+		t.Fatalf("read-only agent should score 0, got %d", readonly.RiskScore)
 	}
 }
 
@@ -164,17 +198,4 @@ func containsString(list []string, v string) bool {
 		}
 	}
 	return false
-}
-
-func containsSubstring(s, sub string) bool {
-	return len(s) >= len(sub) && (s == sub || len(sub) == 0 || indexOf(s, sub) >= 0)
-}
-
-func indexOf(s, sub string) int {
-	for i := 0; i+len(sub) <= len(s); i++ {
-		if s[i:i+len(sub)] == sub {
-			return i
-		}
-	}
-	return -1
 }

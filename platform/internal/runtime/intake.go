@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 // AgentIntake is the structured intake record required before any agent
@@ -81,8 +82,9 @@ func LoadIntake(root, path string) (AgentIntake, error) {
 func checkIntakeInvariants(intake AgentIntake) error {
 	// Owners must be distinct people so accountability lines do not merge
 	// silently. The same individual may hold both roles in early phases, but
-	// that must be an explicit statement, not a copy-paste default.
-	if intake.Owners.BusinessOwner == intake.Owners.TechnicalOwner {
+	// that must be an explicit statement, not a copy-paste default. Compare
+	// normalized (trimmed, case-folded) so whitespace tricks don't bypass it.
+	if strings.EqualFold(strings.TrimSpace(intake.Owners.BusinessOwner), strings.TrimSpace(intake.Owners.TechnicalOwner)) {
 		return fmt.Errorf("business_owner and technical_owner are identical (%q); if intentional, differentiate with a role suffix, e.g. %q",
 			intake.Owners.BusinessOwner, intake.Owners.BusinessOwner+" (acting)")
 	}
@@ -90,7 +92,10 @@ func checkIntakeInvariants(intake AgentIntake) error {
 	if intake.ExecutionIntent != "advise-only" && len(intake.ProposedTools) == 0 {
 		return fmt.Errorf("execution_intent %q requires at least one proposed tool", intake.ExecutionIntent)
 	}
-	// Every write tool must be covered by a stated approval need.
+	// Every write tool must be covered by a stated approval need. The JSON
+	// schema already requires a non-empty approval_needs, so this is
+	// unreachable via LoadIntake; it stays as defense-in-depth for callers
+	// that construct AgentIntake directly (tests, future API intake).
 	for _, tool := range intake.ProposedTools {
 		if tool.Writes && intake.ApprovalNeeds == "" {
 			return fmt.Errorf("tool %q writes but approval_needs is empty", tool.ToolName)

@@ -22,11 +22,12 @@ Requirements work on client engagements is hand-assembled: elicitation notes, ga
 
 ## Autonomy Level & Justification
 
-Level 2 (Drafting), risk tier medium (score 3), MVP policy: allowed.
+Level 2 (Drafting), risk tier medium (score 4), MVP policy: allowed.
 
 Classifier rationale:
 - execution_intent "draft-outputs" maps to level 2 (Drafting)
-- risk score 3 from classification inputs -> tier medium
+- action_risk floored from "low" to "medium": intake declares write tools
+- risk score 4 from classification inputs -> tier medium
 - tool "create_requirements_draft" writes: contract must set approval_boundary soft, hard, or blocked
 
 ## Workflow Overview

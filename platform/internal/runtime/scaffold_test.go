@@ -123,6 +123,101 @@ func TestSectionValidatorDetectsRemovedSection(t *testing.T) {
 	}
 }
 
+func TestSectionValidatorIgnoresHeadingsInsideCodeFences(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "risk-register.md")
+	content := "# Risk Register\n\n## Risk Table\n\nSome content.\n\n```text\n## This is code, not a heading\n# Neither is this\n```\n\nMore content after the fence.\n"
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	report, err := ValidateArtifactSections(path, ArtifactSections["risk-register.md"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !report.OK() {
+		t.Fatalf("fenced pseudo-headings must not break sections: %+v", report)
+	}
+}
+
+func TestScaffoldJSONDeterministic(t *testing.T) {
+	root, dir1 := scaffoldBAFixture(t)
+	intakePath := filepath.Join(root, "examples", "ba-agent.intake.yaml")
+	out2 := t.TempDir()
+	dir2, _, err := ScaffoldAgent(root, intakePath, out2, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range generatedJSONArtifacts {
+		a, err := os.ReadFile(filepath.Join(dir1, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		b, err := os.ReadFile(filepath.Join(dir2, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(a) != string(b) {
+			t.Errorf("non-deterministic JSON output for %s", name)
+		}
+	}
+}
+
+func TestScaffoldAdviseOnlyNoTools(t *testing.T) {
+	root := repoRootForTest(t)
+	content := `agent_id: advisory-test-agent
+submitted_by: raja
+submitted_at: "2026-07-05T10:00:00Z"
+business_problem: Architecture reviews lack a consistent advisory framing and repeatable structure.
+owners:
+  business_owner: Raja Shekar Bollam
+  technical_owner: Raja Shekar Bollam (acting engineering lead)
+users:
+  - Enterprise AI Architect
+expected_outcomes:
+  - Consistent advisory reviews
+execution_intent: advise-only
+proposed_tools: []
+data_domains:
+  - domain: architecture-docs
+    authoritative_source: knowledge base
+    classification: internal
+risks:
+  - Advisory output may be over-trusted
+approval_needs: None; advisory only, no write actions.
+classification_inputs:
+  action_risk: low
+  data_sensitivity: internal
+  reversibility: reversible
+  user_impact: low
+  financial_impact: low
+  production_impact: low
+`
+	fixtureDir := t.TempDir()
+	intakePath := filepath.Join(fixtureDir, "intake.yaml")
+	if err := os.WriteFile(intakePath, []byte(content), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	out := t.TempDir()
+	dir, _, err := ScaffoldAgent(root, intakePath, out, false)
+	if err != nil {
+		t.Fatalf("advise-only scaffold must succeed: %v", err)
+	}
+	// Identity spec must still pass its schema (minItems 1 on scopes).
+	if err := ValidateStructuredFile(filepath.Join(dir, "agent-identity-spec.json"),
+		filepath.Join(root, "schemas", "agent-identity-spec.schema.json")); err != nil {
+		t.Fatalf("advise-only identity spec failed schema: %v", err)
+	}
+	reports, err := ValidateArtifactDir(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, report := range reports {
+		if !report.OK() {
+			t.Errorf("%s: missing %v empty %v", report.Artifact, report.Missing, report.Empty)
+		}
+	}
+}
+
 func TestSectionValidatorDetectsEmptySection(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "risk-register.md")

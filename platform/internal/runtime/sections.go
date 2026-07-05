@@ -3,6 +3,8 @@ package aapruntime
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -98,7 +100,7 @@ func ValidateArtifactDir(dir string) ([]SectionReport, error) {
 	reports := make([]SectionReport, 0, len(ArtifactSections))
 	names := sortedArtifactNames()
 	for _, name := range names {
-		path := dir + string(os.PathSeparator) + name
+		path := filepath.Join(dir, name)
 		if _, err := os.Stat(path); err != nil {
 			reports = append(reports, SectionReport{Artifact: path, Missing: []string{"<file missing>"}})
 			continue
@@ -117,12 +119,7 @@ func sortedArtifactNames() []string {
 	for name := range ArtifactSections {
 		names = append(names, name)
 	}
-	// insertion sort keeps this dependency-free and deterministic
-	for i := 1; i < len(names); i++ {
-		for j := i; j > 0 && names[j] < names[j-1]; j-- {
-			names[j], names[j-1] = names[j-1], names[j]
-		}
-	}
+	sort.Strings(names)
 	return names
 }
 
@@ -137,8 +134,27 @@ func sectionContents(markdown string) map[string]string {
 		}
 		body.Reset()
 	}
+	inFence := false
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
+		// Fenced code blocks are opaque: a "## " line inside a fence is
+		// content, not a section boundary. Without this, a code sample could
+		// silently truncate a section the readiness engine then trusts.
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			inFence = !inFence
+			if current != "" {
+				body.WriteString(line)
+				body.WriteString("\n")
+			}
+			continue
+		}
+		if inFence {
+			if current != "" {
+				body.WriteString(line)
+				body.WriteString("\n")
+			}
+			continue
+		}
 		if strings.HasPrefix(trimmed, "## ") {
 			flush()
 			current = strings.TrimSpace(strings.TrimPrefix(trimmed, "## "))

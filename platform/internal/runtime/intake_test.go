@@ -108,6 +108,16 @@ func TestLoadIntakeIdenticalOwnersRejected(t *testing.T) {
 	}
 }
 
+func TestLoadIntakeIdenticalOwnersWhitespaceRejected(t *testing.T) {
+	// Trailing whitespace or case differences must not bypass the check.
+	content := strings.Replace(validIntakeYAML(), "technical_owner: Raja Shekar Bollam (acting engineering lead)", `technical_owner: "raja shekar bollam "`, 1)
+	root, path := writeIntakeFixture(t, content)
+	_, err := LoadIntake(root, path)
+	if err == nil || !strings.Contains(err.Error(), "identical") {
+		t.Fatalf("expected normalized identical-owners failure, got: %v", err)
+	}
+}
+
 func TestLoadIntakePIIDomainForcesSensitivity(t *testing.T) {
 	content := strings.Replace(validIntakeYAML(), "classification: client-confidential", "classification: pii", 1)
 	root, path := writeIntakeFixture(t, content)

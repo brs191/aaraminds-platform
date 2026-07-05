@@ -46,24 +46,34 @@ func ClassifyAgent(intake AgentIntake) (Classification, error) {
 	c.Rationale = append(c.Rationale,
 		fmt.Sprintf("execution_intent %q maps to level %d (%s)", intake.ExecutionIntent, level, autonomyNames[level]))
 
-	c.RiskScore = riskScore(intake.Classification)
+	// Classification inputs are human-supplied; the classifier must not trust
+	// them blindly ("never self-attestation"). Derive floors from declared
+	// facts: any write tool forces effective action_risk to at least medium.
+	inputs := intake.Classification
+	if anyToolWrites(intake.ProposedTools) && lmh(inputs.ActionRisk) < 1 {
+		c.Rationale = append(c.Rationale,
+			fmt.Sprintf("action_risk floored from %q to \"medium\": intake declares write tools", inputs.ActionRisk))
+		inputs.ActionRisk = "medium"
+	}
+
+	c.RiskScore = riskScore(inputs)
 	c.RiskTier = riskTier(c.RiskScore)
 	c.Rationale = append(c.Rationale,
 		fmt.Sprintf("risk score %d from classification inputs -> tier %s", c.RiskScore, c.RiskTier))
 
 	// Risk-tier caps. A critical-risk agent never exceeds approval-gated
 	// execution; a high-risk agent never runs fully autonomous.
-	cap := 5
+	maxLevel := 5
 	switch c.RiskTier {
 	case "critical":
-		cap = 3
+		maxLevel = 3
 	case "high":
-		cap = 4
+		maxLevel = 4
 	}
-	if c.AutonomyLevel > cap {
+	if c.AutonomyLevel > maxLevel {
 		c.Rationale = append(c.Rationale,
-			fmt.Sprintf("level capped from %d to %d by risk tier %s", c.AutonomyLevel, cap, c.RiskTier))
-		c.AutonomyLevel = cap
+			fmt.Sprintf("level capped from %d to %d by risk tier %s", c.AutonomyLevel, maxLevel, c.RiskTier))
+		c.AutonomyLevel = maxLevel
 	}
 	c.AutonomyName = autonomyNames[c.AutonomyLevel]
 
@@ -141,6 +151,15 @@ func riskTier(score int) string {
 	default:
 		return "critical"
 	}
+}
+
+func anyToolWrites(tools []IntakeTool) bool {
+	for _, tool := range tools {
+		if tool.Writes {
+			return true
+		}
+	}
+	return false
 }
 
 func hasSignoff(list []string, v string) bool {

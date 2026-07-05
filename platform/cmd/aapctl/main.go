@@ -248,13 +248,18 @@ func scaffold(args []string) {
 
 func sections(args []string) {
 	fs := flag.NewFlagSet("sections", flag.ExitOnError)
-	dir := fs.String("dir", "", "agent artifact directory to validate")
+	root := fs.String("root", defaultRoot(), "repository root")
+	dir := fs.String("dir", "", "agent artifact directory relative to root (absolute paths used as-is)")
 	_ = fs.Parse(args)
 	if *dir == "" {
 		fmt.Fprintln(os.Stderr, "sections: -dir is required")
 		os.Exit(2)
 	}
-	reports, err := aapruntime.ValidateArtifactDir(*dir)
+	target := *dir
+	if !filepath.IsAbs(target) {
+		target = filepath.Join(*root, target)
+	}
+	reports, err := aapruntime.ValidateArtifactDir(target)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "section validation error:", err)
 		os.Exit(1)
