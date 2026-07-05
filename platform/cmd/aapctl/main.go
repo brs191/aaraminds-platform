@@ -29,9 +29,53 @@ func main() {
 		prove(os.Args[2:])
 	case "validate":
 		validate(os.Args[2:])
+	case "intake":
+		intake(os.Args[2:])
+	case "classify":
+		classify(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
+	}
+}
+
+func intake(args []string) {
+	fs := flag.NewFlagSet("intake", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	path := fs.String("file", "examples/ba-agent.intake.yaml", "intake file path relative to root")
+	_ = fs.Parse(args)
+
+	record, err := aapruntime.LoadIntake(*root, filepath.Join(*root, *path))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "intake validation failed:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("intake valid: %s (submitted by %s)\n", record.AgentID, record.SubmittedBy)
+	fmt.Printf("  execution_intent: %s | tools: %d | data domains: %d\n",
+		record.ExecutionIntent, len(record.ProposedTools), len(record.DataDomains))
+}
+
+func classify(args []string) {
+	fs := flag.NewFlagSet("classify", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	path := fs.String("file", "examples/ba-agent.intake.yaml", "intake file path relative to root")
+	_ = fs.Parse(args)
+
+	record, err := aapruntime.LoadIntake(*root, filepath.Join(*root, *path))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "intake validation failed:", err)
+		os.Exit(1)
+	}
+	classification, err := aapruntime.ClassifyAgent(record)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "classification failed:", err)
+		os.Exit(1)
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(classification); err != nil {
+		fmt.Fprintln(os.Stderr, "encode classification:", err)
+		os.Exit(1)
 	}
 }
 
@@ -190,7 +234,7 @@ func defaultRoot() string {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify> [flags]")
 }
 
 func flagSet(fs *flag.FlagSet, name string) bool {

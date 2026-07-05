@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/agent-intake.schema.json",
+  "title": "AAP Agent Intake",
+  "description": "Structured intake per BRD v2.1 BR-002 / AC-001. An intake that fails this schema cannot be submitted.",
+  "type": "object",
+  "required": ["agent_id", "submitted_by", "submitted_at", "business_problem", "owners", "users", "expected_outcomes", "execution_intent", "proposed_tools", "data_domains", "risks", "approval_needs", "classification_inputs"],
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+    "submitted_by": { "type": "string", "minLength": 1 },
+    "submitted_at": { "type": "string", "format": "date-time" },
+    "business_problem": { "type": "string", "minLength": 20 },
+    "owners": {
+      "type": "object",
+      "required": ["business_owner", "technical_owner"],
+      "additionalProperties": false,
+      "properties": {
+        "business_owner": { "type": "string", "minLength": 1 },
+        "technical_owner": { "type": "string", "minLength": 1 }
+      }
+    },
+    "users": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "expected_outcomes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "execution_intent": {
+      "type": "string",
+      "enum": ["advise-only", "draft-outputs", "execute-with-approval", "execute-bounded", "execute-autonomous"],
+      "description": "Maps to autonomy levels 1-5; the classifier may cap the resulting level by risk tier."
+    },
+    "proposed_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool_name", "action_type", "writes", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "tool_name": { "type": "string", "minLength": 1 },
+          "action_type": { "type": "string", "minLength": 1 },
+          "writes": { "type": "boolean" },
+          "description": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "data_domains": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["domain", "authoritative_source", "classification"],
+        "additionalProperties": false,
+        "properties": {
+          "domain": { "type": "string", "minLength": 1 },
+          "authoritative_source": { "type": "string", "minLength": 1 },
+          "classification": { "type": "string", "enum": ["public", "internal", "client-confidential", "pii"] }
+        }
+      }
+    },
+    "risks": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "approval_needs": { "type": "string", "minLength": 1 },
+    "classification_inputs": {
+      "type": "object",
+      "required": ["action_risk", "data_sensitivity", "reversibility", "user_impact", "financial_impact", "production_impact"],
+      "additionalProperties": false,
+      "properties": {
+        "action_risk": { "type": "string", "enum": ["low", "medium", "high"] },
+        "data_sensitivity": { "type": "string", "enum": ["public", "internal", "client-confidential", "pii"] },
+        "reversibility": { "type": "string", "enum": ["reversible", "partially-reversible", "irreversible"] },
+        "user_impact": { "type": "string", "enum": ["low", "medium", "high"] },
+        "financial_impact": { "type": "string", "enum": ["low", "medium", "high"] },
+        "production_impact": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    }
+  }
+}

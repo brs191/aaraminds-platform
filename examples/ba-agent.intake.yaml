@@ -1,0 +1,60 @@
+# Agent intake for the BA Agent reference implementation.
+# Validated against schemas/agent-intake.schema.json by `aapctl intake`.
+agent_id: aara-business-analyst
+submitted_by: rajashekar.b@gmail.com
+submitted_at: "2026-07-05T09:00:00Z"
+business_problem: >-
+  Requirements work on client engagements is hand-assembled: elicitation notes,
+  gap analyses, and acceptance criteria are produced ad hoc with no shared
+  structure, no traceability from business objective to requirement, and no
+  evidence discipline. Each engagement restarts from scratch.
+owners:
+  business_owner: Raja Shekar Bollam
+  technical_owner: Raja Shekar Bollam (acting engineering lead)
+users:
+  - Enterprise AI Architect
+  - Engineering Lead
+  - Business Analyst / Product Owner
+expected_outcomes:
+  - Reviewed, source-backed requirements draft within one working day of brief
+  - Every requirement traceable to an engagement source or marked as assumption
+  - Acceptance criteria generated alongside requirements, not after
+execution_intent: draft-outputs
+proposed_tools:
+  - tool_name: get_project_context
+    action_type: project_context_read
+    writes: false
+    description: Read engagement brief, stakeholders, and scope from the engagement repository.
+  - tool_name: search_knowledge_base
+    action_type: knowledge_search
+    writes: false
+    description: Search prior engagement knowledge and standards for relevant patterns.
+  - tool_name: create_requirements_draft
+    action_type: requirements_draft_create
+    writes: true
+    description: Create a structured requirements draft document for review.
+data_domains:
+  - domain: project-context
+    authoritative_source: engagement repository
+    classification: client-confidential
+  - domain: knowledge-base
+    authoritative_source: AaraMinds knowledge base
+    classification: internal
+  - domain: requirements-drafts
+    authoritative_source: agent blueprint repository
+    classification: client-confidential
+risks:
+  - Draft quality depends on retrieval quality from the knowledge base
+  - Client-confidential context must never leak across engagements
+  - Reviewers may over-trust fluent drafts; evidence separation is mandatory
+approval_needs: >-
+  Draft creation is soft-gated (interactive confirmation). Any future write to
+  external systems (e.g., Jira) requires a hard approval boundary and is out of
+  scope for this intake.
+classification_inputs:
+  action_risk: low
+  data_sensitivity: client-confidential
+  reversibility: reversible
+  user_impact: medium
+  financial_impact: low
+  production_impact: low
