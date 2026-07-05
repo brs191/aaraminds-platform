@@ -379,6 +379,42 @@ func (e *Engine) WriteMemory(record MemoryRecord) error {
 	if e.run.RunID == "" {
 		return errors.New("run has not started")
 	}
+	if err := e.writeMemoryLocked(&record); err != nil {
+		// A rejected memory write is a governed action: audit the denial so
+		// the memory-citation release gate has evidence (100% cited writes;
+		// uncited attempts denied and logged).
+		if _, auditErr := e.recordAudit("memory_denied", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
+			"memory_id":     record.MemoryID,
+			"engagement_id": record.EngagementID,
+			"reason":        err.Error(),
+		}); auditErr != nil {
+			return fmt.Errorf("%w (audit of denial also failed: %v)", err, auditErr)
+		}
+		e.recordTrace("memory.denied", "memory", map[string]any{
+			"memory_id": record.MemoryID,
+			"reason":    err.Error(),
+		})
+		return err
+	}
+	if _, err := e.recordAudit("memory_written", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
+		"memory_id":      record.MemoryID,
+		"engagement_id":  record.EngagementID,
+		"classification": record.Classification,
+		"content_hash":   record.ContentHash,
+	}); err != nil {
+		return err
+	}
+	e.recordTrace("memory.written", "memory", map[string]any{
+		"memory_id":      record.MemoryID,
+		"engagement_id":  record.EngagementID,
+		"classification": record.Classification,
+	})
+	return nil
+}
+
+// writeMemoryLocked performs all memory-write validation and storage.
+// Callers hold e.mu and have verified a run is active.
+func (e *Engine) writeMemoryLocked(record *MemoryRecord) error {
 	if !e.manifest.Memory.Enabled {
 		return errors.New("memory is disabled by manifest")
 	}
@@ -397,26 +433,10 @@ func (e *Engine) WriteMemory(record MemoryRecord) error {
 	if record.Status == "" {
 		record.Status = "active"
 	}
-	if err := e.schemas.ValidateMemoryRecord(record); err != nil {
+	if err := e.schemas.ValidateMemoryRecord(*record); err != nil {
 		return err
 	}
-	if err := e.memory.Write(record, e.manifest.Memory.AllowedClassifications, e.manifest.Memory.PIIAllowed); err != nil {
-		return err
-	}
-	if _, err := e.recordAudit("memory_written", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
-		"memory_id":      record.MemoryID,
-		"engagement_id":  record.EngagementID,
-		"classification": record.Classification,
-		"content_hash":   record.ContentHash,
-	}); err != nil {
-		return err
-	}
-	e.recordTrace("memory.written", "memory", map[string]any{
-		"memory_id":      record.MemoryID,
-		"engagement_id":  record.EngagementID,
-		"classification": record.Classification,
-	})
-	return nil
+	return e.memory.Write(*record, e.manifest.Memory.AllowedClassifications, e.manifest.Memory.PIIAllowed)
 }
 
 func (e *Engine) QueryMemory(engagementID string) []MemoryRecord {

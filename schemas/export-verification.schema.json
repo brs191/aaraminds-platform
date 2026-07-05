@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/export-verification.schema.json",
+  "title": "AAP Export Round-Trip Verification",
+  "description": "Attestation that an export/re-import round-trip reproduced identical readiness results (AC-009). The content_digest binds the attestation to the exact artifact bytes it verified; any later artifact change makes it stale.",
+  "type": "object",
+  "required": ["agent_id", "verified_at", "content_digest", "identical", "report_score", "report_verdict", "checks_compared"],
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": { "type": "string" },
+    "verified_at": { "type": "string", "format": "date-time" },
+    "content_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "identical": { "type": "boolean" },
+    "report_score": { "type": "number" },
+    "report_verdict": { "type": "string", "enum": ["pass", "defer", "block"] },
+    "checks_compared": { "type": "integer", "minimum": 1 }
+  }
+}

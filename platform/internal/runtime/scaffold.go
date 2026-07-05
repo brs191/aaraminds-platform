@@ -43,6 +43,7 @@ func ScaffoldAgent(root, intakePath, outDir string, force bool) (string, []strin
 		// stale files behind (matters for the export round-trip, AC-009).
 		// Only known generated names are removed; hand-added files survive.
 		stale := append(sortedArtifactNames(), generatedJSONArtifacts...)
+		stale = append(stale, generatedExtras...)
 		for _, name := range stale {
 			if err := os.Remove(filepath.Join(dir, name)); err != nil && !os.IsNotExist(err) {
 				return "", nil, fmt.Errorf("remove stale artifact %s: %w", name, err)
@@ -72,6 +73,19 @@ func ScaffoldAgent(root, intakePath, outDir string, force bool) (string, []strin
 		}
 		files = append(files, path)
 	}
+
+	// Copy the intake into the agent directory: the folder must be
+	// self-contained so the readiness engine (and later, export/import)
+	// never depends on files outside it.
+	intakeRaw, err := os.ReadFile(intakePath)
+	if err != nil {
+		return "", nil, fmt.Errorf("copy intake: %w", err)
+	}
+	intakeCopy := filepath.Join(dir, "agent-intake.yaml")
+	if err := os.WriteFile(intakeCopy, intakeRaw, 0o644); err != nil {
+		return "", nil, fmt.Errorf("write intake copy: %w", err)
+	}
+	files = append(files, intakeCopy)
 
 	// Machine-validated JSON artifacts.
 	identityPath := filepath.Join(dir, "agent-identity-spec.json")
@@ -120,6 +134,9 @@ var generatedJSONArtifacts = []string{
 	"data-evidence-contract.json",
 	"classification.json",
 }
+
+// generatedExtras are additional scaffold-owned files cleaned on force.
+var generatedExtras = []string{"agent-intake.yaml"}
 
 type scaffoldData struct {
 	Intake         AgentIntake

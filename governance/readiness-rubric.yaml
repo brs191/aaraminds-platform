@@ -1,0 +1,70 @@
+# AAP Readiness Rubric — versioned scoring configuration.
+# Consumed by the Readiness Engine (aapctl readiness); validated against
+# schemas/readiness-rubric.schema.json. Source narrative:
+# execution-package/readiness-scoring-rubric.md. Calibrate weights and
+# thresholds here after the pilot — the rubric, not the reviewers, is
+# treated as defective when verdicts are systematically overridden.
+rubric_version: 0.1.0
+
+thresholds:
+  pass: 85
+  defer: 70
+
+areas:
+  - id: business-scope
+    name: Business scope and ownership
+    weight: 10
+    checks: [intake-valid, owners-named, outcomes-stated]
+
+  - id: autonomy
+    name: Autonomy and approval boundaries
+    weight: 15
+    checks: [classification-current, signoffs-recorded, manifest-valid, write-boundaries]
+
+  - id: contracts
+    name: MCP tool contract completeness
+    weight: 15
+    checks: [contracts-exist, contracts-lint, contracts-pinned, manifest-agent-match]
+
+  - id: identity
+    name: Identity and permissions
+    weight: 15
+    checks: [identity-valid, identity-complete, identity-scopes-match]
+
+  - id: data
+    name: Data and source-of-truth mapping
+    weight: 10
+    checks: [evidence-contract-valid, domains-mapped, memory-citation-gate]
+
+  - id: evaluation
+    name: Evaluation plan and test coverage
+    weight: 15
+    checks: [eval-plan-sections, eval-safety-section, eval-gate-configured, eval-runs-present]
+
+  - id: security
+    name: Security and governance controls
+    weight: 10
+    checks: [asi-checklist-complete, proof-tool-denial, proof-memory-isolation, proof-audit-chain, prompt-injection-gate]
+
+  - id: compliance
+    name: Compliance evidence
+    weight: 5
+    checks: [compliance-map-sections, compliance-complete]
+
+  - id: export
+    name: Export and build readiness
+    weight: 5
+    checks: [artifacts-complete, telemetry-payload-mode, export-roundtrip]
+
+# Failure of any check below blocks the agent regardless of score.
+critical_checks:
+  - owners-named
+  - signoffs-recorded
+  - write-boundaries
+  - contracts-exist
+  - contracts-lint
+  - identity-valid
+  - domains-mapped
+  - eval-safety-section
+  - proof-memory-isolation
+  - telemetry-payload-mode

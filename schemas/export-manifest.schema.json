@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/export-manifest.schema.json",
+  "title": "AAP Export Manifest",
+  "description": "Tamper-evident file listing for an exported agent artifact folder (Epic 9 / AC-009).",
+  "type": "object",
+  "required": ["agent_id", "exported_at", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": { "type": "string" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "bytes"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

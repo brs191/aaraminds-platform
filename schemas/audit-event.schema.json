@@ -16,7 +16,9 @@
     "timestamp"
   ],
   "properties": {
-    "audit_event_id": { "type": "string" },
+    "audit_event_id": {
+      "type": "string"
+    },
     "event_type": {
       "type": "string",
       "enum": [
@@ -29,6 +31,7 @@
         "approval_requested",
         "approval_granted",
         "approval_denied",
+        "memory_denied",
         "memory_written",
         "memory_superseded",
         "memory_purged",
@@ -37,22 +40,76 @@
         "release_approved"
       ]
     },
-    "actor_type": { "type": "string", "enum": ["agent", "user", "tool_principal", "approver", "system"] },
-    "actor_id": { "type": "string" },
-    "context_type": { "type": "string", "enum": ["run", "engagement", "agent", "skill", "release", "eval", "system"] },
-    "context_id": { "type": "string" },
-    "run_id": { "type": ["string", "null"] },
-    "payload_ref": { "type": "string" },
-    "payload_hash": { "type": "string" },
-    "prev_event_hash": { "type": "string" },
-    "timestamp": { "type": "string", "format": "date-time" }
+    "actor_type": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "user",
+        "tool_principal",
+        "approver",
+        "system"
+      ]
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": [
+        "run",
+        "engagement",
+        "agent",
+        "skill",
+        "release",
+        "eval",
+        "system"
+      ]
+    },
+    "context_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "payload_ref": {
+      "type": "string"
+    },
+    "payload_hash": {
+      "type": "string"
+    },
+    "prev_event_hash": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    }
   },
   "allOf": [
     {
-      "if": { "properties": { "context_type": { "const": "run" } }, "required": ["context_type"] },
+      "if": {
+        "properties": {
+          "context_type": {
+            "const": "run"
+          }
+        },
+        "required": [
+          "context_type"
+        ]
+      },
       "then": {
-        "required": ["run_id"],
-        "properties": { "run_id": { "type": "string", "minLength": 1 } }
+        "required": [
+          "run_id"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     }
   ],

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/readiness-rubric.schema.json",
+  "title": "AAP Readiness Rubric Configuration",
+  "description": "Versioned scoring configuration consumed by the Readiness Engine. Calibrating weights or thresholds is a config change, not a code change.",
+  "type": "object",
+  "required": ["rubric_version", "thresholds", "areas", "critical_checks"],
+  "additionalProperties": false,
+  "properties": {
+    "rubric_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "thresholds": {
+      "type": "object",
+      "required": ["pass", "defer"],
+      "additionalProperties": false,
+      "properties": {
+        "pass": { "type": "number", "minimum": 0, "maximum": 100 },
+        "defer": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "areas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "weight", "checks"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "name": { "type": "string", "minLength": 1 },
+          "weight": { "type": "number", "exclusiveMinimum": 0 },
+          "checks": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" } }
+        }
+      }
+    },
+    "critical_checks": {
+      "type": "array",
+      "description": "Check ids whose failure blocks the agent regardless of score.",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -219,6 +219,11 @@ type ProofReport struct {
 	AuditChainValid             bool                       `json:"audit_chain_valid"`
 	MemoryLeakageReturned       int                        `json:"memory_leakage_returned"`
 	ExpiredMemoryReturned       int                        `json:"expired_memory_returned"`
+	UncitedMemoryWriteDenied    bool                       `json:"uncited_memory_write_denied"`
+	UncitedMemoryDenialAudited  bool                       `json:"uncited_memory_denial_audited"`
+	InjectionToolDenied         bool                       `json:"injection_tool_denied"`
+	InjectionApprovalEnforced   bool                       `json:"injection_approval_enforced"`
+	InjectionManifestUnchanged  bool                       `json:"injection_manifest_unchanged"`
 	RunScopedAuditsHaveRunID    bool                       `json:"run_scoped_audits_have_run_id"`
 	TraceSpanCount              int                        `json:"trace_span_count"`
 	AuditEvents                 []AuditEvent               `json:"audit_events"`

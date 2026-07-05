@@ -24,14 +24,14 @@ Implementation status per gate is listed below the table — a defined gate is n
 | Tool-denial tests | Implemented (OffManifestToolDenied, BlockedActionDenied, InvalidInputDenied) |
 | Memory-leakage tests | Implemented (MemoryLeakageReturned, ExpiredMemoryReturned) |
 | Benchmark evals | **Defined, not yet implemented** — tied to SkillOps eval gate (PRD §16) |
-| Prompt-injection tests | **Defined, not yet implemented** — no proof.go coverage yet |
+| Prompt-injection tests | Implemented (`proof.go`: InjectionToolDenied, InjectionApprovalEnforced, InjectionManifestUnchanged — injected tool calls denied, approvals hold unattended, manifest immutable) |
 | Approval-gate accuracy | Implemented (approval lifecycle proofs); golden suite N≥50 population pending |
 | Trace completeness | Implemented (TraceSpanCount); collector/Grafana validation outstanding |
-| Memory citation enforcement | **Defined, not yet explicitly tested** — writes audited, citation link untested |
+| Memory citation enforcement | Implemented (`proof.go`: UncitedMemoryWriteDenied, UncitedMemoryDenialAudited; engine audits `memory_denied` events) |
 | Audit coverage | Implemented (DenialAuditLogged, AuditTrailReplayable, AuditChainValid) |
 | Telemetry payload mode | Enforced at manifest load time (`engine.validateManifest`), not a runtime proof |
 
-The three unimplemented gates are tracked in `execution-package/mvp-backlog.md` (Epics 7–8 adjacency) and tagged `[NEW]` in the readiness rubric.
+The remaining unimplemented gate (benchmark evals) is tied to the SkillOps evaluation loop (PRD §16) and surfaces in readiness as `eval-runs-present`.
 
 ## Approval Golden Suite
 

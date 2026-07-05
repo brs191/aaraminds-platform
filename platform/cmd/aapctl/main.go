@@ -37,6 +37,10 @@ func main() {
 		scaffold(os.Args[2:])
 	case "sections":
 		sections(os.Args[2:])
+	case "readiness":
+		readiness(os.Args[2:])
+	case "export":
+		export(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -278,6 +282,110 @@ func sections(args []string) {
 	}
 }
 
+// readiness runs the rubric against an agent artifact directory, writes
+// readiness-report.json + .md, and exits: 0 pass, 3 defer, 4 block, 1 error.
+// The exit codes let CI treat defer and block differently.
+func readiness(args []string) {
+	fs := flag.NewFlagSet("readiness", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	agent := fs.String("agent", "agents/aara-business-analyst", "agent artifact directory relative to root")
+	manifest := fs.String("manifest", "examples/ba-agent.manifest.yaml", "manifest path relative to root (empty to skip manifest checks)")
+	_ = fs.Parse(args)
+
+	agentDir := filepath.Join(*root, *agent)
+	manifestPath := ""
+	if *manifest != "" {
+		manifestPath = filepath.Join(*root, *manifest)
+	}
+	report, err := aapruntime.RunReadiness(*root, agentDir, manifestPath)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "readiness failed:", err)
+		os.Exit(1)
+	}
+	if err := aapruntime.WriteReadinessReport(*root, agentDir, report); err != nil {
+		fmt.Fprintln(os.Stderr, "write readiness report:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("readiness: %s scored %.1f/100 -> %s (rubric %s)\n", report.AgentID, report.Score, strings.ToUpper(report.Verdict), report.RubricVersion)
+	for _, blocker := range report.CriticalBlockers {
+		fmt.Printf("  CRITICAL %s: %s\n", blocker.BlockerID, blocker.RequiredFix)
+	}
+	failing := 0
+	for _, area := range report.Areas {
+		failing += area.ChecksTotal - area.ChecksPassed
+	}
+	fmt.Printf("  checks failing: %d; report: %s\n", failing, filepath.Join(agentDir, "readiness-report.md"))
+
+	// Activation gate advisory: if the paired manifest claims active status,
+	// enforce the verdict now.
+	if manifestPath != "" {
+		if m, err := aapruntime.LoadManifest(manifestPath); err == nil {
+			if err := aapruntime.ActivationGate(*root, agentDir, m.Status); err != nil {
+				fmt.Fprintln(os.Stderr, "ACTIVATION GATE:", err)
+				os.Exit(4)
+			}
+		}
+	}
+	switch report.Verdict {
+	case "pass":
+		os.Exit(0)
+	case "defer":
+		os.Exit(3)
+	default:
+		os.Exit(4)
+	}
+}
+
+// export copies an agent folder with a tamper-evident hash manifest and,
+// with -verify, proves the AC-009 round trip and writes the attestation.
+func export(args []string) {
+	fs := flag.NewFlagSet("export", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	agent := fs.String("agent", "agents/aara-business-analyst", "agent artifact directory relative to root")
+	dest := fs.String("dest", "", "export destination relative to root (default out/exports/<agent-id>)")
+	manifest := fs.String("manifest", "examples/ba-agent.manifest.yaml", "manifest path relative to root (used by -verify)")
+	verify := fs.Bool("verify", false, "run the export/re-import round trip and write export-verification.json")
+	_ = fs.Parse(args)
+
+	agentDir := filepath.Join(*root, *agent)
+
+	if *verify {
+		scratch, err := os.MkdirTemp("", "aap-roundtrip-*")
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "scratch dir:", err)
+			os.Exit(1)
+		}
+		defer os.RemoveAll(scratch)
+		manifestPath := ""
+		if *manifest != "" {
+			manifestPath = filepath.Join(*root, *manifest)
+		}
+		verification, err := aapruntime.RoundTripVerify(*root, agentDir, manifestPath, scratch)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "round-trip verification failed:", err)
+			os.Exit(1)
+		}
+		fmt.Printf("round-trip verified: %s — %d checks identical (score %.1f, %s); attestation written\n",
+			verification.AgentID, verification.ChecksCompared, verification.ReportScore, verification.ReportVerdict)
+		return
+	}
+
+	destDir := *dest
+	if destDir == "" {
+		destDir = filepath.Join("out", "exports", filepath.Base(agentDir))
+	}
+	exportManifest, err := aapruntime.ExportAgent(*root, agentDir, filepath.Join(*root, destDir))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "export failed:", err)
+		os.Exit(1)
+	}
+	if err := aapruntime.VerifyExport(*root, filepath.Join(*root, destDir)); err != nil {
+		fmt.Fprintln(os.Stderr, "export self-verification failed:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("exported %s: %d files to %s (integrity verified)\n", exportManifest.AgentID, len(exportManifest.Files), destDir)
+}
+
 func defaultRoot() string {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -290,7 +398,8 @@ func defaultRoot() string {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify|scaffold|sections> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify|scaffold|sections|readiness|export> [flags]")
+	fmt.Fprintln(os.Stderr, "readiness exit codes: 0 pass, 3 defer, 4 block (or activation gate violation), 1 error")
 }
 
 func flagSet(fs *flag.FlagSet, name string) bool {
