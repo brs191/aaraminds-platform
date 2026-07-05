@@ -1,0 +1,33 @@
+{
+  "agent_id": "aara-business-analyst",
+  "contract_version": "0.1.0",
+  "data_domains": [
+    {
+      "authoritative_source": "engagement repository",
+      "classification": "client-confidential",
+      "domain": "project-context",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    },
+    {
+      "authoritative_source": "AaraMinds knowledge base",
+      "classification": "internal",
+      "domain": "knowledge-base",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    },
+    {
+      "authoritative_source": "agent blueprint repository",
+      "classification": "client-confidential",
+      "domain": "requirements-drafts",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    }
+  ],
+  "evidence_rules": {
+    "citation_format": "inline source reference (document id or query id)",
+    "factual_claims_require_citation": true,
+    "memory_write_citation_required": true,
+    "uncited_output_behavior": "flag"
+  }
+}

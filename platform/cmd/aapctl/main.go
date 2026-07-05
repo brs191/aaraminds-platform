@@ -33,6 +33,10 @@ func main() {
 		intake(os.Args[2:])
 	case "classify":
 		classify(os.Args[2:])
+	case "scaffold":
+		scaffold(os.Args[2:])
+	case "sections":
+		sections(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -222,6 +226,53 @@ func validate(args []string) {
 	fmt.Println("manifest and tool contracts validated")
 }
 
+func scaffold(args []string) {
+	fs := flag.NewFlagSet("scaffold", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	path := fs.String("file", "examples/ba-agent.intake.yaml", "intake file path relative to root")
+	out := fs.String("out", "agents", "output directory relative to root")
+	force := fs.Bool("force", false, "overwrite a non-empty target directory")
+	_ = fs.Parse(args)
+
+	dir, files, err := aapruntime.ScaffoldAgent(*root, filepath.Join(*root, *path), filepath.Join(*root, *out), *force)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "scaffold failed:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("scaffolded %d artifacts in %s\n", len(files), dir)
+	for _, f := range files {
+		fmt.Println("  ", filepath.Base(f))
+	}
+	fmt.Println("section self-check: all artifacts passed")
+}
+
+func sections(args []string) {
+	fs := flag.NewFlagSet("sections", flag.ExitOnError)
+	dir := fs.String("dir", "", "agent artifact directory to validate")
+	_ = fs.Parse(args)
+	if *dir == "" {
+		fmt.Fprintln(os.Stderr, "sections: -dir is required")
+		os.Exit(2)
+	}
+	reports, err := aapruntime.ValidateArtifactDir(*dir)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "section validation error:", err)
+		os.Exit(1)
+	}
+	failed := false
+	for _, report := range reports {
+		if report.OK() {
+			fmt.Printf("ok    %s\n", filepath.Base(report.Artifact))
+			continue
+		}
+		failed = true
+		fmt.Printf("FAIL  %s missing=%v empty=%v\n", filepath.Base(report.Artifact), report.Missing, report.Empty)
+	}
+	if failed {
+		os.Exit(1)
+	}
+}
+
 func defaultRoot() string {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -234,7 +285,7 @@ func defaultRoot() string {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify|scaffold|sections> [flags]")
 }
 
 func flagSet(fs *flag.FlagSet, name string) bool {

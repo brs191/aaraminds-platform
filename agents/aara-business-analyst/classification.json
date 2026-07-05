@@ -1,0 +1,13 @@
+{
+  "autonomy_level": 2,
+  "autonomy_name": "Drafting",
+  "risk_score": 3,
+  "risk_tier": "medium",
+  "required_signoffs": [],
+  "mvp_policy": "allowed",
+  "rationale": [
+    "execution_intent \"draft-outputs\" maps to level 2 (Drafting)",
+    "risk score 3 from classification inputs -\u003e tier medium",
+    "tool \"create_requirements_draft\" writes: contract must set approval_boundary soft, hard, or blocked"
+  ]
+}

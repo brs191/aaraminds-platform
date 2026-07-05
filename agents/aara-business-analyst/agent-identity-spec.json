@@ -1,0 +1,41 @@
+{
+  "agent_id": "aara-business-analyst",
+  "credential": {
+    "local_dev_fallback": "isolated dev credential; never shared production credentials",
+    "max_lifetime_hours": 24,
+    "pattern": "oauth2-federated-identity-credential",
+    "shared_secrets_forbidden": true
+  },
+  "lifecycle": {
+    "owner": "Raja Shekar Bollam (acting engineering lead)",
+    "provisioning": "[TODO: provisioning process per IdP]",
+    "retirement": "[TODO: retirement trigger and owner]",
+    "rotation": "[TODO: rotation cadence]"
+  },
+  "principal": {
+    "distinct_from_user": true,
+    "idp": "entra-id [VERIFY per implementation]",
+    "principal_type": "agent-identity"
+  },
+  "scopes": [
+    {
+      "environment": "dev",
+      "justification": "Read engagement brief, stakeholders, and scope from the engagement repository.",
+      "permission": "read",
+      "resource": "get_project_context"
+    },
+    {
+      "environment": "dev",
+      "justification": "Search prior engagement knowledge and standards for relevant patterns.",
+      "permission": "read",
+      "resource": "search_knowledge_base"
+    },
+    {
+      "environment": "dev",
+      "justification": "Create a structured requirements draft document for review.",
+      "permission": "write",
+      "resource": "create_requirements_draft"
+    }
+  ],
+  "spec_version": "0.1.0"
+}
