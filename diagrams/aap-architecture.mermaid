@@ -1,0 +1,64 @@
+%% AaraMinds Agent Platform — layered container architecture
+%% Rendered on GitHub. Companion narrative: docs/architecture.md
+%% Legend: built = AaraMinds-built and tested; adopt = adopted/external/future.
+flowchart TB
+  classDef built fill:#E6F1FB,stroke:#185FA5,stroke-width:1.5px,color:#042C53;
+  classDef adopt fill:#F1EFE8,stroke:#888780,stroke-width:1.3px,color:#2C2C2A,stroke-dasharray:5 3;
+  classDef contract fill:#CECBF6,stroke:#534AB7,stroke-width:1.3px,color:#26215C;
+  classDef gate fill:#FAEEDA,stroke:#BA7517,stroke-width:1.5px,color:#854F0B;
+
+  subgraph EXP[Experience and interfaces]
+    direction LR
+    CLI[aapctl CLI<br/><i>intake to export</i>]:::built
+    UI[React console<br/><i>Phase 2</i>]:::adopt
+    TEAMS[Microsoft Teams<br/><i>optional channel</i>]:::adopt
+    API[Platform API<br/><i>workflow integration</i>]:::adopt
+  end
+
+  subgraph FAC[Agent Factory - design-time pipeline - shipped]
+    direction LR
+    F1[Intake<br/><i>validated brief</i>]:::built --> F2[Classify<br/><i>autonomy + risk</i>]:::built --> F3[Scaffold<br/><i>12 artifacts</i>]:::built --> F4[Readiness<br/><i>score + verdict</i>]:::built --> F5[Export<br/><i>hash + round-trip</i>]:::built
+  end
+
+  subgraph GOV[Governance and evidence - readiness reads these]
+    direction LR
+    G1[Rubric and thresholds<br/><i>9 areas, weighted</i>]:::built
+    G2[Approval boundaries<br/><i>none/soft/hard/blocked</i>]:::built
+    G3[Blocked actions and kill switch]:::built
+    G4[Evidence report<br/><i>per-check, cited</i>]:::built
+  end
+
+  subgraph SUB[Runtime proof substrate - Go harness - shipped]
+    direction LR
+    S1[Manifest enforcement]:::built
+    S2[Tool-contract gate<br/><i>MCP, pinned</i>]:::built
+    S3[Scoped memory<br/><i>engagement-isolated</i>]:::built
+    S4[Audit chain<br/><i>tamper-evident</i>]:::built
+    S5[Proof gates<br/><i>injection + denial</i>]:::built
+  end
+
+  SCHEMAS[13 JSON schemas - machine contracts of record<br/><i>manifest, MCP contract, identity, readiness, audit, eval, memory, export</i>]:::contract
+
+  GATE{{activation gate<br/>status active requires verdict = pass}}:::gate
+
+  subgraph RUN[Runtime orchestration - adopt]
+    direction LR
+    R1[MCP gateway<br/><i>policy enforcement</i>]:::adopt
+    R2[Primary runtime<br/><i>Claude Agent SDK</i>]:::adopt
+    R3[Alt runtimes<br/><i>LangGraph, ADK, AgentCore</i>]:::adopt
+  end
+
+  subgraph FND[Platform foundation]
+    direction LR
+    N1[Identity<br/><i>Entra Agent ID, OAuth2</i>]:::adopt
+    N2[Observability<br/><i>OTel GenAI to Grafana</i>]:::adopt
+    N3[Data and SoR<br/><i>git now, Postgres Phase 2</i>]:::adopt
+    N4[CI/CD<br/><i>Actions, readiness gate, govulncheck</i>]:::built
+  end
+
+  EXP --> FAC --> GOV --> SUB --> SCHEMAS --> GATE --> RUN --> FND
+  SUB -. gate results as evidence .-> F4
+  SCHEMAS -. validates .-> FAC
+
+  STD["Standards and compliance: MCP 2025-11-25 · A2A (future) · OTel GenAI · OWASP ASI 2026 · NIST AI RMF · ISO 42001 · EU AI Act"]
+  FND --> STD

@@ -1,0 +1,135 @@
+<svg viewBox="0 0 680 806" width="1360" height="1612" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+<title>AaraMinds Agent Platform — layered architecture, Tokyo Night theme</title>
+<rect x="0" y="0" width="680" height="806" fill="#1a1b26"/>
+<defs>
+<marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7aa2f7"/></marker>
+<marker id="ard" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#e0af68"/></marker>
+</defs>
+
+<text x="40" y="34" font-size="20" font-weight="bold" fill="#c0caf5">AaraMinds Agent Platform</text>
+<text x="40" y="52" font-size="11" fill="#7982a8">Layered container view · the governance layer above runtimes, not another runtime</text>
+
+<rect x="40" y="64" width="22" height="13" rx="3" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="68" y="74" font-size="10.5" fill="#c0caf5">built · tested (AaraMinds)</text>
+<rect x="258" y="64" width="22" height="13" rx="3" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="286" y="74" font-size="10.5" fill="#c0caf5">adopted · external · future phase</text>
+
+<text x="40" y="100" font-size="12.5" font-weight="bold" fill="#7aa2f7">Experience · interfaces</text>
+<rect x="52" y="106" width="136" height="50" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="120" y="127" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">aapctl CLI</text>
+<text x="120" y="143" font-size="9.3" fill="#7aa2f7" text-anchor="middle">intake &#8594; export</text>
+<rect x="198" y="106" width="136" height="50" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="266" y="127" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">React console</text>
+<text x="266" y="143" font-size="9.3" fill="#7982a8" text-anchor="middle">Phase 2</text>
+<rect x="344" y="106" width="136" height="50" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="412" y="127" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Microsoft Teams</text>
+<text x="412" y="143" font-size="9.3" fill="#7982a8" text-anchor="middle">optional channel</text>
+<rect x="490" y="106" width="136" height="50" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="558" y="127" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Platform API</text>
+<text x="558" y="143" font-size="9.3" fill="#7982a8" text-anchor="middle">workflow integration</text>
+
+<text x="40" y="184" font-size="12.5" font-weight="bold" fill="#7aa2f7">Agent Factory · design-time pipeline (shipped)</text>
+<rect x="52" y="190" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="105" y="212" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Intake</text>
+<text x="105" y="230" font-size="9" fill="#7aa2f7" text-anchor="middle">validated brief</text>
+<rect x="169" y="190" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="222" y="212" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Classify</text>
+<text x="222" y="230" font-size="9" fill="#7aa2f7" text-anchor="middle">autonomy · risk</text>
+<rect x="286" y="190" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="339" y="212" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Scaffold</text>
+<text x="339" y="230" font-size="9" fill="#7aa2f7" text-anchor="middle">12 artifacts</text>
+<rect x="403" y="190" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="456" y="212" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Readiness</text>
+<text x="456" y="230" font-size="9" fill="#7aa2f7" text-anchor="middle">score · verdict</text>
+<rect x="520" y="190" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="573" y="212" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Export</text>
+<text x="573" y="230" font-size="9" fill="#7aa2f7" text-anchor="middle">hash · round-trip</text>
+<line x1="160" y1="219" x2="168" y2="219" stroke="#7aa2f7" stroke-width="1.3" marker-end="url(#ar)"/>
+<line x1="277" y1="219" x2="285" y2="219" stroke="#7aa2f7" stroke-width="1.3" marker-end="url(#ar)"/>
+<line x1="394" y1="219" x2="402" y2="219" stroke="#7aa2f7" stroke-width="1.3" marker-end="url(#ar)"/>
+<line x1="511" y1="219" x2="519" y2="219" stroke="#7aa2f7" stroke-width="1.3" marker-end="url(#ar)"/>
+
+<text x="40" y="280" font-size="12.5" font-weight="bold" fill="#7aa2f7">Governance · evidence (readiness reads these)</text>
+<rect x="52" y="286" width="136" height="56" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="120" y="308" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Rubric · thresholds</text>
+<text x="120" y="325" font-size="9" fill="#7aa2f7" text-anchor="middle">9 areas, weighted</text>
+<rect x="198" y="286" width="136" height="56" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="266" y="308" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Approval boundaries</text>
+<text x="266" y="325" font-size="9" fill="#7aa2f7" text-anchor="middle">none/soft/hard/blocked</text>
+<rect x="344" y="286" width="136" height="56" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="412" y="308" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Blocked · kill switch</text>
+<text x="412" y="325" font-size="9" fill="#7aa2f7" text-anchor="middle">deny-list · disable</text>
+<rect x="490" y="286" width="136" height="56" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="558" y="308" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">Evidence report</text>
+<text x="558" y="325" font-size="9" fill="#7aa2f7" text-anchor="middle">per-check · cited</text>
+
+<text x="40" y="372" font-size="12.5" font-weight="bold" fill="#7aa2f7">Runtime proof substrate · Go harness (shipped)</text>
+<rect x="52" y="378" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="105" y="400" font-size="11" font-weight="bold" fill="#c0caf5" text-anchor="middle">Manifest</text>
+<text x="105" y="418" font-size="8.8" fill="#7aa2f7" text-anchor="middle">enforcement</text>
+<rect x="169" y="378" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="222" y="400" font-size="11" font-weight="bold" fill="#c0caf5" text-anchor="middle">Tool gate</text>
+<text x="222" y="418" font-size="8.8" fill="#7aa2f7" text-anchor="middle">MCP · pinned</text>
+<rect x="286" y="378" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="339" y="400" font-size="11" font-weight="bold" fill="#c0caf5" text-anchor="middle">Memory</text>
+<text x="339" y="418" font-size="8.8" fill="#7aa2f7" text-anchor="middle">engagement-scoped</text>
+<rect x="403" y="378" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="456" y="400" font-size="11" font-weight="bold" fill="#c0caf5" text-anchor="middle">Audit chain</text>
+<text x="456" y="418" font-size="8.8" fill="#7aa2f7" text-anchor="middle">tamper-evident</text>
+<rect x="520" y="378" width="107" height="58" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="573" y="400" font-size="11" font-weight="bold" fill="#c0caf5" text-anchor="middle">Proof gates</text>
+<text x="573" y="418" font-size="8.8" fill="#7aa2f7" text-anchor="middle">injection · denial</text>
+
+<rect x="52" y="452" width="575" height="30" rx="6" fill="#292e42" stroke="#bb9af7" stroke-width="1.3"/>
+<text x="339" y="471" font-size="10.8" font-weight="bold" fill="#bb9af7" text-anchor="middle">13 JSON schemas · machine contracts of record (manifest · MCP contract · identity · readiness · audit · eval · memory · export)</text>
+
+<line x1="40" y1="502" x2="640" y2="502" stroke="#414868" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="196" y="489" width="288" height="26" rx="13" fill="#2d2a1e" stroke="#ff9e64" stroke-width="1.3"/>
+<text x="340" y="506" font-size="10.5" font-weight="bold" fill="#e0af68" text-anchor="middle">activation gate · status active requires verdict = pass</text>
+<line x1="340" y1="515" x2="340" y2="543" stroke="#e0af68" stroke-width="1.4" marker-end="url(#ard)"/>
+
+<text x="40" y="540" font-size="12.5" font-weight="bold" fill="#7aa2f7">Runtime orchestration (adopt)</text>
+<rect x="52" y="548" width="185" height="56" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="144" y="570" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">MCP gateway</text>
+<text x="144" y="587" font-size="9" fill="#7982a8" text-anchor="middle">adopt · policy enforcement</text>
+<rect x="247" y="548" width="185" height="56" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="339" y="570" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Primary runtime</text>
+<text x="339" y="587" font-size="9" fill="#7982a8" text-anchor="middle">Claude Agent SDK</text>
+<rect x="442" y="548" width="185" height="56" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="534" y="570" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Alt runtimes</text>
+<text x="534" y="587" font-size="9" fill="#7982a8" text-anchor="middle">LangGraph · ADK · AgentCore</text>
+
+<text x="40" y="636" font-size="12.5" font-weight="bold" fill="#7aa2f7">Platform foundation</text>
+<rect x="52" y="642" width="136" height="60" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="120" y="665" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Identity</text>
+<text x="120" y="682" font-size="8.8" fill="#7982a8" text-anchor="middle">Entra Agent ID · OAuth2</text>
+<rect x="198" y="642" width="136" height="60" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="266" y="665" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Observability</text>
+<text x="266" y="682" font-size="8.8" fill="#7982a8" text-anchor="middle">OTel GenAI &#8594; Grafana</text>
+<rect x="344" y="642" width="136" height="60" rx="6" fill="#1f2335" stroke="#565f89" stroke-width="1.3" stroke-dasharray="5 3"/>
+<text x="412" y="662" font-size="11.5" font-weight="bold" fill="#a9b1d6" text-anchor="middle">Data · SoR</text>
+<text x="412" y="678" font-size="8.8" fill="#7982a8" text-anchor="middle">git now ·</text>
+<text x="412" y="690" font-size="8.8" fill="#7982a8" text-anchor="middle">Postgres Phase 2</text>
+<rect x="490" y="642" width="136" height="60" rx="6" fill="#24283b" stroke="#7aa2f7" stroke-width="1.3"/>
+<text x="558" y="662" font-size="11.5" font-weight="bold" fill="#c0caf5" text-anchor="middle">CI / CD</text>
+<text x="558" y="678" font-size="8.8" fill="#7aa2f7" text-anchor="middle">Actions · readiness gate</text>
+<text x="558" y="690" font-size="8.8" fill="#7aa2f7" text-anchor="middle">govulncheck</text>
+
+<text x="40" y="720" font-size="10" fill="#7982a8">Azure-first: AKS / Container Apps · GitHub Actions OIDC · Terraform AzureRM · Key Vault via managed identity</text>
+
+<text x="40" y="742" font-size="12.5" font-weight="bold" fill="#7aa2f7">Standards · compliance</text>
+<rect x="52" y="750" width="90" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="97" y="765" font-size="9" fill="#73daca" text-anchor="middle">MCP 2025-11-25</text>
+<rect x="150" y="750" width="74" height="22" rx="11" fill="#1f2335" stroke="#565f89" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="187" y="765" font-size="9" fill="#7982a8" text-anchor="middle">A2A · future</text>
+<rect x="232" y="750" width="82" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="273" y="765" font-size="9" fill="#73daca" text-anchor="middle">OTel GenAI</text>
+<rect x="322" y="750" width="96" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="370" y="765" font-size="9" fill="#73daca" text-anchor="middle">OWASP ASI 2026</text>
+<rect x="426" y="750" width="80" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="466" y="765" font-size="9" fill="#73daca" text-anchor="middle">NIST AI RMF</text>
+<rect x="514" y="750" width="60" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="544" y="765" font-size="9" fill="#73daca" text-anchor="middle">ISO 42001</text>
+<rect x="582" y="750" width="45" height="22" rx="11" fill="#1e2b2b" stroke="#73daca" stroke-width="1"/>
+<text x="604" y="765" font-size="9" fill="#73daca" text-anchor="middle">EU AI Act</text>
+</svg>
