@@ -1,0 +1,293 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1600" viewBox="0 0 2400 1600" role="img" aria-labelledby="title desc">
+  <title id="title">AaraMinds Platform Enterprise Production Architecture</title>
+  <desc id="desc">Enterprise architecture view for the AaraMinds Agent Platform repository showing governance, contracts, proof runtime, MCP execution, enterprise integrations, evidence, and cross-cutting control planes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#262C42"/>
+      <stop offset="55%" stop-color="#343B58"/>
+      <stop offset="100%" stop-color="#1E2338"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#343B58"/>
+      <stop offset="100%" stop-color="#252B41"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6172B0"/>
+      <stop offset="100%" stop-color="#4A5279"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#587539"/>
+      <stop offset="100%" stop-color="#344824"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7A4FB0"/>
+      <stop offset="100%" stop-color="#4A5279"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8C6C3E"/>
+      <stop offset="100%" stop-color="#4A3C24"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#2E7DE9" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1 L 9 5 L 1 9 z" fill="#2E7DE9"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1 L 9 5 L 1 9 z" fill="#B9D29A"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1 L 9 5 L 1 9 z" fill="#B5781A"/>
+    </marker>
+    <style>
+      .title { font: 800 50px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #E1E2E7; letter-spacing: -0.8px; }
+      .subtitle { font: 400 24px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #C7CCE0; }
+      .section { font: 800 25px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #E1E2E7; letter-spacing: 0.2px; }
+      .kicker { font: 800 16px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #C7CCE0; letter-spacing: 1.8px; text-transform: uppercase; }
+      .label { font: 700 20px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #E1E2E7; }
+      .small { font: 400 16px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #E1E2E7; }
+      .tiny { font: 400 15px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #C7CCE0; }
+      .muted { font: 400 16px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #C7CCE0; }
+      .badge { font: 800 13px "Calibri", "Aptos", "Segoe UI", Arial, sans-serif; fill: #343B58; letter-spacing: 0.8px; }
+      .panel { fill: url(#panel); stroke: #4A5279; stroke-width: 2; rx: 28; filter: url(#shadow); }
+      .card { fill: rgba(52, 59, 88, 0.86); stroke: #6172B0; stroke-width: 1.6; rx: 20; }
+      .cardBlue { fill: rgba(97, 114, 176, 0.78); stroke: #2E7DE9; stroke-width: 1.8; rx: 20; }
+      .cardGreen { fill: rgba(88, 117, 57, 0.78); stroke: #587539; stroke-width: 1.8; rx: 20; }
+      .cardPurple { fill: rgba(122, 79, 176, 0.78); stroke: #9854F1; stroke-width: 1.8; rx: 20; }
+      .cardAmber { fill: rgba(140, 108, 62, 0.78); stroke: #B5781A; stroke-width: 1.8; rx: 20; }
+      .target { stroke-dasharray: 12 10; }
+      .arrow { stroke: #2E7DE9; stroke-width: 2.8; fill: none; marker-end: url(#arrow); opacity: 0.88; stroke-linecap: round; stroke-linejoin: round; }
+      .flowArrow { stroke: #2E7DE9; stroke-width: 3.2; fill: none; marker-end: url(#arrow); opacity: 0.82; stroke-linecap: round; }
+      .arrowThin { stroke: #2E7DE9; stroke-width: 2.1; fill: none; marker-end: url(#arrow); opacity: 0.58; stroke-linecap: round; }
+      .arrowGreen { stroke: #B9D29A; stroke-width: 2.6; fill: none; marker-end: url(#arrowGreen); opacity: 0.82; stroke-linecap: round; }
+      .govern { stroke: #B5781A; stroke-width: 2.2; fill: none; stroke-dasharray: 7 8; opacity: 0.72; marker-end: url(#arrowAmber); stroke-linecap: round; }
+      .flowNode { fill: #2E7DE9; opacity: 0.92; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="2400" height="1600" fill="url(#bg)"/>
+  <circle cx="2140" cy="190" r="290" fill="#2E7DE9" opacity="0.10"/>
+  <circle cx="190" cy="1420" r="330" fill="#587539" opacity="0.07"/>
+
+  <text x="80" y="86" class="title">AaraMinds Platform — Enterprise Production Architecture</text>
+  <text x="80" y="126" class="subtitle">Santosh 1x1 June theme · AAP contracts, proof runtime, skills, deterministic MCP tools, personas, and release evidence</text>
+  <rect x="1868" y="56" width="452" height="46" rx="23" fill="#C7CCE0" opacity="0.96"/>
+  <text x="1894" y="86" class="badge">SOLID = IMPLEMENTED / PROOFED IN REPO</text>
+  <rect x="1868" y="112" width="452" height="46" rx="23" fill="#C7CCE0" opacity="0.96"/>
+  <text x="1894" y="142" class="badge">DASHED = PRODUCTION TARGET / [VERIFY]</text>
+
+  <!-- Users and channels -->
+  <rect x="80" y="180" width="2240" height="172" class="panel"/>
+  <text x="118" y="225" class="kicker">Demand and interaction channels</text>
+  <g>
+    <rect x="120" y="244" width="420" height="78" class="cardBlue"/>
+    <text x="148" y="276" class="label">Human stakeholders</text>
+    <text x="148" y="304" class="small">BAs, architects, platform engineers, leaders</text>
+  </g>
+  <g>
+    <rect x="590" y="244" width="470" height="78" class="cardPurple"/>
+    <text x="618" y="276" class="label">AI coding and advisory sessions</text>
+    <text x="618" y="304" class="small">GitHub Copilot, Claude Code, custom agents</text>
+  </g>
+  <g>
+    <rect x="1110" y="244" width="450" height="78" class="cardGreen"/>
+    <text x="1138" y="276" class="label">Agent execution requests</text>
+    <text x="1138" y="304" class="small">BA proof flow, architecture review, MCP tools</text>
+  </g>
+  <g>
+    <rect x="1610" y="244" width="660" height="78" class="cardAmber"/>
+    <text x="1638" y="276" class="label">Engineering source and delivery systems</text>
+    <text x="1638" y="304" class="small">GitHub repos, docs, CI, diagrams, proof/eval artifacts</text>
+  </g>
+
+  <!-- Main architecture panels -->
+  <g id="governance">
+    <rect x="80" y="410" width="330" height="520" class="panel"/>
+    <text x="112" y="454" class="kicker">01 Control intent</text>
+    <text x="112" y="486" class="section">Governance and source</text>
+    <text x="112" y="516" class="section">of truth</text>
+    <rect x="110" y="546" width="270" height="94" class="cardAmber"/>
+    <text x="134" y="583" class="label">AAP governance</text>
+    <text x="134" y="611" class="small">PRD v1.3, guardrails,</text>
+    <text x="134" y="635" class="small">blocked actions</text>
+    <rect x="110" y="660" width="270" height="94" class="card"/>
+    <text x="134" y="697" class="label">Repository canon</text>
+    <text x="134" y="725" class="small">README, CLAUDE.md,</text>
+    <text x="134" y="749" class="small">Ranking and docs</text>
+    <rect x="110" y="774" width="270" height="94" class="card"/>
+    <text x="134" y="811" class="label">Human ownership</text>
+    <text x="134" y="839" class="small">Approvals, exceptions,</text>
+    <text x="134" y="863" class="small">release decisions</text>
+    <text x="112" y="902" class="muted">Canonical rule: this repo wins</text>
+  </g>
+
+  <g id="contracts">
+    <rect x="450" y="410" width="370" height="520" class="panel"/>
+    <text x="482" y="454" class="kicker">02 Executable policy</text>
+    <text x="482" y="486" class="section">Contracts and agent</text>
+    <text x="482" y="516" class="section">package layer</text>
+    <rect x="482" y="546" width="306" height="96" class="cardGreen"/>
+    <text x="506" y="583" class="label">Schemas</text>
+    <text x="506" y="611" class="small">agent, tool, audit,</text>
+    <text x="506" y="635" class="small">memory, eval, approvals</text>
+    <rect x="482" y="660" width="306" height="94" class="cardBlue"/>
+    <text x="506" y="697" class="label">Manifest</text>
+    <text x="506" y="725" class="small">BA agent skills, tools,</text>
+    <text x="506" y="749" class="small">memory, telemetry, gates</text>
+    <rect x="482" y="774" width="306" height="94" class="cardPurple"/>
+    <text x="506" y="811" class="label">Tool contracts</text>
+    <text x="506" y="839" class="small">versions, schemas, audit,</text>
+    <text x="506" y="863" class="small">permissions, timeouts</text>
+    <text x="482" y="902" class="muted">Diffable controls in git</text>
+  </g>
+
+  <g id="runtime">
+    <rect x="860" y="410" width="500" height="520" class="panel" filter="url(#softGlow)"/>
+    <text x="892" y="454" class="kicker">03 Runtime decision point</text>
+    <text x="892" y="486" class="section">AAP runtime control plane</text>
+    <rect x="892" y="526" width="436" height="72" class="cardBlue target"/>
+    <text x="918" y="558" class="label">Hosted agent runtime [VERIFY]</text>
+    <text x="918" y="586" class="small">Identity, managed target, live telemetry</text>
+    <rect x="892" y="620" width="436" height="80" class="cardGreen"/>
+    <text x="918" y="652" class="label">Local proof harness</text>
+    <text x="918" y="680" class="small">platform/aapctl validate · prove</text>
+    <rect x="892" y="724" width="205" height="122" class="cardAmber"/>
+    <text x="918" y="756" class="label">Tool gateway</text>
+    <text x="918" y="784" class="small">allowlist · version</text>
+    <text x="918" y="809" class="small">schema · approval</text>
+    <text x="918" y="834" class="small">engagement scope</text>
+    <rect x="1122" y="724" width="206" height="122" class="cardPurple"/>
+    <text x="1148" y="756" class="label">Memory gateway</text>
+    <text x="1148" y="784" class="small">classification</text>
+    <text x="1148" y="809" class="small">source citation</text>
+    <text x="1148" y="834" class="small">scope isolation</text>
+    <rect x="892" y="866" width="436" height="38" rx="19" fill="#D46BA3" opacity="0.96"/>
+    <text x="918" y="891" class="badge">HIGH-RISK ACTIONS REQUIRE HUMAN APPROVAL</text>
+  </g>
+
+  <g id="execution">
+    <rect x="1400" y="410" width="400" height="520" class="panel"/>
+    <text x="1432" y="454" class="kicker">04 Execution and knowledge</text>
+    <text x="1432" y="486" class="section">Skills, agents and</text>
+    <text x="1432" y="516" class="section">deterministic tools</text>
+    <rect x="1432" y="546" width="336" height="96" class="cardPurple"/>
+    <text x="1456" y="583" class="label">Skills-pack</text>
+    <text x="1456" y="611" class="small">35 skills, agents, hooks,</text>
+    <text x="1456" y="635" class="small">BA package evidence</text>
+    <rect x="1432" y="660" width="336" height="94" class="cardBlue"/>
+    <text x="1456" y="697" class="label">MCP architecture server</text>
+    <text x="1456" y="725" class="small">13 deterministic tools</text>
+    <text x="1456" y="749" class="small">services != protocol wiring</text>
+    <rect x="1432" y="774" width="336" height="94" class="card"/>
+    <text x="1456" y="811" class="label">Instruction OS</text>
+    <text x="1456" y="839" class="small">personas, modules,</text>
+    <text x="1456" y="863" class="small">communication layer</text>
+    <text x="1432" y="902" class="muted">Deterministic where correctness matters</text>
+  </g>
+
+  <g id="enterprise">
+    <rect x="1840" y="410" width="480" height="520" class="panel"/>
+    <text x="1872" y="454" class="kicker">05 Enterprise integrations</text>
+    <text x="1872" y="486" class="section">Data, identity and</text>
+    <text x="1872" y="516" class="section">platform services</text>
+    <rect x="1872" y="546" width="190" height="94" class="cardGreen"/>
+    <text x="1896" y="583" class="label">GitHub</text>
+    <text x="1896" y="611" class="small">source, docs,</text>
+    <text x="1896" y="635" class="small">Actions OIDC</text>
+    <rect x="2094" y="546" width="194" height="94" class="cardAmber target"/>
+    <text x="2118" y="583" class="label">Entra + MI</text>
+    <text x="2118" y="611" class="small">agent identity</text>
+    <text x="2118" y="635" class="small">and Key Vault</text>
+    <rect x="1872" y="660" width="190" height="94" class="cardPurple target"/>
+    <text x="1896" y="697" class="label">Model gateway</text>
+    <text x="1896" y="725" class="small">Azure OpenAI /</text>
+    <text x="1896" y="749" class="small">routing [VERIFY]</text>
+    <rect x="2094" y="660" width="194" height="94" class="cardBlue target"/>
+    <text x="2118" y="697" class="label">Memory store</text>
+    <text x="2118" y="725" class="small">persistent scoped</text>
+    <text x="2118" y="749" class="small">recall [VERIFY]</text>
+    <rect x="1872" y="774" width="416" height="94" class="card target"/>
+    <text x="1896" y="811" class="label">Developer portal</text>
+    <text x="1896" y="839" class="small">TechDocs / context artifacts [VERIFY]</text>
+    <text x="1896" y="863" class="small">approved context and runbooks</text>
+    <text x="1872" y="902" class="muted">Private, governed, tenant-safe by design</text>
+  </g>
+
+  <!-- Flow arrows -->
+  <path class="flowArrow" d="M 1335 322 C 1335 358, 1280 385, 1210 410"/>
+  <circle class="flowNode" cx="1335" cy="322" r="4.5"/>
+  <path class="arrow" d="M 410 670 C 424 670, 436 670, 450 670"/>
+  <path class="arrow" d="M 820 670 C 834 670, 846 670, 860 670"/>
+  <path class="arrow" d="M 1360 670 C 1374 670, 1386 670, 1400 670"/>
+  <path class="arrow" d="M 1800 670 C 1814 670, 1826 670, 1840 670"/>
+  <path class="govern" d="M 245 930 C 245 958, 1038 958, 1038 930"/>
+  <path class="arrowGreen" d="M 1110 930 C 1110 964, 1110 994, 1110 1025"/>
+  <path class="arrowThin" d="M 1600 930 C 1600 970, 1600 996, 1600 1025"/>
+  <path class="arrowThin" d="M 2080 930 C 2080 970, 2080 996, 2080 1025"/>
+
+  <!-- Evidence and operations row -->
+  <g id="evidence">
+    <rect x="80" y="1025" width="2240" height="230" class="panel"/>
+    <text x="118" y="1070" class="kicker">Evidence, release and operations plane</text>
+    <rect x="120" y="1100" width="330" height="100" class="cardGreen"/>
+    <text x="148" y="1134" class="label">Proof evidence</text>
+    <text x="148" y="1162" class="small">out/proofs/phase1-proof.json</text>
+    <text x="148" y="1187" class="small">manifest, tool, audit, memory signals</text>
+    <rect x="486" y="1100" width="330" height="100" class="cardBlue"/>
+    <text x="514" y="1134" class="label">CI and validation gates</text>
+    <text x="514" y="1162" class="small">gofmt · test · race · vet</text>
+    <text x="514" y="1187" class="small">aapctl validate · demo goldens</text>
+    <rect x="852" y="1100" width="330" height="100" class="cardPurple"/>
+    <text x="880" y="1134" class="label">Evaluation gates</text>
+    <text x="880" y="1162" class="small">golden suites, pass criteria,</text>
+    <text x="880" y="1187" class="small">release thresholds</text>
+    <rect x="1218" y="1100" width="330" height="100" class="cardAmber target"/>
+    <text x="1246" y="1134" class="label">Observability [VERIFY]</text>
+    <text x="1246" y="1162" class="small">OTel GenAI, Grafana,</text>
+    <text x="1246" y="1187" class="small">cost attribution, drift</text>
+    <rect x="1584" y="1100" width="330" height="100" class="card"/>
+    <text x="1612" y="1134" class="label">Audit and governance</text>
+    <text x="1612" y="1162" class="small">hash references, run IDs,</text>
+    <text x="1612" y="1187" class="small">approval decisions</text>
+    <rect x="1950" y="1100" width="330" height="100" class="card target"/>
+    <text x="1978" y="1134" class="label">Runbooks</text>
+    <text x="1978" y="1162" class="small">rollback,</text>
+    <text x="1978" y="1187" class="small">production ops</text>
+  </g>
+
+  <!-- Cross cutting control planes -->
+  <g id="controlplanes">
+    <rect x="80" y="1300" width="2240" height="230" class="panel"/>
+    <text x="118" y="1345" class="kicker">Cross-cutting enterprise control planes</text>
+    <g>
+      <rect x="120" y="1378" width="510" height="108" class="cardAmber"/>
+      <text x="150" y="1412" class="label">Security and identity</text>
+      <text x="150" y="1440" class="small">RBAC, GitHub Actions OIDC, Entra ID,</text>
+      <text x="150" y="1464" class="small">managed identity, Key Vault, secret/PII controls</text>
+    </g>
+    <g>
+      <rect x="670" y="1378" width="510" height="108" class="cardGreen"/>
+      <text x="700" y="1412" class="label">Policy, approval and compliance</text>
+      <text x="700" y="1440" class="small">blocked actions, approval boundaries, release gates,</text>
+      <text x="700" y="1464" class="small">SOC 2 / ISO 27001 evidence posture</text>
+    </g>
+    <g>
+      <rect x="1220" y="1378" width="510" height="108" class="cardPurple"/>
+      <text x="1250" y="1412" class="label">Evaluation and quality</text>
+      <text x="1250" y="1440" class="small">golden cases, deterministic MCP outputs,</text>
+      <text x="1250" y="1464" class="small">demo goldens, package release scorecards</text>
+    </g>
+    <g>
+      <rect x="1770" y="1378" width="510" height="108" class="cardBlue target"/>
+      <text x="1800" y="1412" class="label">Production SRE [VERIFY]</text>
+      <text x="1800" y="1440" class="small">SLOs, alerts, dashboards, audit sinks,</text>
+      <text x="1800" y="1464" class="small">capacity, incident and rollback workflows</text>
+    </g>
+  </g>
+
+  <!-- Bottom notes -->
+  <text x="80" y="1570" class="muted">Architecture intent: keep correctness-critical boundaries deterministic, make human approval explicit, and treat hosted runtime, identity, persistent memory, and live telemetry as production integration work requiring verification.</text>
+</svg>
