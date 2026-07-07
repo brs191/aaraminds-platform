@@ -17,7 +17,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25.5"
+          go-version: "1.25.11"
 
       - name: Verify platform formatting
         run: |
@@ -61,6 +61,15 @@ jobs:
             echo "readiness exited $code (block or error) — failing CI"
             exit 1
           fi
+
+      - name: Vulnerability scan (govulncheck)
+        run: |
+          # Reachability-based scan of the platform's own dependencies.
+          # This is evidence for the platform's own ASI04 (Agentic Supply
+          # Chain Compromise) control — the factory scans itself.
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck -C platform ./...
+          govulncheck -C skills-pack/examples/microservices-system-design-mcp-server ./...
 
       - name: Verify MCP server formatting
         run: |
