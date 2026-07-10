@@ -1,0 +1,34 @@
+# Data & Engineering Pack — the demo-ready hero pack.
+# Domain: software engineering & data platform. Timeline: now.
+# Three members are factory-certified; two are roadmap.
+pack_id: data-engineering-pack
+name: Data & Engineering Pack
+domain: Software engineering & data platform
+timeline: now
+description: >-
+  Governed, readiness-certified experts for the data and engineering layer:
+  requirements analysis, PostgreSQL and SQL Server drafting/review, plus code
+  and architecture review. The certified core is demo-ready; migration QA is the
+  next member.
+members:
+  - agent_id: aara-business-analyst
+    status: certified
+    note: Requirements elicitation, gap analysis, acceptance criteria, traceability.
+  - agent_id: aara-psql-expert
+    status: certified
+    note: PostgreSQL / PL-pgSQL advise-and-draft expert.
+  - agent_id: aara-mssql-expert
+    status: certified
+    note: SQL Server / T-SQL advise-and-draft expert (Azure SQL focus).
+  - agent_id: aara-project-reviewer
+    status: defined
+    note: PR / code review agent; definition exists, not yet run through the factory.
+  - agent_id: aara-project-architect
+    status: defined
+    note: Architecture review agent; definition exists, not yet certified.
+  - agent_id: aara-migration-qa
+    status: planned
+    note: Source/target validation and reconciliation; template in execution-package.
+shared_tool_contracts:
+  - tool-contracts/get_project_context.contract.yaml
+  - tool-contracts/search_knowledge_base.contract.yaml

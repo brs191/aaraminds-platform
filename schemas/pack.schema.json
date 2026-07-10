@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/pack.schema.json",
+  "title": "AAP Agent Pack",
+  "description": "A curated collection of individually-certified agents sharing a domain. A pack is an organizational/marketing grouping, not a runtime entity: each member remains its own manifest and readiness verdict.",
+  "type": "object",
+  "required": ["pack_id", "name", "domain", "timeline", "description", "members"],
+  "additionalProperties": false,
+  "properties": {
+    "pack_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+    "name": { "type": "string", "minLength": 1 },
+    "domain": { "type": "string", "minLength": 1 },
+    "timeline": { "type": "string", "enum": ["now", "next", "later"] },
+    "description": { "type": "string", "minLength": 20 },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["agent_id", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "agent_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+          "status": {
+            "type": "string",
+            "enum": ["certified", "defined", "planned"],
+            "description": "certified = has a factory readiness report; defined = agent definition exists but not run through the factory; planned = net-new."
+          },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "shared_tool_contracts": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

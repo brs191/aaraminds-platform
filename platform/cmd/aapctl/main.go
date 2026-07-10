@@ -41,6 +41,8 @@ func main() {
 		readiness(os.Args[2:])
 	case "export":
 		export(os.Args[2:])
+	case "pack":
+		pack(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -386,6 +388,67 @@ func export(args []string) {
 	fmt.Printf("exported %s: %d files to %s (integrity verified)\n", exportManifest.AgentID, len(exportManifest.Files), destDir)
 }
 
+// pack rolls up member readiness for one pack (-pack) or all packs (-all),
+// writing scorecards to out/packs/ and printing a summary line per pack.
+func pack(args []string) {
+	fs := flag.NewFlagSet("pack", flag.ExitOnError)
+	root := fs.String("root", defaultRoot(), "repository root")
+	packPath := fs.String("pack", "", "pack manifest path relative to root")
+	all := fs.Bool("all", false, "roll up every pack in packs/")
+	out := fs.String("out", "out/packs", "scorecard output directory relative to root")
+	_ = fs.Parse(args)
+
+	var packs []aapruntime.Pack
+	var err error
+	switch {
+	case *all:
+		packs, err = aapruntime.LoadAllPacks(*root)
+	case *packPath != "":
+		var p aapruntime.Pack
+		p, err = aapruntime.LoadPack(*root, filepath.Join(*root, *packPath))
+		packs = []aapruntime.Pack{p}
+	default:
+		fmt.Fprintln(os.Stderr, "pack: provide -pack <path> or -all")
+		os.Exit(2)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "load packs:", err)
+		os.Exit(1)
+	}
+	outDir := filepath.Join(*root, *out)
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		fmt.Fprintln(os.Stderr, "create out dir:", err)
+		os.Exit(1)
+	}
+	issues := 0
+	for _, p := range packs {
+		card, err := aapruntime.RunPackReadiness(*root, p)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "pack readiness:", err)
+			os.Exit(1)
+		}
+		if err := aapruntime.WritePackScorecard(*root, outDir, card); err != nil {
+			fmt.Fprintln(os.Stderr, "write scorecard:", err)
+			os.Exit(1)
+		}
+		avg := "n/a"
+		if card.CertifiedAvgScore != nil {
+			avg = fmt.Sprintf("%.1f", *card.CertifiedAvgScore)
+		}
+		fmt.Printf("%-24s [%s] %d members: %d certified, %d defined, %d planned; certified avg %s\n",
+			card.PackID, card.Timeline, card.MemberCount,
+			card.Counts.CertifiedCurrent, card.Counts.Defined, card.Counts.Planned, avg)
+		if card.Counts.ReportMissing > 0 || card.Counts.CertifiedStale > 0 {
+			issues++
+			fmt.Printf("  ! %d report-missing, %d stale — a member declared certified lacks a current report\n",
+				card.Counts.ReportMissing, card.Counts.CertifiedStale)
+		}
+	}
+	if issues > 0 {
+		os.Exit(1)
+	}
+}
+
 func defaultRoot() string {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -398,7 +461,7 @@ func defaultRoot() string {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify|scaffold|sections|readiness|export> [flags]")
+	fmt.Fprintln(os.Stderr, "usage: aapctl <contracts|mcp-tools|prove|validate|intake|classify|scaffold|sections|readiness|export|pack> [flags]")
 	fmt.Fprintln(os.Stderr, "readiness exit codes: 0 pass, 3 defer, 4 block (or activation gate violation), 1 error")
 }
 

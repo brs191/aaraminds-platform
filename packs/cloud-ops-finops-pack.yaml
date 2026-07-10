@@ -1,0 +1,31 @@
+# Cloud Ops & FinOps Pack — the timeliest bet (CloudOps+FinOps+AIOps convergence).
+# Domain: IT / cloud operations & FinOps. Timeline: next.
+# Members exist as agent definitions; certification through the factory is the next step.
+pack_id: cloud-ops-finops-pack
+name: Cloud Ops & FinOps Pack
+domain: IT / cloud operations & FinOps
+timeline: next
+description: >-
+  Operational-autonomy pack with guardrails: Azure cost optimization, Copilot
+  cost review, network topology review and visualization, plus a planned
+  incident-response agent and an AI-spend governor that governs the
+  organization's own agent and model token consumption.
+members:
+  - agent_id: aara-azure-cost-reviewer
+    status: defined
+    note: Azure cost analysis, waste detection, optimization recommendations.
+  - agent_id: aara-copilot-cost-reviewer
+    status: defined
+    note: Copilot / AI-tool cost review; agent package exists, not yet certified.
+  - agent_id: aara-network-topology-reviewer
+    status: defined
+    note: Azure subscription topology review, drift, and risk.
+  - agent_id: aara-topology-visualizer
+    status: defined
+    note: Topology visualization guidance.
+  - agent_id: aara-ai-spend-governor
+    status: planned
+    note: Governs the org's own agent/model token spend — 98% of orgs now manage AI spend.
+  - agent_id: aara-incident-responder
+    status: planned
+    note: AIOps incident triage and guided remediation with human-in-the-loop.

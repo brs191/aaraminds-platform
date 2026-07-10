@@ -1,0 +1,25 @@
+# Business Ops Pack — the "factory generalizes beyond engineering" vision pack.
+# Domain: business operations. Timeline: later.
+# Mostly net-new; one leadership-status agent is already defined.
+pack_id: business-ops-pack
+name: Business Ops Pack
+domain: Business operations
+timeline: later
+description: >-
+  Governed knowledge-work agents for business operations: leadership status
+  synthesis (defined), plus planned contract review, procurement/vendor review,
+  and knowledge synthesis. Demonstrates the factory generalizing beyond
+  engineering into business functions.
+members:
+  - agent_id: aara-status-deck
+    status: defined
+    note: Monthly status synthesis, RAG discipline, exec-ready summaries.
+  - agent_id: aara-contract-reviewer
+    status: planned
+    note: Contract / proposal review with cited clauses; no autonomous commitment.
+  - agent_id: aara-procurement-reviewer
+    status: planned
+    note: Vendor / procurement review and comparison.
+  - agent_id: aara-knowledge-synthesizer
+    status: planned
+    note: Cross-source knowledge synthesis with evidence citations.

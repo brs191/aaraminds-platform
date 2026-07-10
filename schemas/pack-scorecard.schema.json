@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aaraminds.ai/schemas/pack-scorecard.schema.json",
+  "title": "AAP Pack Scorecard",
+  "description": "Generated rollup of a pack's member readiness. Certified members contribute a verified score read from their readiness report; the scorecard never self-attests a member as certified without the artifact.",
+  "type": "object",
+  "required": ["pack_id", "name", "domain", "timeline", "generated_at", "rubric_version", "member_count", "counts", "members"],
+  "additionalProperties": false,
+  "properties": {
+    "pack_id": { "type": "string" },
+    "name": { "type": "string" },
+    "domain": { "type": "string" },
+    "timeline": { "type": "string", "enum": ["now", "next", "later"] },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "rubric_version": { "type": "string" },
+    "member_count": { "type": "integer", "minimum": 1 },
+    "certified_avg_score": { "type": ["number", "null"] },
+    "counts": {
+      "type": "object",
+      "required": ["certified_current", "certified_stale", "report_missing", "defined", "planned"],
+      "additionalProperties": false,
+      "properties": {
+        "certified_current": { "type": "integer", "minimum": 0 },
+        "certified_stale": { "type": "integer", "minimum": 0 },
+        "report_missing": { "type": "integer", "minimum": 0 },
+        "defined": { "type": "integer", "minimum": 0 },
+        "planned": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["agent_id", "declared_status", "state"],
+        "additionalProperties": false,
+        "properties": {
+          "agent_id": { "type": "string" },
+          "declared_status": { "type": "string", "enum": ["certified", "defined", "planned"] },
+          "state": { "type": "string", "enum": ["certified-current", "certified-stale", "report-missing", "defined", "planned"] },
+          "score": { "type": ["number", "null"] },
+          "verdict": { "type": "string" },
+          "report_rubric_version": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}
