@@ -1,0 +1,81 @@
+{
+  "tool_name": "get_mssql_schema_context",
+  "contract_version": "1.0.0",
+  "action_type": "mssql_schema_context_read",
+  "purpose": "Retrieve read-only T-SQL schema context (DDL, tables, columns, indexes, constraints) from engagement-provided files. Never queries a live database.",
+  "input_schema": {
+    "type": "object",
+    "required": ["engagement_id", "object_name"],
+    "properties": {
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "object_name": { "type": "string", "minLength": 1 },
+      "object_kind": { "type": "string", "enum": ["table", "view", "procedure", "function", "trigger", "index", "type", "any"] }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": ["definitions", "source_system"],
+    "properties": {
+      "definitions": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["object_name", "object_kind", "ddl", "source_ref"],
+          "properties": {
+            "object_name": { "type": "string", "minLength": 1 },
+            "object_kind": { "type": "string", "minLength": 1 },
+            "ddl": { "type": "string", "minLength": 1 },
+            "source_ref": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "source_system": { "type": "string", "minLength": 1 }
+    },
+    "additionalProperties": false
+  },
+  "permissions_required": ["schema_context:read"],
+  "approval_boundary": "none",
+  "data_classification": { "input": "client-confidential", "output": "client-confidential" },
+  "failure_modes": [
+    {
+      "code": "ENGAGEMENT_SCOPE_MISMATCH",
+      "meaning": "Requested engagement_id does not match active run context.",
+      "retryable": false,
+      "safe_user_message": "The request was blocked because it tried to access a different engagement scope."
+    },
+    {
+      "code": "OBJECT_NOT_FOUND",
+      "meaning": "The requested schema object was not present in the provided DDL.",
+      "retryable": false,
+      "safe_user_message": "That object was not found in the provided schema; provide its definition to continue."
+    }
+  ],
+  "timeout_ms": 5000,
+  "timeout_class": "interactive",
+  "retry_policy": { "max_attempts": 2, "backoff": "exponential" },
+  "audit_event_schema": {
+    "type": "object",
+    "required": ["run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"],
+    "properties": {
+      "run_id": { "type": "string", "minLength": 1 },
+      "tool_name": { "type": "string", "const": "get_mssql_schema_context" },
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "run_engagement_id": { "type": "string", "minLength": 1 },
+      "input_hash": { "type": "string", "minLength": 1 },
+      "outcome": { "type": "string", "enum": ["success", "denied", "approval_required"] },
+      "timestamp": { "type": "string", "format": "date-time" },
+      "reason": { "type": "string" },
+      "approval_boundary": { "type": "string" },
+      "original_boundary": { "type": "string" },
+      "runtime_mode": { "type": "string" },
+      "action_type": { "type": "string" },
+      "output_hash": { "type": "string" },
+      "elapsed_ms": { "type": "integer" },
+      "attempts": { "type": "integer" }
+    },
+    "additionalProperties": false
+  },
+  "example_invocation": { "engagement_id": "eng-example-001", "object_name": "dbo.Orders", "object_kind": "table" }
+}

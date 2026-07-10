@@ -1,0 +1,9 @@
+{
+  "agent_id": "aara-mssql-expert",
+  "verified_at": "2026-07-10T01:42:11Z",
+  "content_digest": "ead33c22db0749b56972c428b8d366efc2f2e9a79f8ab0282280052ea1d59f21",
+  "identical": true,
+  "report_score": 93.75,
+  "report_verdict": "pass",
+  "checks_compared": 32
+}

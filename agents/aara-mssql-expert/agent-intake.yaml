@@ -1,0 +1,72 @@
+# Agent intake for the Microsoft SQL Server / T-SQL expert agent.
+# Target emphasis: Azure SQL Database and Managed Instance (T-SQL, SQL Server 2025 baseline).
+# Scope: advise and draft only — never touches a live database.
+# Validated against schemas/agent-intake.schema.json by `aapctl intake`.
+agent_id: aara-mssql-expert
+submitted_by: rajashekar.b@gmail.com
+submitted_at: "2026-07-05T18:00:00Z"
+business_problem: >-
+  Teams write, review, and optimize T-SQL stored procedures, functions, and
+  queries for Azure SQL Database and Managed Instance by hand, with uneven
+  expertise and frequent SQL-Server-specific defects: parameter-sniffing plan
+  regressions, NOLOCK misuse, injection-prone dynamic SQL, and incorrect
+  isolation assumptions. Schema knowledge is often assumed rather than verified,
+  producing subtly wrong T-SQL that fails only under production load.
+owners:
+  business_owner: Raja Shekar Bollam
+  technical_owner: Raja Shekar Bollam (acting engineering lead)
+users:
+  - Backend Engineer
+  - Database Developer
+  - Azure Data Platform Lead
+expected_outcomes:
+  - Reviewed, evidence-grounded T-SQL drafts produced from provided schema
+  - Every schema or behavior claim cited to the provided DDL, never assumed
+  - Parameter-sniffing, isolation, and injection risks flagged before code is run
+execution_intent: draft-outputs
+proposed_tools:
+  - tool_name: get_mssql_schema_context
+    action_type: mssql_schema_context_read
+    writes: false
+    description: >-
+      Read provided T-SQL schema DDL, migration scripts, and table/column/index
+      definitions supplied for the engagement. Reads files only — never a live database.
+  - tool_name: search_tsql_knowledge
+    action_type: tsql_knowledge_search
+    writes: false
+    description: >-
+      Search an approved T-SQL / SQL Server knowledge base (Microsoft Learn docs,
+      patterns, internal standards) for relevant guidance.
+  - tool_name: create_tsql_draft
+    action_type: tsql_draft_create
+    writes: true
+    description: >-
+      Produce a reviewed T-SQL draft (stored procedure, function, migration, or
+      query) with cited rationale, for human review. Never executes SQL.
+data_domains:
+  - domain: schema-definitions
+    authoritative_source: engagement-provided T-SQL DDL and migration repository
+    classification: client-confidential
+  - domain: tsql-knowledge
+    authoritative_source: Microsoft Learn (SQL Server / Azure SQL) and internal T-SQL standards
+    classification: public
+  - domain: tsql-drafts
+    authoritative_source: agent blueprint repository
+    classification: client-confidential
+risks:
+  - Hallucinated column names, types, or index definitions if schema is not verified from source
+  - Dynamic SQL vulnerable to injection if not parameterized via sp_executesql
+  - Parameter-sniffing plan regressions if plan-stability advice is wrong
+  - Incorrect isolation assumptions (Azure SQL DB defaults to RCSI, unlike on-prem)
+  - Client schema definitions must never leak across engagements
+approval_needs: >-
+  Draft creation is soft-gated (interactive confirmation). This agent never executes
+  T-SQL against any database; any future execution tool would require a hard boundary
+  and separate security sign-off, and is out of scope for this intake.
+classification_inputs:
+  action_risk: low
+  data_sensitivity: client-confidential
+  reversibility: reversible
+  user_impact: medium
+  financial_impact: low
+  production_impact: low

@@ -1,0 +1,14 @@
+{
+  "autonomy_level": 2,
+  "autonomy_name": "Drafting",
+  "risk_score": 4,
+  "risk_tier": "medium",
+  "required_signoffs": [],
+  "mvp_policy": "allowed",
+  "rationale": [
+    "execution_intent \"draft-outputs\" maps to level 2 (Drafting)",
+    "action_risk floored from \"low\" to \"medium\": intake declares write tools",
+    "risk score 4 from classification inputs -\u003e tier medium",
+    "tool \"create_tsql_draft\" writes: contract must set approval_boundary soft, hard, or blocked"
+  ]
+}

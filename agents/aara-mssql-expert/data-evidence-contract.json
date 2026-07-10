@@ -1,0 +1,33 @@
+{
+  "agent_id": "aara-mssql-expert",
+  "contract_version": "0.1.0",
+  "data_domains": [
+    {
+      "authoritative_source": "engagement-provided T-SQL DDL and migration repository",
+      "classification": "client-confidential",
+      "domain": "schema-definitions",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    },
+    {
+      "authoritative_source": "Microsoft Learn (SQL Server / Azure SQL) and internal T-SQL standards",
+      "classification": "public",
+      "domain": "tsql-knowledge",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    },
+    {
+      "authoritative_source": "agent blueprint repository",
+      "classification": "client-confidential",
+      "domain": "tsql-drafts",
+      "record_type": "read-only",
+      "staleness_note": "[TODO architect: confirm record type and staleness handling]"
+    }
+  ],
+  "evidence_rules": {
+    "citation_format": "inline source reference (document id or query id)",
+    "factual_claims_require_citation": true,
+    "memory_write_citation_required": true,
+    "uncited_output_behavior": "flag"
+  }
+}

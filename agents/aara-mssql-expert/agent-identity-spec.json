@@ -1,0 +1,41 @@
+{
+  "agent_id": "aara-mssql-expert",
+  "credential": {
+    "local_dev_fallback": "isolated dev credential; never shared production credentials",
+    "max_lifetime_hours": 24,
+    "pattern": "oauth2-federated-identity-credential",
+    "shared_secrets_forbidden": true
+  },
+  "lifecycle": {
+    "owner": "Raja Shekar Bollam (acting engineering lead)",
+    "provisioning": "Provisioned as an Entra Agent ID via workload identity federation on agent approval by the platform admin; no standing secret issued. [VERIFY: Entra Agent ID GA federation mapping per PRD section 6]",
+    "retirement": "Disabled by the platform admin when the manifest status moves to deprecated or blocked (kill-switch path); the technical owner confirms decommission and revokes federation trust.",
+    "rotation": "No long-lived secret to rotate; federated credentials are short-lived (<= 24h per credential.max_lifetime_hours). Federation trust and scopes reviewed quarterly."
+  },
+  "principal": {
+    "distinct_from_user": true,
+    "idp": "entra-id [VERIFY per implementation]",
+    "principal_type": "agent-identity"
+  },
+  "scopes": [
+    {
+      "environment": "dev",
+      "justification": "Read provided T-SQL schema DDL, migration scripts, and table/column/index definitions supplied for the engagement. Reads files only — never a live database.",
+      "permission": "read",
+      "resource": "get_mssql_schema_context"
+    },
+    {
+      "environment": "dev",
+      "justification": "Search an approved T-SQL / SQL Server knowledge base (Microsoft Learn docs, patterns, internal standards) for relevant guidance.",
+      "permission": "read",
+      "resource": "search_tsql_knowledge"
+    },
+    {
+      "environment": "dev",
+      "justification": "Produce a reviewed T-SQL draft (stored procedure, function, migration, or query) with cited rationale, for human review. Never executes SQL.",
+      "permission": "write",
+      "resource": "create_tsql_draft"
+    }
+  ],
+  "spec_version": "0.1.0"
+}

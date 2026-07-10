@@ -1,6 +1,6 @@
 # Agent Readiness Report — aara-business-analyst
 
-Generated 2026-07-10T01:23:33Z · rubric 0.2.0 · agent version 0.1.0
+Generated 2026-07-10T01:42:12Z · rubric 0.2.0 · agent version 0.1.0
 
 ## Verdict
 
