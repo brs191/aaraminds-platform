@@ -1,9 +1,9 @@
 {
   "agent_id": "aara-business-analyst",
-  "verified_at": "2026-07-05T15:19:42Z",
+  "verified_at": "2026-07-10T01:23:33Z",
   "content_digest": "67206e1755e3b3262d7b74bb98f143b91cbb52fa66ba6655fd4d4b0b489531aa",
   "identical": true,
-  "report_score": 85.08,
+  "report_score": 85.5,
   "report_verdict": "pass",
-  "checks_compared": 31
+  "checks_compared": 32
 }

@@ -282,12 +282,18 @@ var checkRegistry = map[string]checkSpec{
 		}
 		return true, rc.manifestPath, ""
 	}},
-	"eval-runs-present": {mechanism: "eval-run", run: func(rc *readinessContext) (bool, string, string) {
+	// eval-runs-pass requires a recorded eval run whose overall_result is
+	// "pass" — not merely that a run exists. A "needs-review" or "fail" run
+	// records evaluation discipline but does not certify the agent behaved
+	// correctly, so it must not earn readiness credit.
+	"eval-runs-pass": {mechanism: "eval-run", run: func(rc *readinessContext) (bool, string, string) {
 		dir := filepath.Join(rc.agentDir, "eval-runs")
 		entries, err := os.ReadDir(dir)
 		if err != nil || len(entries) == 0 {
-			return false, dir, "record at least one eval run (schemas/eval-run.schema.json) in eval-runs/"
+			return false, dir, "record and pass at least one eval run (schemas/eval-run.schema.json) with overall_result \"pass\""
 		}
+		found := false
+		latestResult := ""
 		for _, entry := range entries {
 			if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
 				continue
@@ -296,9 +302,26 @@ var checkRegistry = map[string]checkSpec{
 			if err := ValidateStructuredFile(path, filepath.Join(rc.root, "schemas", "eval-run.schema.json")); err != nil {
 				return false, path, "eval run record fails schema: " + err.Error()
 			}
-			return true, path, ""
+			found = true
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				return false, path, "eval run unreadable: " + err.Error()
+			}
+			var run struct {
+				OverallResult string `json:"overall_result"`
+			}
+			if err := json.Unmarshal(raw, &run); err != nil {
+				return false, path, "eval run unparseable: " + err.Error()
+			}
+			latestResult = run.OverallResult
+			if run.OverallResult == "pass" {
+				return true, path, ""
+			}
 		}
-		return false, dir, "eval-runs/ contains no schema-valid .json eval run records"
+		if !found {
+			return false, dir, "eval-runs/ contains no schema-valid .json eval run records"
+		}
+		return false, dir, fmt.Sprintf("eval runs recorded but none passed (latest overall_result: %q); behavioral gates must pass, not just be recorded", latestResult)
 	}},
 
 	// ---- security ----
@@ -377,6 +400,29 @@ var checkRegistry = map[string]checkSpec{
 	}},
 
 	// ---- export ----
+	// artifacts-todo-free fails if any generated Markdown artifact still
+	// carries a "[TODO" or "Status: TODO" placeholder. Section-specific
+	// checks (identity/asi/compliance) gate their own files; this catches the
+	// rest — blueprint, workflow, system prompt, risk register, data/evidence
+	// contract, backlog, eval plan — so a perfect score cannot coexist with
+	// unresolved architect hand-work anywhere in the package.
+	"artifacts-todo-free": {mechanism: "schema-validation", run: func(rc *readinessContext) (bool, string, string) {
+		var offenders []string
+		for _, name := range sortedArtifactNames() {
+			path := filepath.Join(rc.agentDir, name)
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				continue // absence is caught by artifacts-complete
+			}
+			if strings.Contains(string(raw), "[TODO") || strings.Contains(string(raw), "Status: TODO") {
+				offenders = append(offenders, name)
+			}
+		}
+		if len(offenders) > 0 {
+			return false, rc.agentDir, "resolve remaining [TODO] placeholders in: " + strings.Join(offenders, ", ")
+		}
+		return true, rc.agentDir, ""
+	}},
 	"artifacts-complete": {mechanism: "schema-validation", run: func(rc *readinessContext) (bool, string, string) {
 		reports, err := ValidateArtifactDir(rc.agentDir)
 		if err != nil {

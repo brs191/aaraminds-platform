@@ -1,0 +1,61 @@
+{
+  "agent_id": "aara-psql-expert",
+  "manifest_version": "1.0.0",
+  "owner": "Raja",
+  "runtime": "claude-agent-sdk",
+  "status": "draft",
+  "allowed_skills": [
+    {
+      "skill_id": "aara-psql-expert-core",
+      "skill_version": "0.1.0",
+      "source_path": "skills-pack/agent-packages/aara-psql-expert/agent.md"
+    },
+    {
+      "skill_id": "aara-psql-expert-spec",
+      "skill_version": "0.1.0",
+      "source_path": "skills-pack/agent-packages/aara-psql-expert/AGENT_SPEC.md"
+    },
+    {
+      "skill_id": "aara-psql-expert-eval-plan",
+      "skill_version": "0.1.0",
+      "source_path": "skills-pack/agent-packages/aara-psql-expert/eval-plan.md"
+    }
+  ],
+  "allowed_tools": [
+    {
+      "tool_name": "get_schema_context",
+      "contract_version": "1.0.0",
+      "approval_boundary": "none"
+    },
+    {
+      "tool_name": "search_sql_knowledge",
+      "contract_version": "1.0.0",
+      "approval_boundary": "none"
+    },
+    {
+      "tool_name": "create_sql_draft",
+      "contract_version": "1.0.0",
+      "approval_boundary": "soft"
+    }
+  ],
+  "memory": {
+    "enabled": true,
+    "scope": "engagement",
+    "allowed_classifications": ["public", "internal", "client-confidential"],
+    "pii_allowed": false
+  },
+  "approval_boundaries": {
+    "default": "hard",
+    "blocked_actions_ref": "governance/aap-blocked-actions.yaml"
+  },
+  "telemetry": {
+    "otel_enabled": true,
+    "cost_attribution": true,
+    "payload_mode": "hash-and-reference"
+  },
+  "evaluation_gate": {
+    "required": true,
+    "benchmark_ref": "skills-pack/agent-packages/aara-psql-expert/eval-plan.md",
+    "threshold_profile": "skills-pack/agent-packages/aara-psql-expert/release-gate.json"
+  }
+}

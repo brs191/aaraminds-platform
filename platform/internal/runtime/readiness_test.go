@@ -112,10 +112,11 @@ func TestReadinessBAAgentHonestVerdict(t *testing.T) {
 			}
 		}
 	}
-	// No eval run has been recorded yet; the check must reflect that.
-	if _, err := os.Stat(filepath.Join(agentDir, "eval-runs")); err != nil {
-		if checkPassed(report, "eval-runs-present") {
-			t.Error("eval-runs-present must fail with no recorded eval runs")
+	// No passing eval run recorded for the BA fixture; the check must reflect
+	// that. eval-runs-pass requires overall_result "pass", not mere existence.
+	if !hasPassingEvalRun(agentDir) {
+		if checkPassed(report, "eval-runs-pass") {
+			t.Error("eval-runs-pass must fail without a passing eval run")
 		}
 	}
 	// Harness-backed gates must pass — the proof harness is green, including
@@ -230,6 +231,26 @@ func TestReadinessDeterministicModuloTimestamp(t *testing.T) {
 	if first.Score != second.Score || first.Verdict != second.Verdict {
 		t.Fatalf("non-deterministic verdict: %.1f/%s vs %.1f/%s", first.Score, first.Verdict, second.Score, second.Verdict)
 	}
+}
+
+func hasPassingEvalRun(agentDir string) bool {
+	entries, err := os.ReadDir(filepath.Join(agentDir, "eval-runs"))
+	if err != nil {
+		return false
+	}
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".json") {
+			continue
+		}
+		raw, err := os.ReadFile(filepath.Join(agentDir, "eval-runs", e.Name()))
+		if err != nil {
+			continue
+		}
+		if strings.Contains(string(raw), "\"overall_result\": \"pass\"") {
+			return true
+		}
+	}
+	return false
 }
 
 func checkPassed(report ReadinessReport, id string) bool {

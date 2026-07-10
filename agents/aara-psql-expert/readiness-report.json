@@ -1,5 +1,5 @@
 {
-  "agent_id": "aara-business-analyst",
+  "agent_id": "aara-psql-expert",
   "agent_version": "0.1.0",
   "rubric_version": "0.2.0",
   "generated_at": "2026-07-10T01:23:33Z",
@@ -24,19 +24,19 @@
           "check": "intake-valid",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-intake.yaml"
+          "evidence_ref": "../agents/aara-psql-expert/agent-intake.yaml"
         },
         {
           "check": "owners-named",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-intake.yaml"
+          "evidence_ref": "../agents/aara-psql-expert/agent-intake.yaml"
         },
         {
           "check": "outcomes-stated",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-intake.yaml"
+          "evidence_ref": "../agents/aara-psql-expert/agent-intake.yaml"
         }
       ]
     },
@@ -51,25 +51,25 @@
           "check": "classification-current",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/classification.json"
+          "evidence_ref": "../agents/aara-psql-expert/classification.json"
         },
         {
           "check": "signoffs-recorded",
           "result": "pass",
           "mechanism": "catalog-record",
-          "evidence_ref": "../agents/aara-business-analyst/signoffs.json"
+          "evidence_ref": "../agents/aara-psql-expert/signoffs.json"
         },
         {
           "check": "manifest-valid",
           "result": "pass",
           "mechanism": "contract-lint",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         },
         {
           "check": "write-boundaries",
           "result": "pass",
           "mechanism": "contract-lint",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         }
       ]
     },
@@ -96,13 +96,13 @@
           "check": "contracts-pinned",
           "result": "pass",
           "mechanism": "contract-lint",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         },
         {
           "check": "manifest-agent-match",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         }
       ]
     },
@@ -110,26 +110,26 @@
       "area": "Identity and permissions",
       "weight": 15,
       "checks_total": 3,
-      "checks_passed": 2,
-      "score": 10,
+      "checks_passed": 3,
+      "score": 15,
       "evidence": [
         {
           "check": "identity-valid",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-identity-spec.json"
+          "evidence_ref": "../agents/aara-psql-expert/agent-identity-spec.json"
         },
         {
           "check": "identity-complete",
-          "result": "fail",
+          "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-identity-spec.json"
+          "evidence_ref": "../agents/aara-psql-expert/agent-identity-spec.json"
         },
         {
           "check": "identity-scopes-match",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/agent-identity-spec.json"
+          "evidence_ref": "../agents/aara-psql-expert/agent-identity-spec.json"
         }
       ]
     },
@@ -144,13 +144,13 @@
           "check": "evidence-contract-valid",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/data-evidence-contract.json"
+          "evidence_ref": "../agents/aara-psql-expert/data-evidence-contract.json"
         },
         {
           "check": "domains-mapped",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/data-evidence-contract.json"
+          "evidence_ref": "../agents/aara-psql-expert/data-evidence-contract.json"
         },
         {
           "check": "memory-citation-gate",
@@ -171,25 +171,25 @@
           "check": "eval-plan-sections",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/evaluation-plan.md"
+          "evidence_ref": "../agents/aara-psql-expert/evaluation-plan.md"
         },
         {
           "check": "eval-safety-section",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/evaluation-plan.md"
+          "evidence_ref": "../agents/aara-psql-expert/evaluation-plan.md"
         },
         {
           "check": "eval-gate-configured",
           "result": "pass",
           "mechanism": "contract-lint",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         },
         {
           "check": "eval-runs-pass",
           "result": "fail",
           "mechanism": "eval-run",
-          "evidence_ref": "../agents/aara-business-analyst/eval-runs"
+          "evidence_ref": "../agents/aara-psql-expert/eval-runs"
         }
       ]
     },
@@ -197,14 +197,14 @@
       "area": "Security and governance controls",
       "weight": 10,
       "checks_total": 5,
-      "checks_passed": 4,
-      "score": 8,
+      "checks_passed": 5,
+      "score": 10,
       "evidence": [
         {
           "check": "asi-checklist-complete",
-          "result": "fail",
+          "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/security-governance-checklist.md"
+          "evidence_ref": "../agents/aara-psql-expert/security-governance-checklist.md"
         },
         {
           "check": "proof-tool-denial",
@@ -236,20 +236,20 @@
       "area": "Compliance evidence",
       "weight": 5,
       "checks_total": 2,
-      "checks_passed": 1,
-      "score": 2.5,
+      "checks_passed": 2,
+      "score": 5,
       "evidence": [
         {
           "check": "compliance-map-sections",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/compliance-evidence-map.md"
+          "evidence_ref": "../agents/aara-psql-expert/compliance-evidence-map.md"
         },
         {
           "check": "compliance-complete",
-          "result": "fail",
+          "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst/compliance-evidence-map.md"
+          "evidence_ref": "../agents/aara-psql-expert/compliance-evidence-map.md"
         }
       ]
     },
@@ -264,31 +264,31 @@
           "check": "artifacts-complete",
           "result": "pass",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst"
+          "evidence_ref": "../agents/aara-psql-expert"
         },
         {
           "check": "artifacts-todo-free",
           "result": "fail",
           "mechanism": "schema-validation",
-          "evidence_ref": "../agents/aara-business-analyst"
+          "evidence_ref": "../agents/aara-psql-expert"
         },
         {
           "check": "telemetry-payload-mode",
           "result": "pass",
           "mechanism": "contract-lint",
-          "evidence_ref": "../examples/ba-agent.manifest.yaml"
+          "evidence_ref": "../examples/psql-expert.manifest.yaml"
         },
         {
           "check": "export-roundtrip",
           "result": "pass",
           "mechanism": "export-roundtrip",
-          "evidence_ref": "../agents/aara-business-analyst/export-verification.json"
+          "evidence_ref": "../agents/aara-psql-expert/export-verification.json"
         }
       ]
     }
   ],
   "critical_blockers": [],
-  "score": 85.5,
+  "score": 95,
   "verdict": "pass",
   "approvals_required": [
     {

@@ -21,10 +21,10 @@ Each readiness area has a weight and a set of checks. An area's score = weight �
 | 3 | MCP tool contract completeness | 15 | Every `allowed_tools` entry pins a contract version [HARNESS]; contracts validate against `schemas/mcp-tool-contract.schema.json` [HARNESS]; example invocation validates against `input_schema` [HARNESS]; failure modes + audit_event_schema present [HARNESS] |
 | 4 | Identity and permissions | 15 | Identity spec validates against `schemas/agent-identity-spec.schema.json` [NEW]; principal, credential pattern, scopes, lifecycle defined [NEW]; no shared/production credentials in local dev config [NEW] |
 | 5 | Data / source-of-truth mapping | 10 | Every data domain referenced by tools maps to an authoritative source [HARNESS: domains-mapped]; memory `allowed_classifications` consistent with data-evidence contract [HARNESS partial]; memory citation enforcement 100% [HARNESS: proof gates UncitedMemoryWriteDenied + UncitedMemoryDenialAudited] |
-| 6 | Evaluation plan and test coverage | 15 | Eval plan contains all 7 categories (golden, tool accuracy, retrieval/evidence, safety/prompt-injection, latency, cost, regression) [NEW]; `evaluation_gate.required=true` with resolvable `benchmark_ref` [HARNESS]; eval-run results meet `release-gate-thresholds.md` where executed [HARNESS] |
+| 6 | Evaluation plan and test coverage | 15 | Eval plan contains all 7 categories (golden, tool accuracy, retrieval/evidence, safety/prompt-injection, latency, cost, regression) [HARNESS: eval-plan-sections]; `evaluation_gate.required=true` with resolvable `benchmark_ref` [HARNESS: eval-gate-configured]; **a recorded eval run has `overall_result: pass`** — a `needs-review`/`fail` run does not earn credit [HARNESS: eval-runs-pass, rubric ≥0.2.0] |
 | 7 | Security / governance controls | 10 | OWASP ASI01–ASI10 mapping complete [HARNESS: asi-checklist-complete]; prompt-injection tool-escalation tests 100% pass [HARNESS: proof gates InjectionToolDenied + InjectionApprovalEnforced + InjectionManifestUnchanged]; tool-denial tests 100% pass [HARNESS]; audit coverage 100% [HARNESS] |
 | 8 | Compliance evidence | 5 | AI Act role assessed (deployer/provider) [NEW]; ISO 42001 registry fields populated in catalog record [NEW] |
-| 9 | Export / build readiness | 5 | Artifact folder complete per artifact-schemas.md [NEW]; export round-trips (re-import reproduces validation results) [NEW]; telemetry `payload_mode=hash-and-reference` for active/platform-ready [HARNESS] |
+| 9 | Export / build readiness | 5 | Artifact folder complete per artifact-schemas.md [HARNESS: artifacts-complete]; **no `[TODO]`/`Status: TODO` placeholders remain in any generated Markdown artifact** [HARNESS: artifacts-todo-free, rubric ≥0.2.0]; export round-trips (re-import reproduces validation results) [HARNESS: export-roundtrip]; telemetry `payload_mode=hash-and-reference` for active/platform-ready [HARNESS: telemetry-payload-mode] |
 
 Total: 100.
 
@@ -56,3 +56,8 @@ Total: 100.
 ## Calibration
 
 Weights and the 85/70 thresholds are proposals `[TARGET]`. Calibrate during the pilot (BRD v2.1 §21.2): if reviewers systematically override verdicts, revise this rubric — the rubric, not the reviewers, is treated as defective.
+
+## Changelog
+
+- **0.2.0** — Closed two "score is softer than the pitch" seams. `eval-runs-present` → `eval-runs-pass`: a recorded eval run must have `overall_result: pass`; merely recording a `needs-review` run no longer earns credit. Added `artifacts-todo-free`: any `[TODO]`/`Status: TODO` placeholder in a generated Markdown artifact fails the check, so a perfect score cannot coexist with unresolved architect hand-work. Bumping the version invalidates reports scored under 0.1.0 for the activation gate — agents must be re-scored.
+- **0.1.0** — Initial rubric: 9 areas, 10 critical checks, evidence-backed check runners composed over section validation, contract lint, and proof-harness gate results.

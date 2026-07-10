@@ -1,10 +1,10 @@
 # Agent Readiness Report — aara-business-analyst
 
-Generated 2026-07-05T15:19:42Z · rubric 0.1.0 · agent version 0.1.0
+Generated 2026-07-10T01:23:33Z · rubric 0.2.0 · agent version 0.1.0
 
 ## Verdict
 
-**PASS** — score 86.8/100
+**PASS** — score 85.5/100
 
 Every field below is populated from verifiable checks, never self-attestation.
 
@@ -30,18 +30,20 @@ Every field below is populated from verifiable checks, never self-attestation.
 | Evaluation plan and test coverage | 15 | 3/4 | 11.25 |
 | Security and governance controls | 10 | 4/5 | 8.00 |
 | Compliance evidence | 5 | 1/2 | 2.50 |
-| Export and build readiness | 5 | 3/3 | 5.00 |
+| Export and build readiness | 5 | 3/4 | 3.75 |
 
 ## Failing Checks and Required Fixes
 
 - `identity-complete` (Identity and permissions, schema-validation)
   - Evidence: ../agents/aara-business-analyst/agent-identity-spec.json
-- `eval-runs-present` (Evaluation plan and test coverage, eval-run)
+- `eval-runs-pass` (Evaluation plan and test coverage, eval-run)
   - Evidence: ../agents/aara-business-analyst/eval-runs
 - `asi-checklist-complete` (Security and governance controls, schema-validation)
   - Evidence: ../agents/aara-business-analyst/security-governance-checklist.md
 - `compliance-complete` (Compliance evidence, schema-validation)
   - Evidence: ../agents/aara-business-analyst/compliance-evidence-map.md
+- `artifacts-todo-free` (Export and build readiness, schema-validation)
+  - Evidence: ../agents/aara-business-analyst
 
 ## Check Evidence
 
@@ -67,7 +69,7 @@ Every field below is populated from verifiable checks, never self-attestation.
 | eval-plan-sections | pass | schema-validation | ../agents/aara-business-analyst/evaluation-plan.md |
 | eval-safety-section | pass | schema-validation | ../agents/aara-business-analyst/evaluation-plan.md |
 | eval-gate-configured | pass | contract-lint | ../examples/ba-agent.manifest.yaml |
-| eval-runs-present | fail | eval-run | ../agents/aara-business-analyst/eval-runs |
+| eval-runs-pass | fail | eval-run | ../agents/aara-business-analyst/eval-runs |
 | asi-checklist-complete | fail | schema-validation | ../agents/aara-business-analyst/security-governance-checklist.md |
 | proof-tool-denial | pass | harness-gate | aapctl prove: tool-denial gates |
 | proof-memory-isolation | pass | harness-gate | aapctl prove: memory gates |
@@ -76,6 +78,7 @@ Every field below is populated from verifiable checks, never self-attestation.
 | compliance-map-sections | pass | schema-validation | ../agents/aara-business-analyst/compliance-evidence-map.md |
 | compliance-complete | fail | schema-validation | ../agents/aara-business-analyst/compliance-evidence-map.md |
 | artifacts-complete | pass | schema-validation | ../agents/aara-business-analyst |
+| artifacts-todo-free | fail | schema-validation | ../agents/aara-business-analyst |
 | telemetry-payload-mode | pass | contract-lint | ../examples/ba-agent.manifest.yaml |
 | export-roundtrip | pass | export-roundtrip | ../agents/aara-business-analyst/export-verification.json |
 

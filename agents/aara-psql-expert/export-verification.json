@@ -1,0 +1,9 @@
+{
+  "agent_id": "aara-psql-expert",
+  "verified_at": "2026-07-10T01:23:33Z",
+  "content_digest": "d87f12064dccc7aa3ceb6aa78e4ce537018f46d2aa006cb8e90a6e26c21924bf",
+  "identical": true,
+  "report_score": 95,
+  "report_verdict": "pass",
+  "checks_compared": 32
+}

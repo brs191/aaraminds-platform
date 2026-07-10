@@ -1,0 +1,75 @@
+{
+  "tool_name": "create_sql_draft",
+  "contract_version": "1.0.0",
+  "action_type": "sql_draft_create",
+  "purpose": "Create a non-production PL/pgSQL or SQL draft (stored procedure, function, trigger, migration, or query) from cited schema evidence. Never executes SQL.",
+  "input_schema": {
+    "type": "object",
+    "required": ["engagement_id", "title", "draft_kind", "evidence_refs"],
+    "properties": {
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "title": { "type": "string", "minLength": 1 },
+      "draft_kind": { "type": "string", "enum": ["stored_procedure", "function", "trigger", "migration", "query"] },
+      "evidence_refs": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_schema": {
+    "type": "object",
+    "required": ["draft_ref", "status"],
+    "properties": {
+      "draft_ref": { "type": "string", "minLength": 1 },
+      "status": { "type": "string", "enum": ["draft_created", "draft_updated", "pending_review"] }
+    },
+    "additionalProperties": false
+  },
+  "permissions_required": ["sql_draft:create"],
+  "approval_boundary": "soft",
+  "data_classification": { "input": "client-confidential", "output": "client-confidential" },
+  "failure_modes": [
+    {
+      "code": "APPROVAL_REQUIRED",
+      "meaning": "Draft creation requires an authenticated interactive user confirmation.",
+      "retryable": true,
+      "safe_user_message": "Please confirm before creating the SQL draft."
+    },
+    {
+      "code": "MISSING_EVIDENCE",
+      "meaning": "The draft cited no schema evidence; every draft must reference the provided DDL.",
+      "retryable": false,
+      "safe_user_message": "The draft was blocked because it did not cite the schema it depends on."
+    }
+  ],
+  "timeout_ms": 10000,
+  "timeout_class": "interactive",
+  "retry_policy": { "max_attempts": 0, "backoff": "none" },
+  "audit_event_schema": {
+    "type": "object",
+    "required": ["run_id", "tool_name", "engagement_id", "input_hash", "outcome", "timestamp"],
+    "properties": {
+      "run_id": { "type": "string", "minLength": 1 },
+      "tool_name": { "type": "string", "const": "create_sql_draft" },
+      "engagement_id": { "type": "string", "minLength": 1 },
+      "run_engagement_id": { "type": "string", "minLength": 1 },
+      "input_hash": { "type": "string", "minLength": 1 },
+      "outcome": { "type": "string", "enum": ["success", "denied", "approval_required"] },
+      "timestamp": { "type": "string", "format": "date-time" },
+      "reason": { "type": "string" },
+      "approval_boundary": { "type": "string" },
+      "original_boundary": { "type": "string" },
+      "runtime_mode": { "type": "string" },
+      "approval_request_id": { "type": "string" },
+      "approved_by": { "type": "string" },
+      "action_type": { "type": "string" },
+      "output_hash": { "type": "string" },
+      "elapsed_ms": { "type": "integer" },
+      "attempts": { "type": "integer" }
+    },
+    "additionalProperties": false
+  },
+  "example_invocation": { "engagement_id": "eng-example-001", "title": "Idempotent upsert procedure for orders", "draft_kind": "stored_procedure", "evidence_refs": ["source://example/schema/orders.sql"] }
+}

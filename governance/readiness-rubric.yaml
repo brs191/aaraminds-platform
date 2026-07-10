@@ -4,7 +4,7 @@
 # execution-package/readiness-scoring-rubric.md. Calibrate weights and
 # thresholds here after the pilot — the rubric, not the reviewers, is
 # treated as defective when verdicts are systematically overridden.
-rubric_version: 0.1.0
+rubric_version: 0.2.0
 
 thresholds:
   pass: 85
@@ -39,7 +39,7 @@ areas:
   - id: evaluation
     name: Evaluation plan and test coverage
     weight: 15
-    checks: [eval-plan-sections, eval-safety-section, eval-gate-configured, eval-runs-present]
+    checks: [eval-plan-sections, eval-safety-section, eval-gate-configured, eval-runs-pass]
 
   - id: security
     name: Security and governance controls
@@ -54,7 +54,7 @@ areas:
   - id: export
     name: Export and build readiness
     weight: 5
-    checks: [artifacts-complete, telemetry-payload-mode, export-roundtrip]
+    checks: [artifacts-complete, artifacts-todo-free, telemetry-payload-mode, export-roundtrip]
 
 # Failure of any check below blocks the agent regardless of score.
 critical_checks:
