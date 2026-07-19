@@ -1128,6 +1128,114 @@ func TestExpiredMemoryWriteRejected(t *testing.T) {
 	}
 }
 
+func testClaimRecord(ctx RunContext, memoryID, claimKey, supersedes string) MemoryRecord {
+	return MemoryRecord{
+		MemoryID:       memoryID,
+		AgentID:        ctx.AgentID,
+		EngagementID:   ctx.EngagementID,
+		Classification: "client-confidential",
+		ContentRef:     "memory://" + ctx.EngagementID + "/" + memoryID,
+		ContentHash:    "hash-" + memoryID,
+		SourceCitation: SourceCitation{
+			RunID:     ctx.RunID,
+			TraceID:   "trace-" + ctx.RunID,
+			SpanID:    "span-test",
+			SourceRef: "source://example/test",
+		},
+		CreatedAt:          time.Now().UTC(),
+		ExpiresAt:          time.Now().UTC().Add(24 * time.Hour),
+		Status:             "active",
+		ClaimKey:           claimKey,
+		SupersedesMemoryID: supersedes,
+	}
+}
+
+func TestConflictingClaimKeyWriteDenied(t *testing.T) {
+	engine := newStartedTestEngine(t)
+	ctx := testRunContext()
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-1", "customer-count", "")); err != nil {
+		t.Fatalf("first claim write: %v", err)
+	}
+	err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-2", "customer-count", ""))
+	if err == nil {
+		t.Fatal("expected conflicting claim_key write to be denied")
+	}
+	if got := countMemoryID(engine.QueryMemory(ctx.EngagementID), "mem-claim-2"); got != 0 {
+		t.Fatalf("denied conflicting record was stored, count %d", got)
+	}
+	if !hasAuditEventType(engine.AuditEvents(), "memory_denied", "agent") {
+		t.Fatal("expected conflicting claim denial to be audited as memory_denied")
+	}
+}
+
+func TestSupersedeRetiresOldRecordAndIsAudited(t *testing.T) {
+	engine := newStartedTestEngine(t)
+	ctx := testRunContext()
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-1", "customer-count", "")); err != nil {
+		t.Fatalf("first claim write: %v", err)
+	}
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-2", "customer-count", "mem-claim-1")); err != nil {
+		t.Fatalf("superseding write: %v", err)
+	}
+	records := engine.QueryMemory(ctx.EngagementID)
+	if got := countMemoryID(records, "mem-claim-1"); got != 0 {
+		t.Fatalf("superseded record still retrievable, count %d", got)
+	}
+	if got := countMemoryID(records, "mem-claim-2"); got != 1 {
+		t.Fatalf("superseding record not retrievable, count %d", got)
+	}
+	if !hasAuditEventType(engine.AuditEvents(), "memory_superseded", "agent") {
+		t.Fatal("expected memory_superseded audit event")
+	}
+	if !VerifyAuditChain(engine.AuditEvents()) {
+		t.Fatal("audit chain invalid after supersession")
+	}
+}
+
+func TestSupersedeTargetMustExistAndBeActive(t *testing.T) {
+	engine := newStartedTestEngine(t)
+	ctx := testRunContext()
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-x", "k1", "mem-missing")); err == nil {
+		t.Fatal("expected supersede of missing record to fail")
+	}
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-1", "k2", "")); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-2", "k2", "mem-claim-1")); err != nil {
+		t.Fatalf("supersede: %v", err)
+	}
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-claim-3", "k2", "mem-claim-1")); err == nil {
+		t.Fatal("expected supersede of already-superseded record to fail")
+	}
+}
+
+func TestMemoryRetrievalIsAudited(t *testing.T) {
+	engine := newStartedTestEngine(t)
+	ctx := testRunContext()
+	if err := engine.WriteMemory(testClaimRecord(ctx, "mem-ret-1", "", "")); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	if got := len(engine.QueryMemory(ctx.EngagementID)); got != 1 {
+		t.Fatalf("expected 1 record, got %d", got)
+	}
+	if !hasAuditEventType(engine.AuditEvents(), "memory_retrieved", "agent") {
+		t.Fatal("expected memory_retrieved audit event")
+	}
+	if !VerifyAuditTrail(engine.AuditEvents(), engine.AuditPayloads()) {
+		t.Fatal("audit trail not replayable after retrieval provenance")
+	}
+}
+
+func TestCrossEngagementQueryIsAuditedAndDenied(t *testing.T) {
+	engine := newStartedTestEngine(t)
+	if got := len(engine.QueryMemory("eng-other-001")); got != 0 {
+		t.Fatalf("expected cross-engagement query to return nothing, got %d", got)
+	}
+	if !hasAuditEventType(engine.AuditEvents(), "memory_query_denied", "agent") {
+		t.Fatal("expected memory_query_denied audit event")
+	}
+}
+
 func TestMemorySourceCitationMustMatchRun(t *testing.T) {
 	engine := newStartedTestEngine(t)
 	ctx := testRunContext()

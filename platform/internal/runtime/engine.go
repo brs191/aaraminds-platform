@@ -379,7 +379,8 @@ func (e *Engine) WriteMemory(record MemoryRecord) error {
 	if e.run.RunID == "" {
 		return errors.New("run has not started")
 	}
-	if err := e.writeMemoryLocked(&record); err != nil {
+	supersededID, err := e.writeMemoryLocked(&record)
+	if err != nil {
 		// A rejected memory write is a governed action: audit the denial so
 		// the memory-citation release gate has evidence (100% cited writes;
 		// uncited attempts denied and logged).
@@ -409,44 +410,99 @@ func (e *Engine) WriteMemory(record MemoryRecord) error {
 		"engagement_id":  record.EngagementID,
 		"classification": record.Classification,
 	})
+	if supersededID != "" {
+		// Consolidation is a governed action: the replaced record's
+		// deactivation is audited so the claim's history is replayable.
+		if _, err := e.recordAudit("memory_superseded", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
+			"memory_id":     supersededID,
+			"superseded_by": record.MemoryID,
+			"engagement_id": record.EngagementID,
+			"claim_key":     record.ClaimKey,
+		}); err != nil {
+			return err
+		}
+		e.recordTrace("memory.superseded", "memory", map[string]any{
+			"memory_id":     supersededID,
+			"superseded_by": record.MemoryID,
+		})
+	}
 	return nil
 }
 
-// writeMemoryLocked performs all memory-write validation and storage.
+// writeMemoryLocked performs all memory-write validation and storage. It
+// returns the memory_id of a record superseded by this write, if any.
 // Callers hold e.mu and have verified a run is active.
-func (e *Engine) writeMemoryLocked(record *MemoryRecord) error {
+func (e *Engine) writeMemoryLocked(record *MemoryRecord) (string, error) {
 	if !e.manifest.Memory.Enabled {
-		return errors.New("memory is disabled by manifest")
+		return "", errors.New("memory is disabled by manifest")
 	}
 	if record.AgentID == "" {
 		record.AgentID = e.manifest.AgentID
 	}
 	if record.AgentID != e.run.AgentID {
-		return fmt.Errorf("memory agent %q does not match run agent %q", record.AgentID, e.run.AgentID)
+		return "", fmt.Errorf("memory agent %q does not match run agent %q", record.AgentID, e.run.AgentID)
 	}
 	if record.EngagementID != e.run.EngagementID {
-		return fmt.Errorf("memory engagement %q does not match run engagement %q", record.EngagementID, e.run.EngagementID)
+		return "", fmt.Errorf("memory engagement %q does not match run engagement %q", record.EngagementID, e.run.EngagementID)
 	}
 	if record.SourceCitation.RunID != e.run.RunID {
-		return fmt.Errorf("memory source run %q does not match active run %q", record.SourceCitation.RunID, e.run.RunID)
+		return "", fmt.Errorf("memory source run %q does not match active run %q", record.SourceCitation.RunID, e.run.RunID)
 	}
 	if record.Status == "" {
 		record.Status = "active"
 	}
 	if err := e.schemas.ValidateMemoryRecord(*record); err != nil {
-		return err
+		return "", err
 	}
 	return e.memory.Write(*record, e.manifest.Memory.AllowedClassifications, e.manifest.Memory.PIIAllowed)
 }
 
+// QueryMemory returns the in-scope memory records for the active run and
+// records retrieval provenance in the tamper-evident audit chain: every
+// successful read emits a memory_retrieved event listing the returned
+// record ids, and an out-of-scope engagement query emits memory_query_denied.
+// Reads fail closed — if provenance cannot be audited, nothing is returned.
 func (e *Engine) QueryMemory(engagementID string) []MemoryRecord {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	if e.run.RunID == "" || engagementID != e.run.EngagementID {
+	if e.run.RunID == "" {
 		return nil
 	}
-	return e.memory.Query(engagementID, e.manifest.Memory.Scope, e.run.AgentID)
+	if engagementID != e.run.EngagementID {
+		// Audit the attempt: a cross-engagement query is the leakage path,
+		// and an unlogged denial is invisible to the release gate.
+		if _, err := e.recordAudit("memory_query_denied", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
+			"requested_engagement_id": engagementID,
+			"run_engagement_id":       e.run.EngagementID,
+			"reason":                  "query engagement does not match active run",
+		}); err != nil {
+			return nil
+		}
+		e.recordTrace("memory.query_denied", "memory", map[string]any{
+			"requested_engagement_id": engagementID,
+		})
+		return nil
+	}
+	records := e.memory.Query(engagementID, e.manifest.Memory.Scope, e.run.AgentID)
+	memoryIDs := make([]any, 0, len(records))
+	for _, record := range records {
+		memoryIDs = append(memoryIDs, record.MemoryID)
+	}
+	if _, err := e.recordAudit("memory_retrieved", "run", e.run.RunID, "agent", e.manifest.AgentID, map[string]any{
+		"engagement_id": engagementID,
+		"scope":         e.manifest.Memory.Scope,
+		"memory_ids":    memoryIDs,
+		"count":         len(records),
+	}); err != nil {
+		// Fail closed: an unauditable read does not happen.
+		return nil
+	}
+	e.recordTrace("memory.retrieved", "memory", map[string]any{
+		"engagement_id": engagementID,
+		"count":         len(records),
+	})
+	return records
 }
 
 func (e *Engine) AuditEvents() []AuditEvent {

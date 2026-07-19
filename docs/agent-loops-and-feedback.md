@@ -117,13 +117,14 @@ The three-loop frame above is Ng's; this loop is ours. It is not in the June 202
 - **Engagement scoping** — reads are scoped to the active engagement/agent policy; cross-engagement isolation is proven, not assumed (`platform/internal/runtime/memory.go`, `memory_leakage_returned`).
 - **Retention/expiry** — expired records are excluded from retrieval (`expired_memory_returned` proof field).
 
-What is **not yet governed** — the open middle of the loop:
+- **Consolidation gate** (closed 2026-07-19) — at most one active record per `(engagement_id, claim_key)`; a conflicting write is denied unless it supersedes the record holding the claim, and a valid supersession retires the old record with a `memory_superseded` audit event. Contradictory cited memories can no longer silently coexist (proof fields `ConflictingClaimWriteDenied`, `SupersededRecordExcluded`, `SupersessionAudited`).
+- **Retrieval provenance** (closed 2026-07-19) — every in-scope read emits a `memory_retrieved` audit event listing the returned record ids in the tamper-evident chain; cross-engagement queries are audited as `memory_query_denied`; unauditable reads fail closed. A run can now show which memories steered it (proof fields `MemoryRetrievalAudited`, `CrossEngagementQueryAudited`).
 
-- **Extraction quality.** What the platform distills from a run into a record is exactly the Mem0 OSS + Azure OpenAI spike still open in `docs/runtime-verification-notes.md`. A citation gate on a badly extracted fact is a well-audited wrong memory.
-- **Consolidation policy.** No defined rules for when records merge, supersede, or conflict. Two contradictory cited memories are both currently "valid."
-- **Retrieval provenance.** A run cannot yet explain *why* a memory surfaced. Until retrieval is auditable the loop's steering is invisible — write-side provenance without read-side provenance is half a chain.
+What is **not yet governed** — the remaining open item:
 
-The write side of this loop is certified; the read side is not. That asymmetry is the memory loop's current risk statement in one line.
+- **Extraction quality.** What the platform distills from a run into a record is exactly the Mem0 OSS + Azure OpenAI spike still open in `docs/runtime-verification-notes.md`. A citation gate on a badly extracted fact is a well-audited wrong memory. The spike now has contracts to measure against: extracted records must produce valid citations and claim keys that survive the consolidation gate.
+
+Both the write side and the retrieval side of this loop are now certified in the harness; extraction — the step that turns run content into records — is the loop's one remaining ungoverned edge.
 
 ---
 
@@ -200,11 +201,11 @@ Signal flows up and out; constraints flow down and in. The memory loop sits *bes
 | Loop | What AaraMinds already does | What's proposed / next |
 |---|---|---|
 | **Loop 1 — Agent** | Governed at design time: manifest tool allowlist, tool contracts, approval boundaries, scoped memory, autonomy classification, and a readiness certificate that gates production. The runtime is *adopted*, not built. | Keep the governance surface current as runtimes evolve. |
-| **Loop 1.5 — Memory** | Write side certified: memory-record contract, citation gate with audited denials, engagement-scoped reads, retention/expiry — all proven in the harness. | Close the read side: extraction-quality spike (Mem0 + Azure OpenAI, Phase 2), consolidation policy, retrieval provenance. |
+| **Loop 1.5 — Memory** | Write and read sides certified: memory-record contract, citation gate, engagement-scoped reads, retention/expiry, claim-key consolidation with audited supersession, and retrieval provenance in the tamper-evident chain — all proven in the harness. | Close extraction: the Mem0 + Azure OpenAI extraction-quality spike (Phase 2), measured against the citation + consolidation contracts. |
 | **Loop 2 — Developer** | Readiness rubric + golden eval cases make Loop 2 converge on evidence, not vibes. Scaffold generator produces the spec artifacts. | The IDE accept/reject/edit signal (the proposed extension) is a Loop-2 source that feeds Loop 3. |
 | **Loop 3 — Feedback** | Readiness reports and pack scorecards are point-in-time certification — the honest baseline Loop 3 recalibrates against. | The **Continuous Certification & Agent Feedback Loop** (see its BRD): OTel GenAI instrumentation → hash-and-reference traces → mined eval cases → rubric recalibration → re-certification. |
 
-The one-line takeaway for the team: **we already govern Loop 1 at design time and certify it once. The feedback-loop initiative is about making Loop 3 real — turning production experience into re-certification — without becoming the surveillance system we tell customers not to build. The memory loop's write side is already certified; closing its read side (extraction, consolidation, retrieval provenance) is the other open front.**
+The one-line takeaway for the team: **we already govern Loop 1 at design time and certify it once. The feedback-loop initiative is about making Loop 3 real — turning production experience into re-certification — without becoming the surveillance system we tell customers not to build. The memory loop's write and retrieval sides are certified in the harness; extraction quality is its one remaining open front.**
 
 ---
 
@@ -223,8 +224,8 @@ When you design or review an agent, confirm each loop has its non-negotiables:
 - [ ] Every write validates against the memory-record contract, with classification, retention, and source citation.
 - [ ] Reads are engagement-scoped; cross-engagement isolation has a passing proof, not a design intention.
 - [ ] Expired records are excluded from retrieval.
-- [ ] A consolidation rule exists for conflicting or superseding records (or conflicts are surfaced, not silently coexisting).
-- [ ] Retrieval is auditable: a run can show which memories steered it and why they surfaced.
+- [ ] A consolidation rule exists for conflicting or superseding records (in AAP: one active record per claim key; conflicts fail closed unless superseded).
+- [ ] Retrieval is auditable: a run can show which memories steered it (in AAP: `memory_retrieved` events in the audit chain; unauditable reads fail closed).
 
 **Loop 2 (Developer) — while building:**
 - [ ] Changes are validated against eval cases, not just re-read.

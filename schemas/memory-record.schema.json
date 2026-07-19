@@ -36,7 +36,11 @@
     "created_at": { "type": "string", "format": "date-time" },
     "expires_at": { "type": "string", "format": "date-time" },
     "status": { "type": "string", "enum": ["active", "superseded"] },
-    "supersedes_memory_id": { "type": ["string", "null"] }
+    "supersedes_memory_id": { "type": ["string", "null"] },
+    "claim_key": {
+      "type": ["string", "null"],
+      "description": "Optional stable topic key for consolidation. At most one active record per (engagement_id, claim_key): a write that collides with an active record's claim_key is denied unless it declares supersedes_memory_id pointing at that record."
+    }
   },
   "additionalProperties": false
 }

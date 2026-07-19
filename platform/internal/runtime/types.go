@@ -189,6 +189,12 @@ type MemoryRecord struct {
 	CreatedAt      time.Time      `json:"created_at"`
 	ExpiresAt      time.Time      `json:"expires_at"`
 	Status         string         `json:"status"`
+	// SupersedesMemoryID names the active record this write replaces.
+	// Required when ClaimKey collides with an existing active record.
+	SupersedesMemoryID string `json:"supersedes_memory_id,omitempty"`
+	// ClaimKey is an optional stable topic key for consolidation. At most
+	// one active record per (engagement_id, claim_key) may exist.
+	ClaimKey string `json:"claim_key,omitempty"`
 }
 
 type SourceCitation struct {
@@ -221,6 +227,11 @@ type ProofReport struct {
 	ExpiredMemoryReturned       int                        `json:"expired_memory_returned"`
 	UncitedMemoryWriteDenied    bool                       `json:"uncited_memory_write_denied"`
 	UncitedMemoryDenialAudited  bool                       `json:"uncited_memory_denial_audited"`
+	ConflictingClaimWriteDenied bool                       `json:"conflicting_claim_write_denied"`
+	SupersededRecordExcluded    bool                       `json:"superseded_record_excluded"`
+	SupersessionAudited         bool                       `json:"supersession_audited"`
+	MemoryRetrievalAudited      bool                       `json:"memory_retrieval_audited"`
+	CrossEngagementQueryAudited bool                       `json:"cross_engagement_query_audited"`
 	InjectionToolDenied         bool                       `json:"injection_tool_denied"`
 	InjectionApprovalEnforced   bool                       `json:"injection_approval_enforced"`
 	InjectionManifestUnchanged  bool                       `json:"injection_manifest_unchanged"`

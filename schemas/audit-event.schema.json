@@ -35,6 +35,8 @@
         "memory_written",
         "memory_superseded",
         "memory_purged",
+        "memory_retrieved",
+        "memory_query_denied",
         "eval_completed",
         "skill_revision_opened",
         "release_approved"

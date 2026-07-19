@@ -148,6 +148,66 @@ func RunPhase1Proof(root string) (ProofReport, error) {
 	})
 	uncitedNotStored := countMemoryID(engine.QueryMemory(ctx.EngagementID), "mem-proof-uncited") == 0
 
+	// ---- Consolidation gates: at most one active record per claim_key.
+	// A conflicting write without supersedes_memory_id must fail closed;
+	// a valid supersede must retire the old record and be audited. ----
+	claimCitation := SourceCitation{
+		RunID:     ctx.RunID,
+		TraceID:   "trace-" + ctx.RunID,
+		SpanID:    "span-proof-source",
+		SourceRef: "source://example/discovery-note",
+	}
+	err = engine.WriteMemory(MemoryRecord{
+		MemoryID:       "mem-proof-claim-a",
+		AgentID:        ctx.AgentID,
+		EngagementID:   ctx.EngagementID,
+		Classification: "client-confidential",
+		ContentRef:     "memory://eng-example-001/mem-proof-claim-a",
+		ContentHash:    hashPayload("customer count is 40"),
+		SourceCitation: claimCitation,
+		CreatedAt:      time.Now().UTC(),
+		ExpiresAt:      time.Now().UTC().Add(90 * 24 * time.Hour),
+		Status:         "active",
+		ClaimKey:       "proof-customer-count",
+	})
+	if err != nil {
+		return ProofReport{}, err
+	}
+	conflictErr := engine.WriteMemory(MemoryRecord{
+		MemoryID:       "mem-proof-claim-conflict",
+		AgentID:        ctx.AgentID,
+		EngagementID:   ctx.EngagementID,
+		Classification: "client-confidential",
+		ContentRef:     "memory://eng-example-001/mem-proof-claim-conflict",
+		ContentHash:    hashPayload("customer count is 55"),
+		SourceCitation: claimCitation,
+		CreatedAt:      time.Now().UTC(),
+		ExpiresAt:      time.Now().UTC().Add(90 * 24 * time.Hour),
+		Status:         "active",
+		ClaimKey:       "proof-customer-count",
+	})
+	conflictNotStored := countMemoryID(engine.QueryMemory(ctx.EngagementID), "mem-proof-claim-conflict") == 0
+	err = engine.WriteMemory(MemoryRecord{
+		MemoryID:           "mem-proof-claim-b",
+		AgentID:            ctx.AgentID,
+		EngagementID:       ctx.EngagementID,
+		Classification:     "client-confidential",
+		ContentRef:         "memory://eng-example-001/mem-proof-claim-b",
+		ContentHash:        hashPayload("customer count is 55 per updated roster"),
+		SourceCitation:     claimCitation,
+		CreatedAt:          time.Now().UTC(),
+		ExpiresAt:          time.Now().UTC().Add(90 * 24 * time.Hour),
+		Status:             "active",
+		ClaimKey:           "proof-customer-count",
+		SupersedesMemoryID: "mem-proof-claim-a",
+	})
+	if err != nil {
+		return ProofReport{}, err
+	}
+	afterSupersede := engine.QueryMemory(ctx.EngagementID)
+	supersededExcluded := countMemoryID(afterSupersede, "mem-proof-claim-a") == 0 &&
+		countMemoryID(afterSupersede, "mem-proof-claim-b") == 1
+
 	// ---- Prompt-injection tool-escalation gates. The harness simulates an
 	// agent acting on instructions embedded in retrieved content (the
 	// injection payload below). The gate proves that even a fully compromised
@@ -200,6 +260,11 @@ func RunPhase1Proof(root string) (ProofReport, error) {
 		ExpiredMemoryReturned:       expired,
 		UncitedMemoryWriteDenied:    uncitedErr != nil && uncitedNotStored,
 		UncitedMemoryDenialAudited:  hasAuditEventType(engine.AuditEvents(), "memory_denied", "agent"),
+		ConflictingClaimWriteDenied: conflictErr != nil && conflictNotStored,
+		SupersededRecordExcluded:    supersededExcluded,
+		SupersessionAudited:         hasAuditEventType(engine.AuditEvents(), "memory_superseded", "agent"),
+		MemoryRetrievalAudited:      hasAuditEventType(engine.AuditEvents(), "memory_retrieved", "agent"),
+		CrossEngagementQueryAudited: hasAuditEventType(engine.AuditEvents(), "memory_query_denied", "agent"),
 		InjectionToolDenied:         injectionDenied.Outcome == "denied" && hasAuditEvent(engine.AuditEvents(), "tool_denied", injectionDenied.AuditEventID),
 		InjectionApprovalEnforced:   injectionApproval.Outcome == "approval_required" && injectionApproval.ApprovalBoundary == BoundaryHard,
 		InjectionManifestUnchanged:  string(manifestBefore) == string(manifestAfter),

@@ -1,4 +1,4 @@
-# Ecosystem Facts — Verified May 18, 2026
+# Ecosystem Facts — Verified May 18, 2026 (SDK/spec section re-verified July 19, 2026)
 
 ## Purpose
 
@@ -29,6 +29,7 @@ These changes are real, modest improvements. None of them is a reason by itself 
 - **Current MCP spec version:** 2025-11-25
 - **Backward-compatible versions:** 2025-06-18, 2025-03-26, 2024-11-05
 - **Specification home:** modelcontextprotocol.io
+- **Incoming (re-verified 2026-07-19):** spec **2026-07-28** is in release candidate and finalizes July 28, 2026 — the largest revision since launch: stateless protocol core, extensions framework (Tasks, MCP Apps), tighter OAuth/OIDC alignment, formal deprecation policy with a **12-month legacy window**. Tier 1 SDKs are expected to ship support within the 10-week validation window. Plan spec-coverage re-checks for whichever SDK you pin. Source: blog.modelcontextprotocol.io (2026-07-28 RC announcement).
 
 ## Go MCP SDKs — both are viable
 
@@ -36,7 +37,7 @@ There are now **two production-viable Go MCP SDKs.** This is a meaningful change
 
 ### Option A — `github.com/modelcontextprotocol/go-sdk` (official)
 
-- **Status:** Stable since v1.0.0, currently v1.5.0
+- **Status:** Stable since v1.0.0, currently v1.6.1 (2026-05-22, per Go module proxy 2026-07-19); v1.7.0 ships MCP spec 2026-07-28 support
 - **Maintainers:** Anthropic in collaboration with Google
 - **Stability commitment:** Formal — no breaking API changes after v1.0.0
 - **MCP spec coverage:** Implements 2025-11-25 with backward compatibility
@@ -53,7 +54,7 @@ Choose this SDK when:
 
 ### Option B — `github.com/mark3labs/mcp-go` (community)
 
-- **Status:** Active development (latest mcp package published May 13, 2026)
+- **Status:** Active development (v0.56.0, 2026-07-08, per Go module proxy 2026-07-19); spec 2026-07-28 support not yet announced
 - **Maintainer:** Originally Ed Zynda, now community-maintained
 - **Stability:** No formal v1.0 stability commitment as of verification date
 - **MCP spec coverage:** Implements 2025-11-25 with backward compatibility
@@ -61,7 +62,7 @@ Choose this SDK when:
 - **Transports:** stdio, SSE, streamable HTTP
 - **License:** MIT
 - **OAuth support:** Yes, including RFC 9728 protected-resource metadata discovery (added in v0.49.0)
-- **Pack pin (verified):** the `microservices-system-design-mcp-server` example pins `v0.52.0`. Verified building and running on Go 1.26.3 with `go mod tidy` / `go build ./...` / full test sweep and a live stdio `tools/list` + `tools/call` round-trip during session-3 verification (May 18, 2026). No version bump required; re-verify the pin per the freshness cadence.
+- **Pack pin (verified):** the `microservices-system-design-mcp-server` example pins `v0.56.0` (bumped from v0.52.0 on 2026-07-19). Verified with `go mod tidy` / `go build ./...` / full test sweep (all packages `ok`) / `go vet` on Go 1.25.x. Prior v0.52.0 verification (May 18, 2026) included a live stdio `tools/list` + `tools/call` round-trip. Re-verify the pin per the freshness cadence and after spec 2026-07-28 lands.
 
 Choose this SDK when:
 - You have existing code on mark3labs/mcp-go and migration cost is significant

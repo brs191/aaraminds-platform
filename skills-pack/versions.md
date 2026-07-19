@@ -14,12 +14,12 @@ Verify the current Go version before pinning. Go major versions ship roughly eve
 
 ## MCP libraries — choose one
 
-Two Go MCP SDKs are production-viable. Both implement MCP spec 2025-11-25 with backward compatibility to 2025-06-18, 2025-03-26, 2024-11-05.
+Two Go MCP SDKs are production-viable. Both implement MCP spec 2025-11-25 with backward compatibility to 2025-06-18, 2025-03-26, 2024-11-05. Spec **2026-07-28** finalizes July 28, 2026 (stateless core, extensions framework, 12-month deprecation window for legacy versions) — re-check SDK spec coverage after it lands; see `ecosystem-facts.md`.
 
 ### Official SDK
 
 - **Module:** `github.com/modelcontextprotocol/go-sdk`
-- **Status:** Stable since v1.0.0, currently v1.5.0 (verify before pinning)
+- **Status:** Stable since v1.0.0, currently v1.6.1; v1.7.0 ships spec 2026-07-28 support (verify before pinning)
 - **Stability commitment:** Formal — no breaking API changes post-v1.0
 - **Maintainer:** Anthropic in collaboration with Google
 - **Default for new enterprise projects with no prior Go MCP code**
