@@ -54,6 +54,8 @@ Current-edge items require re-verification before production commitment:
 - Mem0 OSS + Azure OpenAI memory extraction quality: `[VERIFY]`.
 - MCP SDK/spec compatibility and hosting guidance beyond the pinned repository versions: `[VERIFY]`.
 
+> **Update 2026-07-19:** all six items were externally re-verified — see the dated Verification Log in `docs/runtime-verification-notes.md`. Externally confirmed: Claude Agent SDK hooks/production maturity, Foundry Agent Service GA (BYO VNet, Entra Agent ID), Go MCP SDK v1 stability. Revised: identity model is agent-identity-per-`agent_id` with blueprint-held managed-identity credentials. Still open: OTel GenAI semconv stability, Mem0 extraction-quality spike, local-dev identity fallback, and the repo-side binding spikes. New action: MCP spec 2026-07-28 lands July 28 — plan Go SDK bump to ≥ v1.7.0.
+
 ## System map and layered architecture
 
 ```text
