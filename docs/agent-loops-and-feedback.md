@@ -42,6 +42,8 @@ The framing of building with agents as three nested loops running at different s
 
 The loops are **nested and one-directional in what they feed**: Loop 3's learnings update the spec, evals, and rubric that constrain Loop 2's decisions, which update the prompt, tools, and policy that constrain Loop 1's behavior. Signal flows outward (production → org); constraints flow inward (org → runtime). When people say "close the loop," they almost always mean *make Loop 3 actually change Loop 1* — which is the hard part, because those two loops are weeks and a dozen artifacts apart.
 
+AaraMinds adds a fourth loop to this frame — the **Memory Loop (Loop 1.5)**, covered after Loop 1 below. It runs across runs, between Loop 1's seconds and Loop 3's weeks, and is operated by the agent plus the platform rather than by a person or the org. It is our extension, not part of the Ng framing.
+
 ---
 
 ## Loop 1 — The Agent Loop
@@ -80,6 +82,48 @@ Note what governed the path: the available tools, their read-only scope, and the
 - **The readiness certificate** is the gate that says this loop is allowed to run in production at all. An agent whose manifest is `active` must hold a current passing readiness verdict.
 
 The persona or system prompt shapes how the loop behaves, but **does not enforce** limits — a prompt is not a security boundary. The manifest, contracts, and approval gates are.
+
+---
+
+## Loop 1.5 — The Memory Loop (AaraMinds extension)
+
+The three-loop frame above is Ng's; this loop is ours. It is not in the June 2026 framing, but it passes the same test the other loops pass: it has its own clock, its own operator, and failure modes none of the other loops produce. Within a single run, memory is just context accumulation — Loop 1 covers that. Across runs, memory forms a loop of its own, and pretending it's a Loop 1 property is how memory incidents get misdiagnosed as prompt problems.
+
+**Simple meaning.** What the agent stores in one run changes what it does in later runs, and what it does in later runs changes what it stores.
+
+**Technical meaning.** A cross-run cycle: run N writes a memory record → the platform extracts/consolidates it → run N+1 retrieves it → the retrieval steers reasoning → that reasoning writes new records. One full iteration spans at least two runs. The operator is the **agent plus the platform** — the agent decides what to write, the platform decides what survives, consolidates, and gets retrieved. Neither the developer nor the organization drives an iteration, which is exactly why it is not Loop 2 or Loop 3.
+
+| | **Loop 1.5 — Memory Loop** |
+|---|---|
+| Also called | Memory cycle, cross-run state, agent memory |
+| Clock | Across runs, within an engagement (minutes → days) |
+| Who runs it | The **agent + platform**, between runtimes |
+| One iteration | write record → extract/consolidate → retrieve in later run → steer behavior → write |
+| Optimizes | Continuity across tasks without re-deriving context |
+| Ends when | Never (standing state; records end via retention/expiry) |
+| Primary risk | Poisoning, staleness, cross-engagement leakage |
+
+**Failure modes** (none of these exist in the other three loops):
+
+- **Memory poisoning.** A bad write in run N silently steers run N+50. Unlike Loop 1 error propagation, it survives the run boundary, outlives the context window, and carries no visible trace in the run it corrupts. A poisoned memory is a poisoned *future*, not a poisoned task.
+- **Staleness compounding.** A fact true when written is retrieved as true months later. The record doesn't decay; the world does. Retrieval confidence and record accuracy drift apart silently.
+- **Retrieval feedback bias.** Frequently retrieved memories get re-cited and reinforced; rarely retrieved ones effectively vanish. The loop narrows its own worldview without any single step being wrong.
+- **Cross-engagement leakage.** A memory written in one engagement surfaces in another. This is a confidentiality incident, not a quality incident — and it is the failure the AAP harness already tests for directly.
+
+**Governance — where AaraMinds binds Loop 1.5.** More of this loop is already governed than the three-loop frame suggests:
+
+- **Memory-record contract** — every write is validated against `schemas/memory-record.schema.json`, including classification and retention fields.
+- **Citation gate** — uncited writes are denied, not stored, and audited as `memory_denied` events in the tamper-evident chain (proof fields `UncitedMemoryWriteDenied`, `UncitedMemoryDenialAudited`). Provenance is enforced at write time, which is the cheapest place to fight poisoning.
+- **Engagement scoping** — reads are scoped to the active engagement/agent policy; cross-engagement isolation is proven, not assumed (`platform/internal/runtime/memory.go`, `memory_leakage_returned`).
+- **Retention/expiry** — expired records are excluded from retrieval (`expired_memory_returned` proof field).
+
+What is **not yet governed** — the open middle of the loop:
+
+- **Extraction quality.** What the platform distills from a run into a record is exactly the Mem0 OSS + Azure OpenAI spike still open in `docs/runtime-verification-notes.md`. A citation gate on a badly extracted fact is a well-audited wrong memory.
+- **Consolidation policy.** No defined rules for when records merge, supersede, or conflict. Two contradictory cited memories are both currently "valid."
+- **Retrieval provenance.** A run cannot yet explain *why* a memory surfaced. Until retrieval is auditable the loop's steering is invisible — write-side provenance without read-side provenance is half a chain.
+
+The write side of this loop is certified; the read side is not. That asymmetry is the memory loop's current risk statement in one line.
 
 ---
 
@@ -141,9 +185,13 @@ Without Loop 3, an agent's real reliability decays silently after the day it was
         Loop 1 — Agent (runtime, seconds–minutes)                          │
    reason ─► act(tool) ─► observe ─► decide ──► (governed by manifest,     │
         └────────── repeat until stop ──────┘    contracts, approvals) ────┘
+        │                    ▲
+        ▼ writes             │ retrieves (scoped, cited, retained)
+        Loop 1.5 — Memory (agent + platform, across runs)
+   write record ─► extract/consolidate ─► retrieve in later run ─► steer
 ```
 
-Signal flows up and out; constraints flow down and in. The value of the whole system is proportional to how tightly the outer loops actually reach the inner one — and that reach is engineering work, not a diagram.
+Signal flows up and out; constraints flow down and in. The memory loop sits *beside* Loop 1 rather than above it: each run feeds it on the way out and is fed by it on the way in, which is why a poisoned memory bypasses every per-run control. The value of the whole system is proportional to how tightly the outer loops actually reach the inner one — and that reach is engineering work, not a diagram.
 
 ---
 
@@ -152,10 +200,11 @@ Signal flows up and out; constraints flow down and in. The value of the whole sy
 | Loop | What AaraMinds already does | What's proposed / next |
 |---|---|---|
 | **Loop 1 — Agent** | Governed at design time: manifest tool allowlist, tool contracts, approval boundaries, scoped memory, autonomy classification, and a readiness certificate that gates production. The runtime is *adopted*, not built. | Keep the governance surface current as runtimes evolve. |
+| **Loop 1.5 — Memory** | Write side certified: memory-record contract, citation gate with audited denials, engagement-scoped reads, retention/expiry — all proven in the harness. | Close the read side: extraction-quality spike (Mem0 + Azure OpenAI, Phase 2), consolidation policy, retrieval provenance. |
 | **Loop 2 — Developer** | Readiness rubric + golden eval cases make Loop 2 converge on evidence, not vibes. Scaffold generator produces the spec artifacts. | The IDE accept/reject/edit signal (the proposed extension) is a Loop-2 source that feeds Loop 3. |
 | **Loop 3 — Feedback** | Readiness reports and pack scorecards are point-in-time certification — the honest baseline Loop 3 recalibrates against. | The **Continuous Certification & Agent Feedback Loop** (see its BRD): OTel GenAI instrumentation → hash-and-reference traces → mined eval cases → rubric recalibration → re-certification. |
 
-The one-line takeaway for the team: **we already govern Loop 1 at design time and certify it once. The feedback-loop initiative is about making Loop 3 real — turning production experience into re-certification — without becoming the surveillance system we tell customers not to build.**
+The one-line takeaway for the team: **we already govern Loop 1 at design time and certify it once. The feedback-loop initiative is about making Loop 3 real — turning production experience into re-certification — without becoming the surveillance system we tell customers not to build. The memory loop's write side is already certified; closing its read side (extraction, consolidation, retrieval provenance) is the other open front.**
 
 ---
 
@@ -169,6 +218,13 @@ When you design or review an agent, confirm each loop has its non-negotiables:
 - [ ] High-risk actions pause for approval; the loop cannot cross the risk threshold alone.
 - [ ] Memory is scoped, retained with limits, and provenance-tracked.
 - [ ] A current passing readiness verdict exists.
+
+**Loop 1.5 (Memory) — before memory persists across runs:**
+- [ ] Every write validates against the memory-record contract, with classification, retention, and source citation.
+- [ ] Reads are engagement-scoped; cross-engagement isolation has a passing proof, not a design intention.
+- [ ] Expired records are excluded from retrieval.
+- [ ] A consolidation rule exists for conflicting or superseding records (or conflicts are surfaced, not silently coexisting).
+- [ ] Retrieval is auditable: a run can show which memories steered it and why they surfaced.
 
 **Loop 2 (Developer) — while building:**
 - [ ] Changes are validated against eval cases, not just re-read.
@@ -191,6 +247,7 @@ When you design or review an agent, confirm each loop has its non-negotiables:
 - **"More agents in the loop is better."** Multi-agent adds coordination cost, latency, and harder debugging. Reach for it when the work genuinely decomposes into specialized roles, not by default.
 - **"Guardrails make the loop safe."** Guardrails catch specific known failure classes. Safety is a property of the whole system — stopping conditions, permissions, evaluation, observability — not a component you bolt on.
 - **"We tested it, so it works."** A single passing run says nothing about the distribution. That is the entire reason Loop 3 exists.
+- **"Memory is just long context."** No. Context dies with the run; memory survives it. A long context window changes how much one Loop 1 iteration can see — it does nothing about poisoning, staleness, or leakage across runs, which are memory-loop failures. Teams that treat memory as "more context" ship the write path and forget they also shipped a steering mechanism for every future run.
 
 ---
 
